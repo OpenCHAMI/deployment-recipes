@@ -1,0 +1,19 @@
+networks:
+  - name: hardware_management
+    subnet: 10.10.10.10/24
+  - name: system_management
+    subnet: 10.10.10.10/24
+  - name: high_speed
+    subnet: 192.168.1.128/24
+
+databases:
+  - name: smd
+    users:
+      - name: smd-init-user
+        password: LQBlBgUJAPQjYDbaJQXU1Nu980orhbSxuTt+pDrH048=
+      - name: smd-user
+        password: LQBlBgUJAPQjYDbaJQXU1Nu980orhbSxuTt+pDrH048=
+  - name: bssdb
+    users:
+      - name: bss-user
+        password: jH9f3BtXIWNDBsnOBAyx1oy5mZT2ySdoZk5C3eb6FGA=

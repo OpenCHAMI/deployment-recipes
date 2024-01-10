@@ -1,0 +1,119 @@
+version: '3.7'
+
+## Because hardcoding passwords is bad, we use openssl to generate a random password
+## and store it in a .env file.  This file is not checked into git, so it is not
+## shared with anyone else.  This is a temporary solution until we can use docker secrets.
+# echo "POSTGRES_PASSWORD=$(openssl rand -base64 32)" > .env
+# echo "SMD_POSTGRES_PASSWORD=$(openssl rand -base64 32)" >> .env
+# echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 32)" >> .env
+
+networks:
+  internal:
+  external:
+    external: true
+
+volumes:
+  postgres-data:
+
+
+services:
+  postgres: # Postgres
+    image: postgres:11.5-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ochami
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Set in .env file for now.
+      POSTGRES_DB: ochami
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - internal
+    ports:
+      - 5432:5432
+  ochami-init: # Creates the ochami databases and users
+    container_name: ochami-init
+    image: ghcr.io/openchami/ochami-init:v0.0.1
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=ochami
+      - DB_PASSWORD=${POSTGRES_PASSWORD} # Set in .env file
+      - DB_NAME=ochami
+    hostname: ochami-init
+    depends_on:
+      - postgres
+    networks:
+      - internal
+    entrypoint:
+      - /ochami-init
+    volumes:
+      - ./ochami.yaml:/config/ochami.yaml:ro
+###
+# SMD Init and Server Containers
+###
+  # sets up postgres for SMD data
+  smd-init:
+    container_name: smd-init
+    image: ghcr.io/openchami/smd:v2.12.15
+    environment:
+      - SMD_DBHOST=postgres
+      - SMD_DBPORT=5432
+      - SMD_DBUSER=ochami
+      - SMD_DBPASS=${POSTGRES_PASSWORD} # Set in .env file
+      - SMD_DBNAME=ochami
+      - SMD_DBOPTS=sslmode=disable
+    hostname: smd-init
+    depends_on:
+      - postgres
+      - ochami-init
+    networks:
+      - internal
+    entrypoint:
+      - /smd-init 
+  # SMD 
+  smd:
+    container_name: smd
+    image: ghcr.io/openchami/smd:v2.12.15
+    environment:
+      - SMD_DBHOST=postgres
+      - SMD_DBPORT=5432
+      - SMD_DBUSER=ochami
+      - SMD_DBPASS=${POSTGRES_PASSWORD} # Set in .env file
+      - SMD_DBNAME=ochami
+      - SMD_DBOPTS=sslmode=disable
+    hostname: smd
+    depends_on:
+      - postgres
+      - smd-init
+    ports:
+      - "27779:27779"
+    networks:
+      - internal
+###
+# BSS Server Container
+###
+  # boot-script-service
+  bss:
+    hostname: bss
+    container_name: bss
+    image: ghcr.io/openchami/bss:v1.27.0
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - SQL_USER=bss-user
+      - SQL_PASSWORD=${BSS_POSTGRES_PASSWORD} # Set in .env file
+    ports:
+      - '27778:27778'
+    depends_on:
+      - postgres
+      - smd
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:27778/boot/v1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+  

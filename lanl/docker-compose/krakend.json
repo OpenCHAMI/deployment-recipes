@@ -1,0 +1,130 @@
+{
+  "$schema": "https://www.krakend.io/schema/krakend.json",
+  "version": 3,
+  "name": "KrakenD - API Gateway",
+  "timeout": "3000ms",
+  "cache_ttl": "300s",
+  "output_encoding": "json",
+  "endpoints": [
+    {
+      "endpoint": "/v1/ochami/physical/datacenters",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/memberships",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/v1/ochami/physical/datacenters/{id}",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/memberships",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://localhost:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/v1/ochami/physical/racks",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components?type=Cabinet",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/v1/ochami/physical/racks/{id}",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components/{id}?type=Cabinet",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/v1/ochami/physical/BMCs",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components?type=ChassisBMC&type=NodeBMC&type=RouterBMC",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/v1/ochami/physical/BMCs/{id}",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components/{id}?type=ChassisBMC&type=NodeBMC&type=RouterBMC",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/v1/ochami/physical/frus",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/Inventory/HardwareByFRU",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/v1/ochami/physical/frus/{id}",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/Inventory/FRUs/{id}",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    }
+  ]
+}
