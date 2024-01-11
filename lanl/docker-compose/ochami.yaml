@@ -1,19 +1,22 @@
 networks:
-  - name: hardware_management
-    subnet: 10.10.10.10/24
-  - name: system_management
-    subnet: 10.10.10.10/24
-  - name: high_speed
-    subnet: 192.168.1.128/24
-
+- name: hardware_management
+  subnet: 10.10.10.10/24
+- name: system_management
+  subnet: 10.10.10.10/24
+- name: high_speed
+  subnet: 192.168.1.128/24
 databases:
-  - name: smd
-    users:
-      - name: smd-init-user
-        password: LQBlBgUJAPQjYDbaJQXU1Nu980orhbSxuTt+pDrH048=
-      - name: smd-user
-        password: LQBlBgUJAPQjYDbaJQXU1Nu980orhbSxuTt+pDrH048=
-  - name: bssdb
-    users:
-      - name: bss-user
-        password: jH9f3BtXIWNDBsnOBAyx1oy5mZT2ySdoZk5C3eb6FGA=
+- name: smd
+  users:
+  - name: smd-init-user
+    password: 4e8a793d9c3cd3f6979f8a58bf892e3e28f0c691
+  - name: smd-user
+    password: 4e8a793d9c3cd3f6979f8a58bf892e3e28f0c691
+- name: bssdb
+  users:
+  - name: bss-user
+    password: 49b29ad5469836287a0ea65f48f965159b41d60d
+- name: hydradb
+  users:
+  - name: hydra-user
+    password: feec5907a0e6dc9b4f6ac99221c2252ed10d854c

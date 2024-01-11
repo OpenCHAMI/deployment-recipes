@@ -3,9 +3,11 @@ version: '3.7'
 ## Because hardcoding passwords is bad, we use openssl to generate a random password
 ## and store it in a .env file.  This file is not checked into git, so it is not
 ## shared with anyone else.  This is a temporary solution until we can use docker secrets.
-# echo "POSTGRES_PASSWORD=$(openssl rand -base64 32)" > .env
-# echo "SMD_POSTGRES_PASSWORD=$(openssl rand -base64 32)" >> .env
-# echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 32)" >> .env
+# echo "POSTGRES_PASSWORD=$(openssl rand -base64 128 | shasum)" > .env
+# echo "SMD_POSTGRES_PASSWORD=$(openssl rand -base64 128 | shasum)" >> .env
+# echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 128 | shasum)" >> .env
+# echo "HYDRA_POSTGRES_PASSWORD=$(openssl rand -base64 128 | shasum)" >> .env
+
 
 networks:
   internal:
@@ -47,7 +49,7 @@ services:
     entrypoint:
       - /ochami-init
     volumes:
-      - ./ochami.yaml:/config/ochami.yaml:ro
+      - ./ochami.yaml:/config/ochami.yaml:rw
 ###
 # SMD Init and Server Containers
 ###
