@@ -98,12 +98,15 @@ services:
   bss:
     hostname: bss
     container_name: bss
-    image: ghcr.io/openchami/bss:v1.27.0
+    image: ghcr.io/openchami/bss:v1.27.2
     environment:
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - SQL_USER=bss-user
-      - SQL_PASSWORD=${BSS_POSTGRES_PASSWORD} # Set in .env file
+      - BSS_USESQL=true
+      - BSS_INSECURE=true
+      - BSS_DBHOST=postgres
+      - BSS_DBNAME=ochami
+      - BSS_DBPORT=5432
+      - BSS_DBUSER=ochami
+      - BSS_DBPASS=${POSTGRES_PASSWORD} # Set in .env file
     ports:
       - '27778:27778'
     depends_on:
