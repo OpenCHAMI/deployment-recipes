@@ -49,7 +49,7 @@ services:
     entrypoint:
       - /ochami-init
     volumes:
-      - ./ochami.yaml:/config/ochami.yaml:rw
+      - ./configs/ochami.yaml:/config/ochami.yaml:rw
 ###
 # SMD Init and Server Containers
 ###
@@ -119,6 +119,3 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-
-
-  

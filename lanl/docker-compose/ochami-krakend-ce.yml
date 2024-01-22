@@ -17,4 +17,4 @@ services:
     networks:
       - internal
     volumes:
-      - ./krakend.json:/etc/krakend/krakend.json:ro
+      - ./configs/krakend.json:/etc/krakend/krakend.json:ro

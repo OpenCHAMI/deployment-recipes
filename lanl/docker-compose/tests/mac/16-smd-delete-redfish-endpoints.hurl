@@ -1,0 +1,16 @@
+# Delete RedfishEndpoint for first XName.
+DELETE http://smd:27779/hsm/v2/Inventory/RedfishEndpoints/x0c0s1b0
+
+HTTP 200
+
+# Delete RedfishEndpoint for third XName.
+DELETE http://smd:27779/hsm/v2/Inventory/RedfishEndpoints/x0c0s3b0
+
+HTTP 200
+
+# Get RedfishEndpoints (should be empty).
+GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
+
+HTTP 200
+[Asserts]
+jsonpath "$.RedfishEndpoints" count == 0
