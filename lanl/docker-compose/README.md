@@ -19,6 +19,16 @@
    curl http://<bss_host>:27778/boot/v1/service/status
    ```
 
+### Running Hurl Tests
+
+The hurl tests use [Hurl](https://hurl.dev/) to send API calls to SMD and BSS to
+perform integration testing. `ochami-hurl-tests.yml` depends on
+`ochami-services.yml`, so run the tests with:
+
+```
+docker compose -f ochami-services.yml -f ochami-hurl-tests.yml up
+```
+
 ### Note on ochami-init errors
 
 Docker compose doesn't dispose of ephemeral volumes unless you run
