@@ -9,12 +9,13 @@ PATCH http://bss:27778/boot/v1/bootparameters
 
 HTTP 200
 
-# There should now be only one BootParams entry.
-GET http://bss:27778/boot/v1/bootparameters
-
-HTTP 200
-[Asserts]
-jsonpath "$" count == 1
+# Being able to query:
+# /boot/v1/bootparams?macs=02:0b:b8:00:30:02&kernel=<uri>&initrd=<uri>&params=<params>
+# here and have the nodes with this config be returned.
+#
+# Until/Unless BSS implements this, we check if the specific MAC got
+# updated instead of checking if the specific MAC is a member of the
+# list with the specific boot config.
 
 # Verify that update occurred.
 GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:02

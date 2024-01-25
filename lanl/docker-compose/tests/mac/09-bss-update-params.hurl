@@ -7,12 +7,13 @@ PATCH http://bss:27778/boot/v1/bootparameters
 
 HTTP 200
 
-# There should be two separate BootParams entries.
-GET http://bss:27778/boot/v1/bootparameters
-
-HTTP 200
-[Asserts]
-jsonpath "$" count == 2
+# Being able to query:
+# /boot/v1/bootparams?macs=02:0b:b8:00:30:02&params=param3%20param4
+# here and have the nodes with this config be returned.
+#
+# Until/Unless BSS implements this, we check if the specific MAC got
+# updated instead of checking if the specific MAC is a member of the
+# list with the specific boot config.
 
 # Verify that update occurred.
 GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:02
@@ -25,27 +26,6 @@ GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:02
 #			 "02:0b:b8:00:30:02"
 #		 ],
 #		 "params": "param3 param4",
-#		 "kernel": "https://testkerneluri2.tld",
-#		 "initrd": "https://testinitrduri2.tld",
-#		 "cloud-init": {
-#			 "meta-data": null,
-#			 "user-data": null,
-#			 "phone-home": {
-#				 "pub_key_dsa": "",
-#				 "pub_key_rsa": "",
-#				 "pub_key_ecdsa": "",
-#				 "instance_id": "",
-#				 "hostname": "",
-#				 "fqdn": ""
-#			 }
-#		 }
-#	 },
-#	 {
-#		 "macs": [
-#			 "02:0b:b8:00:30:00",
-#			 "02:0b:b8:00:30:04"
-#		 ],
-#		 "params": "param3,param4",
 #		 "kernel": "https://testkerneluri2.tld",
 #		 "initrd": "https://testinitrduri2.tld",
 #		 "cloud-init": {
