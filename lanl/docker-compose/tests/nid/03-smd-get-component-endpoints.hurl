@@ -28,7 +28,7 @@ GET http://smd:27779/hsm/v2/Inventory/ComponentEndpoints
 #						 "RedfishId": "ManagementEthernet",
 #						 "@odata.id": "/redfish/v1/Systems/x0c1s1b0n0/EthernetInterfaces/ManagementEthernet",
 #						 "Description": "Node Maintenance Network",
-#						 "MACAddress": "02:0b:b8:00:30:00"
+#						 "MACAddress": "02:0b:b8:02:30:00"
 #					 },
 #					 {
 #						 "RedfishId": "HPCNet1",
@@ -74,7 +74,7 @@ GET http://smd:27779/hsm/v2/Inventory/ComponentEndpoints
 #						 "RedfishId": "ManagementEthernet",
 #						 "@odata.id": "/redfish/v1/Systems/x0c1s3b0n0/EthernetInterfaces/ManagementEthernet",
 #						 "Description": "Node Maintenance Network",
-#						 "MACAddress": "02:0b:b8:00:30:04"
+#						 "MACAddress": "02:0b:b8:02:30:04"
 #					 },
 #					 {
 #						 "RedfishId": "HPCNet1",

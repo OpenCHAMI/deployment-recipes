@@ -9,7 +9,7 @@ GET http://bss:27778/boot/v1/bootscript?nid=3
 # boot || goto boot_retry
 # :boot_retry
 # sleep 30
-# chain https://api-gw-service-nmn.local/apis/bss/boot/v1/bootscript?mac=02:0b:b8:00:30:04&retry=1
+# chain https://api-gw-service-nmn.local/apis/bss/boot/v1/bootscript?mac=02:0b:b8:02:30:04&retry=1
 #
 HTTP 200
 [Asserts]
@@ -19,4 +19,4 @@ body contains "initrd --name initrd https://testinitrduri3.tld || goto boot_retr
 body contains "boot || goto boot_retry"
 body contains ":boot_retry"
 body contains "sleep 30"
-body contains "chain https://api-gw-service-nmn.local/apis/bss/boot/v1/bootscript?mac=02:0b:b8:00:30:04&retry=1"
+body contains "chain https://api-gw-service-nmn.local/apis/bss/boot/v1/bootscript?mac=02:0b:b8:02:30:04&retry=1"
