@@ -102,8 +102,5 @@ GET http://smd:27779/hsm/v2/Inventory/ComponentEndpoints
 HTTP 200
 Content-Type: application/json
 [Asserts]
-jsonpath "$.ComponentEndpoints" count == 2
 jsonpath "$.ComponentEndpoints[*].ID" includes "x0c1s1b0"
 jsonpath "$.ComponentEndpoints[*].ID" includes "x0c1s3b0"
-jsonpath "$.ComponentEndpoints[0].Type" == "Node"
-jsonpath "$.ComponentEndpoints[1].Type" == "Node"

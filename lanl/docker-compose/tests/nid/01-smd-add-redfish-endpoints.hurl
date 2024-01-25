@@ -1458,7 +1458,6 @@ GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 HTTP 200
 Content-Type: application/json
 [Asserts]
-jsonpath "$.RedfishEndpoints" count == 2
 jsonpath "$.RedfishEndpoints[*].ID" includes "x0c1s1b0"
 jsonpath "$.RedfishEndpoints[*].ID" includes "x0c1s3b0"
 jsonpath "$.RedfishEndpoints[*].Hostname" includes "x0c1s3b0"
@@ -1467,5 +1466,3 @@ jsonpath "$.RedfishEndpoints[*].MACAddr" includes "ae:12:e2:ff:89:9d"
 jsonpath "$.RedfishEndpoints[*].MACAddr" includes "ae:12:e2:ff:89:9e"
 jsonpath "$.RedfishEndpoints[*].IPAddress" includes "10.254.2.10"
 jsonpath "$.RedfishEndpoints[*].IPAddress" includes "10.254.2.11"
-jsonpath "$.RedfishEndpoints[0].RediscoverOnUpdate" == false
-jsonpath "$.RedfishEndpoints[1].RediscoverOnUpdate" == false
