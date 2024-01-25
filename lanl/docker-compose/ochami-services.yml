@@ -17,6 +17,9 @@ networks:
 volumes:
   postgres-data:
 
+secrets:
+  ochami-config:
+    file: /etc/ochami/ochami.yaml
 
 services:
   postgres: # Postgres
@@ -41,6 +44,7 @@ services:
       - DB_USER=ochami
       - DB_PASSWORD=${POSTGRES_PASSWORD} # Set in .env file
       - DB_NAME=ochami
+      - OCHAMI_CONFIG=/run/secrets/ochami-config
     hostname: ochami-init
     depends_on:
       - postgres
@@ -48,8 +52,8 @@ services:
       - internal
     entrypoint:
       - /ochami-init
-    volumes:
-      - ./configs/ochami.yaml:/config/ochami.yaml:rw
+    secrets:
+      - ochami-config
 ###
 # SMD Init and Server Containers
 ###
