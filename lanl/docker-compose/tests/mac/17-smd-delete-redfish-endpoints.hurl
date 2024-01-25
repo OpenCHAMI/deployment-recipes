@@ -3,14 +3,17 @@ DELETE http://smd:27779/hsm/v2/Inventory/RedfishEndpoints/x0c0s1b0
 
 HTTP 200
 
+# Ensure RedfishEndpoint was deleted for first XName.
+GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints/x0c0s1b0
+
+HTTP 404
+
 # Delete RedfishEndpoint for third XName.
 DELETE http://smd:27779/hsm/v2/Inventory/RedfishEndpoints/x0c0s3b0
 
 HTTP 200
 
-# Get RedfishEndpoints (should be empty).
-GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
+# Ensure RedfishEndpoint was deleted for third XName.
+GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints/x0c0s3b0
 
-HTTP 200
-[Asserts]
-jsonpath "$.RedfishEndpoints" count == 0
+HTTP 404

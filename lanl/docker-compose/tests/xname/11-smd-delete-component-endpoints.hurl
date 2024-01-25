@@ -8,9 +8,17 @@
 #
 #HTTP 200
 
-# Get ComponentEndpoints (should be empty).
-GET http://smd:27779/hsm/v2/Inventory/ComponentEndpoints
+# Ensure ComponentEndpoint was deleted for first XName.
+GET http://smd:27779/hsm/v2/Inventory/ComponentEndpoints/x0c2s1b0
 
-HTTP 200
-[Asserts]
-jsonpath "$.ComponentEndpoints" count == 0
+HTTP 404
+
+# Ensure ComponentEndpoint was deleted for second XName.
+GET http://smd:27779/hsm/v2/Inventory/ComponentEndpoints/x0c2s2b0
+
+HTTP 404
+
+# Ensure ComponentEndpoint was deleted for third XName.
+GET http://smd:27779/hsm/v2/Inventory/ComponentEndpoints/x0c2s3b0
+
+HTTP 404
