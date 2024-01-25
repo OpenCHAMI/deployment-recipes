@@ -9,13 +9,6 @@ PATCH http://bss:27778/boot/v1/bootparameters
 
 HTTP 200
 
-# There should still be only one BootParams entry.
-GET http://bss:27778/boot/v1/bootparameters
-
-HTTP 200
-[Asserts]
-jsonpath "$" count == 1
-
 # Verify that update occurred.
 GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:02
 
@@ -24,8 +17,6 @@ GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:02
 # [
 # 	{
 # 		"macs": [
-# 			"02:0b:b8:00:30:00",
-# 			"02:0b:b8:00:30:04",
 # 			"02:0b:b8:00:30:02"
 # 		],
 # 		"params": "param3,param4",
@@ -47,6 +38,7 @@ GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:02
 # ]
 HTTP 200
 [Asserts]
+jsonpath "$" count == 1
 jsonpath "$[0].macs" count == 1
 jsonpath "$[0].macs[0]" == "02:0b:b8:00:30:02"
 jsonpath "$[0].params" == "param3,param4"
