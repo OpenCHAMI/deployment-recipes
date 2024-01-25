@@ -4,7 +4,7 @@ GET http://bss:27778/boot/v1/bootscript?nid=3
 # Response should be (trailing newline included):
 #
 # #!ipxe
-# kernel --name kernel https://testkerneluri3.tld initrd=initrd param5,param6 xname=x0c0s3b0 ds=nocloud-net;s=localhost/ || goto boot_retry
+# kernel --name kernel https://testkerneluri3.tld initrd=initrd param5,param6 xname=x0c1s3b0 ds=nocloud-net;s=localhost/ || goto boot_retry
 # initrd --name initrd https://testinitrduri3.tld || goto boot_retry
 # boot || goto boot_retry
 # :boot_retry
@@ -14,7 +14,7 @@ GET http://bss:27778/boot/v1/bootscript?nid=3
 HTTP 200
 [Asserts]
 body contains "#!ipxe"
-body contains "kernel --name kernel https://testkerneluri3.tld initrd=initrd param5,param6 xname=x0c0s3b0 ds=nocloud-net;s=localhost/ || goto boot_retry"
+body contains "kernel --name kernel https://testkerneluri3.tld initrd=initrd param5,param6 xname=x0c1s3b0 ds=nocloud-net;s=localhost/ || goto boot_retry"
 body contains "initrd --name initrd https://testinitrduri3.tld || goto boot_retry"
 body contains "boot || goto boot_retry"
 body contains ":boot_retry"

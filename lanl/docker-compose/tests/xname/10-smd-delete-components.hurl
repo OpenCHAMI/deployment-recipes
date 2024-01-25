@@ -1,10 +1,10 @@
 # Delete Component for first XName.
-DELETE http://smd:27779/hsm/v2/State/Components/x0c0s1b0
+DELETE http://smd:27779/hsm/v2/State/Components/x0c2s1b0
 
 HTTP 200
 
 # Delete Component for third XName.
-DELETE http://smd:27779/hsm/v2/State/Components/x0c0s3b0
+DELETE http://smd:27779/hsm/v2/State/Components/x0c2s3b0
 
 HTTP 200
 

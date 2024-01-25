@@ -6,12 +6,12 @@ GET http://smd:27779/hsm/v2/State/Components
 # {
 #	 "Components": [
 #		 {
-#			 "ID": "x0c0s1b0",
+#			 "ID": "x0c2s1b0",
 #			 "Type": "Node",
 #			 "Enabled": false
 #		 },
 #		 {
-#			 "ID": "x0c0s3b0",
+#			 "ID": "x0c2s3b0",
 #			 "Type": "Node",
 #			 "Enabled": false
 #		 }
@@ -20,8 +20,8 @@ GET http://smd:27779/hsm/v2/State/Components
 HTTP 200
 Content-Type: application/json
 [Asserts]
-jsonpath "$.Components[*].ID" includes "x0c0s1b0"
-jsonpath "$.Components[*].ID" includes "x0c0s3b0"
+jsonpath "$.Components[*].ID" includes "x0c2s1b0"
+jsonpath "$.Components[*].ID" includes "x0c2s3b0"
 jsonpath "$.Components[0].Type" == "Node"
 jsonpath "$.Components[0].Enabled" == true
 jsonpath "$.Components[1].Type" == "Node"

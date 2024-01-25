@@ -1,9 +1,9 @@
 # Create SMD Redfish endpoints for first xname.
 POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 {
-	"ID": "x0c0s1b0",
-	"Name": "x0c0s1b0",
-	"Hostname": "x0c0s1b0",
+	"ID": "x0c1s1b0",
+	"Name": "x0c1s1b0",
+	"Hostname": "x0c1s1b0",
 	"FQDN": "",
 	"User": "admin",
 	"Password": "password",
@@ -13,9 +13,9 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 	"IPAddress": "10.254.2.10",
 	"Chassis": [
 		{
-			"@odata.id": "/redfish/v1/Chassis/x0c0s1b0",
-			"Id": "x0c0s1b0",
-			"Name": "x0c0s1b0",
+			"@odata.id": "/redfish/v1/Chassis/x0c1s1b0",
+			"Id": "x0c1s1b0",
+			"Name": "x0c1s1b0",
 			"@odata.context": "",
 			"@odata.type": "#Chassis.v1_5_1.Chassis",
 			"AssetTag": "",
@@ -197,9 +197,9 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 			"SupportedResetTypes": null
 		},
 		{
-			"@odata.id": "/redfish/v1/Chassis/x0c0s1b0n0",
-			"Id": "x0c0s1b0n0",
-			"Name": "x0c0s1b0n0",
+			"@odata.id": "/redfish/v1/Chassis/x0c1s1b0n0",
+			"Id": "x0c1s1b0n0",
+			"Name": "x0c1s1b0n0",
 			"@odata.context": "",
 			"@odata.type": "#Chassis.v1_5_1.Chassis",
 			"AssetTag": "",
@@ -292,8 +292,8 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 	"Systems": [
 		{
 			"Data": {
-				"@odata.id": "/redfish/v1/Systems/x0c0s1b0n0",
-				"Id": "x0c0s1b0n0",
+				"@odata.id": "/redfish/v1/Systems/x0c1s1b0n0",
+				"Id": "x0c1s1b0n0",
 				"@odata.context": "",
 				"@odata.type": "#ComputerSystem.v1_5_0.ComputerSystem",
 				"AssetTag": "",
@@ -337,7 +337,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 					"TotalSystemPersistentMemoryGiB": 0
 				},
 				"Model": "HPE CRAY EX235a",
-				"Name": "x0c0s1b0n0",
+				"Name": "x0c1s1b0n0",
 				"PCIeDevices@odata.count": 0,
 				"PCIeFunctions@odata.count": 0,
 				"PartNumber": "P37085-001.A",
@@ -372,7 +372,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 			"EthernetInterfaces": [
 				{
 					"@odata.context": "",
-					"@odata.id": "/redfish/v1/Systems/x0c0s1b0n0/EthernetInterfaces/HPCNet2",
+					"@odata.id": "/redfish/v1/Systems/x0c1s1b0n0/EthernetInterfaces/HPCNet2",
 					"@odata.type": "#EthernetInterface.v1_3_0.EthernetInterface",
 					"AutoNeg": false,
 					"DHCPv4": {
@@ -414,7 +414,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 					"Oem": {
 						"Hpe": {
 							"CassiniMetrics": {
-								"@odata.id": "/redfish/v1/Systems/x0c0s1b0n0/EthernetInterfaces/HPCNet2/Oem/Hpe/CassiniMetrics"
+								"@odata.id": "/redfish/v1/Systems/x0c1s1b0n0/EthernetInterfaces/HPCNet2/Oem/Hpe/CassiniMetrics"
 							}
 						}
 					},
@@ -438,7 +438,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 				},
 				{
 					"@odata.context": "",
-					"@odata.id": "/redfish/v1/Systems/x0c0s1b0n0/EthernetInterfaces/ManagementEthernet",
+					"@odata.id": "/redfish/v1/Systems/x0c1s1b0n0/EthernetInterfaces/ManagementEthernet",
 					"@odata.type": "#EthernetInterface.v1_3_0.EthernetInterface",
 					"AutoNeg": false,
 					"DHCPv4": {
@@ -498,7 +498,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 				},
 				{
 					"@odata.context": "",
-					"@odata.id": "/redfish/v1/Systems/x0c0s1b0n0/EthernetInterfaces/HPCNet1",
+					"@odata.id": "/redfish/v1/Systems/x0c1s1b0n0/EthernetInterfaces/HPCNet1",
 					"@odata.type": "#EthernetInterface.v1_3_0.EthernetInterface",
 					"AutoNeg": false,
 					"DHCPv4": {
@@ -540,7 +540,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 					"Oem": {
 						"Hpe": {
 							"CassiniMetrics": {
-								"@odata.id": "/redfish/v1/Systems/x0c0s1b0n0/EthernetInterfaces/HPCNet1/Oem/Hpe/CassiniMetrics"
+								"@odata.id": "/redfish/v1/Systems/x0c1s1b0n0/EthernetInterfaces/HPCNet1/Oem/Hpe/CassiniMetrics"
 							}
 						}
 					},
@@ -564,7 +564,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 				},
 				{
 					"@odata.context": "",
-					"@odata.id": "/redfish/v1/Systems/x0c0s1b0n0/EthernetInterfaces/HPCNet3",
+					"@odata.id": "/redfish/v1/Systems/x0c1s1b0n0/EthernetInterfaces/HPCNet3",
 					"@odata.type": "#EthernetInterface.v1_3_0.EthernetInterface",
 					"AutoNeg": false,
 					"DHCPv4": {
@@ -606,7 +606,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 					"Oem": {
 						"Hpe": {
 							"CassiniMetrics": {
-								"@odata.id": "/redfish/v1/Systems/x0c0s1b0n0/EthernetInterfaces/HPCNet3/Oem/Hpe/CassiniMetrics"
+								"@odata.id": "/redfish/v1/Systems/x0c1s1b0n0/EthernetInterfaces/HPCNet3/Oem/Hpe/CassiniMetrics"
 							}
 						}
 					},
@@ -630,7 +630,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 				},
 				{
 					"@odata.context": "",
-					"@odata.id": "/redfish/v1/Systems/x0c0s1b0n0/EthernetInterfaces/HPCNet0",
+					"@odata.id": "/redfish/v1/Systems/x0c1s1b0n0/EthernetInterfaces/HPCNet0",
 					"@odata.type": "#EthernetInterface.v1_3_0.EthernetInterface",
 					"AutoNeg": false,
 					"DHCPv4": {
@@ -672,7 +672,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 					"Oem": {
 						"Hpe": {
 							"CassiniMetrics": {
-								"@odata.id": "/redfish/v1/Systems/x0c0s1b0n0/EthernetInterfaces/HPCNet0/Oem/Hpe/CassiniMetrics"
+								"@odata.id": "/redfish/v1/Systems/x0c1s1b0n0/EthernetInterfaces/HPCNet0/Oem/Hpe/CassiniMetrics"
 							}
 						}
 					},
@@ -702,14 +702,14 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 HTTP 201
 Content-Type: application/json
 [Asserts]
-jsonpath "$[0].URI" == "/hsm/v2/Inventory/RedfishEndpoints/x0c0s1b0"
+jsonpath "$[0].URI" == "/hsm/v2/Inventory/RedfishEndpoints/x0c1s1b0"
 
 # Create SMD Redfish endpoints for third xname (the second will be deleted).
 POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 {
-	"ID": "x0c0s3b0",
-	"Name": "x0c0s3b0",
-	"Hostname": "x0c0s3b0",
+	"ID": "x0c1s3b0",
+	"Name": "x0c1s3b0",
+	"Hostname": "x0c1s3b0",
 	"FQDN": "",
 	"User": "admin",
 	"Password": "password",
@@ -719,9 +719,9 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 	"IPAddress": "10.254.2.11",
 	"Chassis": [
 		{
-			"@odata.id": "/redfish/v1/Chassis/x0c0s3b0",
-			"Id": "x0c0s3b0",
-			"Name": "x0c0s3b0",
+			"@odata.id": "/redfish/v1/Chassis/x0c1s3b0",
+			"Id": "x0c1s3b0",
+			"Name": "x0c1s3b0",
 			"@odata.context": "",
 			"@odata.type": "#Chassis.v1_5_1.Chassis",
 			"AssetTag": "",
@@ -903,9 +903,9 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 			"SupportedResetTypes": null
 		},
 		{
-			"@odata.id": "/redfish/v1/Chassis/x0c0s3b0n0",
-			"Id": "x0c0s3b0n0",
-			"Name": "x0c0s3b0n0",
+			"@odata.id": "/redfish/v1/Chassis/x0c1s3b0n0",
+			"Id": "x0c1s3b0n0",
+			"Name": "x0c1s3b0n0",
 			"@odata.context": "",
 			"@odata.type": "#Chassis.v1_5_1.Chassis",
 			"AssetTag": "",
@@ -998,8 +998,8 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 	"Systems": [
 		{
 			"Data": {
-				"@odata.id": "/redfish/v1/Systems/x0c0s3b0n0",
-				"Id": "x0c0s3b0n0",
+				"@odata.id": "/redfish/v1/Systems/x0c1s3b0n0",
+				"Id": "x0c1s3b0n0",
 				"@odata.context": "",
 				"@odata.type": "#ComputerSystem.v1_5_0.ComputerSystem",
 				"AssetTag": "",
@@ -1043,7 +1043,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 					"TotalSystemPersistentMemoryGiB": 0
 				},
 				"Model": "HPE CRAY EX235a",
-				"Name": "x0c0s3b0n0",
+				"Name": "x0c1s3b0n0",
 				"PCIeDevices@odata.count": 0,
 				"PCIeFunctions@odata.count": 0,
 				"PartNumber": "P37085-001.A",
@@ -1078,7 +1078,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 			"EthernetInterfaces": [
 				{
 					"@odata.context": "",
-					"@odata.id": "/redfish/v1/Systems/x0c0s3b0n0/EthernetInterfaces/HPCNet2",
+					"@odata.id": "/redfish/v1/Systems/x0c1s3b0n0/EthernetInterfaces/HPCNet2",
 					"@odata.type": "#EthernetInterface.v1_3_0.EthernetInterface",
 					"AutoNeg": false,
 					"DHCPv4": {
@@ -1120,7 +1120,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 					"Oem": {
 						"Hpe": {
 							"CassiniMetrics": {
-								"@odata.id": "/redfish/v1/Systems/x0c0s3b0n0/EthernetInterfaces/HPCNet2/Oem/Hpe/CassiniMetrics"
+								"@odata.id": "/redfish/v1/Systems/x0c1s3b0n0/EthernetInterfaces/HPCNet2/Oem/Hpe/CassiniMetrics"
 							}
 						}
 					},
@@ -1144,7 +1144,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 				},
 				{
 					"@odata.context": "",
-					"@odata.id": "/redfish/v1/Systems/x0c0s3b0n0/EthernetInterfaces/ManagementEthernet",
+					"@odata.id": "/redfish/v1/Systems/x0c1s3b0n0/EthernetInterfaces/ManagementEthernet",
 					"@odata.type": "#EthernetInterface.v1_3_0.EthernetInterface",
 					"AutoNeg": false,
 					"DHCPv4": {
@@ -1204,7 +1204,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 				},
 				{
 					"@odata.context": "",
-					"@odata.id": "/redfish/v1/Systems/x0c0s3b0n0/EthernetInterfaces/HPCNet1",
+					"@odata.id": "/redfish/v1/Systems/x0c1s3b0n0/EthernetInterfaces/HPCNet1",
 					"@odata.type": "#EthernetInterface.v1_3_0.EthernetInterface",
 					"AutoNeg": false,
 					"DHCPv4": {
@@ -1246,7 +1246,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 					"Oem": {
 						"Hpe": {
 							"CassiniMetrics": {
-								"@odata.id": "/redfish/v1/Systems/x0c0s3b0n0/EthernetInterfaces/HPCNet1/Oem/Hpe/CassiniMetrics"
+								"@odata.id": "/redfish/v1/Systems/x0c1s3b0n0/EthernetInterfaces/HPCNet1/Oem/Hpe/CassiniMetrics"
 							}
 						}
 					},
@@ -1270,7 +1270,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 				},
 				{
 					"@odata.context": "",
-					"@odata.id": "/redfish/v1/Systems/x0c0s3b0n0/EthernetInterfaces/HPCNet3",
+					"@odata.id": "/redfish/v1/Systems/x0c1s3b0n0/EthernetInterfaces/HPCNet3",
 					"@odata.type": "#EthernetInterface.v1_3_0.EthernetInterface",
 					"AutoNeg": false,
 					"DHCPv4": {
@@ -1312,7 +1312,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 					"Oem": {
 						"Hpe": {
 							"CassiniMetrics": {
-								"@odata.id": "/redfish/v1/Systems/x0c0s3b0n0/EthernetInterfaces/HPCNet3/Oem/Hpe/CassiniMetrics"
+								"@odata.id": "/redfish/v1/Systems/x0c1s3b0n0/EthernetInterfaces/HPCNet3/Oem/Hpe/CassiniMetrics"
 							}
 						}
 					},
@@ -1336,7 +1336,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 				},
 				{
 					"@odata.context": "",
-					"@odata.id": "/redfish/v1/Systems/x0c0s3b0n0/EthernetInterfaces/HPCNet0",
+					"@odata.id": "/redfish/v1/Systems/x0c1s3b0n0/EthernetInterfaces/HPCNet0",
 					"@odata.type": "#EthernetInterface.v1_3_0.EthernetInterface",
 					"AutoNeg": false,
 					"DHCPv4": {
@@ -1378,7 +1378,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 					"Oem": {
 						"Hpe": {
 							"CassiniMetrics": {
-								"@odata.id": "/redfish/v1/Systems/x0c0s3b0n0/EthernetInterfaces/HPCNet0/Oem/Hpe/CassiniMetrics"
+								"@odata.id": "/redfish/v1/Systems/x0c1s3b0n0/EthernetInterfaces/HPCNet0/Oem/Hpe/CassiniMetrics"
 							}
 						}
 					},
@@ -1408,7 +1408,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 HTTP 201
 Content-Type: application/json
 [Asserts]
-jsonpath "$[0].URI" == "/hsm/v2/Inventory/RedfishEndpoints/x0c0s3b0"
+jsonpath "$[0].URI" == "/hsm/v2/Inventory/RedfishEndpoints/x0c1s3b0"
 
 # Get RedfishEndpoints we just added.
 GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
@@ -1418,12 +1418,12 @@ GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 # {
 #	 "RedfishEndpoints": [
 #		 {
-#			 "ID": "x0c0s1b0",
+#			 "ID": "x0c1s1b0",
 #			 "Type": "NodeBMC",
-#			 "Name": "x0c0s1b0",
-#			 "Hostname": "x0c0s1b0",
+#			 "Name": "x0c1s1b0",
+#			 "Hostname": "x0c1s1b0",
 #			 "Domain": "",
-#			 "FQDN": "x0c0s1b0",
+#			 "FQDN": "x0c1s1b0",
 #			 "Enabled": true,
 #			 "User": "admin",
 #			 "Password": "password",
@@ -1436,12 +1436,12 @@ GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 #			 }
 #		 },
 #		 {
-#			 "ID": "x0c0s3b0",
+#			 "ID": "x0c1s3b0",
 #			 "Type": "NodeBMC",
-#			 "Name": "x0c0s3b0",
-#			 "Hostname": "x0c0s3b0",
+#			 "Name": "x0c1s3b0",
+#			 "Hostname": "x0c1s3b0",
 #			 "Domain": "",
-#			 "FQDN": "x0c0s3b0",
+#			 "FQDN": "x0c1s3b0",
 #			 "Enabled": true,
 #			 "User": "admin",
 #			 "Password": "password",
@@ -1459,10 +1459,10 @@ HTTP 200
 Content-Type: application/json
 [Asserts]
 jsonpath "$.RedfishEndpoints" count == 2
-jsonpath "$.RedfishEndpoints[*].ID" includes "x0c0s1b0"
-jsonpath "$.RedfishEndpoints[*].ID" includes "x0c0s3b0"
-jsonpath "$.RedfishEndpoints[*].Hostname" includes "x0c0s3b0"
-jsonpath "$.RedfishEndpoints[*].Hostname" includes "x0c0s3b0"
+jsonpath "$.RedfishEndpoints[*].ID" includes "x0c1s1b0"
+jsonpath "$.RedfishEndpoints[*].ID" includes "x0c1s3b0"
+jsonpath "$.RedfishEndpoints[*].Hostname" includes "x0c1s3b0"
+jsonpath "$.RedfishEndpoints[*].Hostname" includes "x0c1s3b0"
 jsonpath "$.RedfishEndpoints[*].MACAddr" includes "ae:12:e2:ff:89:9d"
 jsonpath "$.RedfishEndpoints[*].MACAddr" includes "ae:12:e2:ff:89:9e"
 jsonpath "$.RedfishEndpoints[*].IPAddress" includes "10.254.2.10"
