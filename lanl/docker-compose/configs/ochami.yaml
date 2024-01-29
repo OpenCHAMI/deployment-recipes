@@ -9,14 +9,14 @@ databases:
 - name: smd
   users:
   - name: smd-init-user
-    password: 4e8a793d9c3cd3f6979f8a58bf892e3e28f0c691
+    password: SMD_DB_PASSWD
   - name: smd-user
-    password: 4e8a793d9c3cd3f6979f8a58bf892e3e28f0c691
+    password: SMD_DB_PASSWD
 - name: bssdb
   users:
   - name: bss-user
-    password: 49b29ad5469836287a0ea65f48f965159b41d60d
+    password: BSS_DB_PASSWD
 - name: hydradb
   users:
   - name: hydra-user
-    password: feec5907a0e6dc9b4f6ac99221c2252ed10d854c
+    password: HYDRA_DB_PASSWD
