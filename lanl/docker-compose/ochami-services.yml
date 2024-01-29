@@ -19,7 +19,7 @@ volumes:
 
 secrets:
   ochami-config:
-    file: /etc/ochami/ochami.yaml
+    file: /etc/ochami/ochami-config.yaml
 
 services:
   postgres: # Postgres
