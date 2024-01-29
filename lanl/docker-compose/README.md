@@ -1,6 +1,6 @@
 # Deployment Recipe for use with Docker compose
 
-1. Run `./generate-config.sh` to generate an ochami config file. Default location is `/etc/ochami/ochami-config.yaml`. This can be changed by setting `OCHAMI_CONFIG=/path/to/config/ochami.yaml`
+1. Run `./generate-config.sh` to generate an ochami config file. Default location is `/etc/ochami/ochami-config.yaml`
 1. Run `docker compose -f ochami-services.yml -f ochami-krakend-ce.yml up` to bring up ochami services
 1. After a minute or so you can check the health of SMD: `curl http://<smd_host>:27779/hsm/v2/service/ready`
 1. And BSS: `curl http://<bss_host>:27778/boot/v1/service/status`
