@@ -38,7 +38,7 @@ services:
       - 5432:5432
   ochami-init: # Creates the ochami databases and users
     container_name: ochami-init
-    image: ghcr.io/openchami/ochami-init:v0.0.18
+    image: ghcr.io/openchami/ochami-init:v0.0.20
     environment:
       - DB_HOST=postgres
       - DB_USER=ochami
