@@ -96,8 +96,29 @@ services:
     networks:
       - internal
 ###
-# BSS Server Container
+# BSS Init and Server Containers
 ###
+# sets up postgres for BSS data
+  bss-init:
+    hostname: bss-init
+    container_name: bss-init
+    image: ghcr.io/openchami/bss:v1.27.2
+    environment:
+      - BSS_USESQL=true
+      - BSS_INSECURE=true
+      - BSS_DBHOST=postgres
+      - BSS_DBNAME=bssdb
+      - BSS_DBPORT=5432
+      - BSS_DBUSER=bss-user
+      - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
+    ports:
+      - '27778:27778'
+    depends_on:
+      - postgres
+    networks:
+      - internal
+    entrypoint:
+      - /usr/local/bin/bss-init
   # boot-script-service
   bss:
     hostname: bss
@@ -115,6 +136,7 @@ services:
       - '27778:27778'
     depends_on:
       - postgres
+      - bss-init
       - smd
     networks:
       - internal
