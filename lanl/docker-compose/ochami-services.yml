@@ -126,10 +126,10 @@ services:
       - BSS_USESQL=true
       - BSS_INSECURE=true
       - BSS_DBHOST=postgres
-      - BSS_DBNAME=ochami
+      - BSS_DBNAME=bssdb
       - BSS_DBPORT=5432
-      - BSS_DBUSER=ochami
-      - BSS_DBPASS=${POSTGRES_PASSWORD} # Set in .env file
+      - BSS_DBUSER=bss-user
+      - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
     ports:
       - '27778:27778'
     depends_on:
