@@ -111,8 +111,6 @@ services:
       - BSS_DBPORT=5432
       - BSS_DBUSER=bss-user
       - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
-    ports:
-      - '27778:27778'
     depends_on:
       - postgres
     networks:
