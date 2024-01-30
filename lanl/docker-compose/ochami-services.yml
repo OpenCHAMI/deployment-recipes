@@ -36,6 +36,11 @@ services:
       - internal
     ports:
       - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "ochami"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
   ochami-init: # Creates the ochami databases and users
     container_name: ochami-init
     image: ghcr.io/openchami/ochami-init:v0.0.20
@@ -70,8 +75,10 @@ services:
       - SMD_DBOPTS=sslmode=disable
     hostname: smd-init
     depends_on:
-      - postgres
-      - ochami-init
+      postgres:
+        condition: service_healthy
+      ochami-init:
+        condition: service_completed_successfully
     networks:
       - internal
     entrypoint:
@@ -112,7 +119,10 @@ services:
       - BSS_DBUSER=bss-user
       - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      ochami-init:
+        condition: service_completed_successfully
     networks:
       - internal
     entrypoint:
