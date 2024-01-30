@@ -1,7 +1,14 @@
 #!/bin/bash
 
 # Ochami config file location
-OCHAMI_CONFIG=/etc/ochami/ochami-config.yaml
+OCHAMI_DIR=${OCHAMI_DIR:-/etc/ochami}
+OCHAMI_CONFIG=${OCHAMI_CONFIG:-${OCHAMI_DIR}/ochami-config.yaml}
+
+if [ -f $OCHAMI_CONFIG ]
+then
+	echo "A config file exists. Delete to generate a new one"
+	exit 1
+fi
 
 #Set DB passwords 
 echo "POSTGRES_PASSWORD=$(openssl rand -base64 32)" > .env
