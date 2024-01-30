@@ -102,7 +102,7 @@ services:
   bss-init:
     hostname: bss-init
     container_name: bss-init
-    image: ghcr.io/openchami/bss:v1.27.2
+    image: ghcr.io/openchami/bss:v1.28.0
     environment:
       - BSS_USESQL=true
       - BSS_INSECURE=true
@@ -121,7 +121,7 @@ services:
   bss:
     hostname: bss
     container_name: bss
-    image: ghcr.io/openchami/bss:v1.27.2
+    image: ghcr.io/openchami/bss:v1.28.0
     environment:
       - BSS_USESQL=true
       - BSS_INSECURE=true
