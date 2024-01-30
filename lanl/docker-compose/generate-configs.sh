@@ -16,7 +16,7 @@ echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 32)" >> .env
 echo "OCHAMI_CONFIG=$OCHAMI_CONFIG" >> .env
 
 #Copy Config template to real config location
-mkdir -p /etc/ochami
+mkdir -p $OCHAMI_DIR
 cp configs/ochami-template.yaml $OCHAMI_CONFIG
 
 #replace passwords in template. 
