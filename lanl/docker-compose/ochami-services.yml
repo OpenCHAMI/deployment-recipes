@@ -3,10 +3,11 @@ version: '3.7'
 ## Because hardcoding passwords is bad, we use openssl to generate a random password
 ## and store it in a .env file.  This file is not checked into git, so it is not
 ## shared with anyone else.  This is a temporary solution until we can use docker secrets.
-# echo "POSTGRES_PASSWORD=$(openssl rand -base64 128 | shasum)" > .env
-# echo "SMD_POSTGRES_PASSWORD=$(openssl rand -base64 128 | shasum)" >> .env
-# echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 128 | shasum)" >> .env
-# echo "HYDRA_POSTGRES_PASSWORD=$(openssl rand -base64 128 | shasum)" >> .env
+## The generate-creds.sh script performs the following commands.
+# echo "POSTGRES_PASSWORD=$(openssl rand -base64 128 | sha1sum | awk '{print $1}')" > .env
+# echo "SMD_POSTGRES_PASSWORD=$(openssl rand -base64 128 | sha1sum | awk '{print $1}')" >> .env
+# echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 128 | sha1sum | awk '{print $1}')" >> .env
+# echo "HYDRA_POSTGRES_PASSWORD=$(openssl rand -base64 128 | sha1sum | awk '{print $1}')" >> .env
 
 
 networks:
@@ -17,10 +18,6 @@ networks:
 volumes:
   postgres-data:
 
-secrets:
-  ochami-config:
-    file: ${OCHAMI_CONFIG}
-
 services:
   postgres: # Postgres
     image: postgres:11.5-alpine
@@ -29,9 +26,10 @@ services:
     environment:
       POSTGRES_USER: ochami
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Set in .env file for now.
-      POSTGRES_DB: ochami
+      POSTGRES_MULTIPLE_DATABASES: hmsds:smd-user:${SMD_POSTGRES_PASSWORD},bssdb:bss-user:${BSS_POSTGRES_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./pg-init:/docker-entrypoint-initdb.d
     networks:
       - internal
     ports:
@@ -41,24 +39,6 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-  ochami-init: # Creates the ochami databases and users
-    container_name: ochami-init
-    image: ghcr.io/openchami/ochami-init:v0.0.20
-    environment:
-      - DB_HOST=postgres
-      - DB_USER=ochami
-      - DB_PASSWORD=${POSTGRES_PASSWORD} # Set in .env file
-      - DB_NAME=ochami
-      - OCHAMI_CONFIG=/run/secrets/ochami-config
-    hostname: ochami-init
-    depends_on:
-      - postgres
-    networks:
-      - internal
-    entrypoint:
-      - /ochami-init
-    secrets:
-      - ochami-config
 ###
 # SMD Init and Server Containers
 ###
@@ -69,16 +49,14 @@ services:
     environment:
       - SMD_DBHOST=postgres
       - SMD_DBPORT=5432
-      - SMD_DBUSER=ochami
-      - SMD_DBPASS=${POSTGRES_PASSWORD} # Set in .env file
-      - SMD_DBNAME=ochami
+      - SMD_DBUSER=smd-user
+      - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
+      - SMD_DBNAME=hmsds
       - SMD_DBOPTS=sslmode=disable
     hostname: smd-init
     depends_on:
       postgres:
         condition: service_healthy
-      ochami-init:
-        condition: service_completed_successfully
     networks:
       - internal
     entrypoint:
@@ -90,9 +68,9 @@ services:
     environment:
       - SMD_DBHOST=postgres
       - SMD_DBPORT=5432
-      - SMD_DBUSER=ochami
-      - SMD_DBPASS=${POSTGRES_PASSWORD} # Set in .env file
-      - SMD_DBNAME=ochami
+      - SMD_DBUSER=smd-user
+      - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
+      - SMD_DBNAME=hmsds
       - SMD_DBOPTS=sslmode=disable
     hostname: smd
     depends_on:
@@ -121,8 +99,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      ochami-init:
-        condition: service_completed_successfully
     networks:
       - internal
     entrypoint:
