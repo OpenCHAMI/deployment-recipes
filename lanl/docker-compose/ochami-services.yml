@@ -4,10 +4,10 @@ version: '3.7'
 ## and store it in a .env file.  This file is not checked into git, so it is not
 ## shared with anyone else.  This is a temporary solution until we can use docker secrets.
 ## The generate-creds.sh script performs the following commands.
-# echo "POSTGRES_PASSWORD=$(openssl rand -base64 128 | sha1sum | awk '{print $1}')" > .env
-# echo "SMD_POSTGRES_PASSWORD=$(openssl rand -base64 128 | sha1sum | awk '{print $1}')" >> .env
-# echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 128 | sha1sum | awk '{print $1}')" >> .env
-# echo "HYDRA_POSTGRES_PASSWORD=$(openssl rand -base64 128 | sha1sum | awk '{print $1}')" >> .env
+# echo "POSTGRES_PASSWORD=$(openssl rand -base64 32)" > .env
+# echo "SMD_POSTGRES_PASSWORD=$(openssl rand -base64 32)" >> .env
+# echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 32)" >> .env
+# echo "HYDRA_POSTGRES_PASSWORD=$(openssl rand -base64 32)" >> .env
 
 
 networks:
