@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: bss
+  {{- with .Values.bss.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.bss.service.type }}
+  ports:
+    - port: {{ .Values.bss.service.port }}
+      targetPort: {{ .Values.bss.deployment.containerPort }}
+      name: bss
+  selector:
+    app: bss

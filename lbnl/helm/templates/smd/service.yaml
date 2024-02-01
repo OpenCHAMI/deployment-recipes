@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: smd
+  {{- with .Values.smd.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: LoadBalancer
+  ports:
+    - port: {{ .Values.smd.service.port }}
+      targetPort: {{ .Values.smd.deployment.containerPort }}
+      name: smd
+  selector:
+    app: smd

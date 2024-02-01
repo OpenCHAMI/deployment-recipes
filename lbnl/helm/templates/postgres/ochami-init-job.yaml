@@ -1,0 +1,41 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ochami-init
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    spec:
+      containers:
+      - name: ochami-init
+        image: {{ .Values.init.job.image.repository }}/{{ .Values.init.job.image.name }}:{{ .Values.init.job.image.tag }}
+        imagePullPolicy: {{ .Values.init.job.image.pullPolicy }}
+        command: ["/ochami-init"]
+        env:
+          - name: DB_HOST
+            value: postgres.{{ .Release.Namespace }}.svc.cluster.local
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-creds
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-creds
+                key: password
+          - name: DB_NAME
+            value: {{ .Values.init.dbname }}
+          - name: OCHAMI_CONFIG
+            value: /run/secrets/ochami-config.yaml
+        volumeMounts:
+          - name: ochami-config
+            mountPath: /run/secrets
+            readOnly: true
+      volumes:
+        - name: ochami-config
+          configMap:
+            name: ochami-config
+      restartPolicy: OnFailure
+  backoffLimit: 4

@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bss
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: bss
+spec:
+  replicas: {{ .Values.bss.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: bss
+  template:
+    metadata:
+      labels:
+        app: bss
+    spec:
+      containers:
+        - name: bss
+          image: {{ .Values.bss.deployment.image.repository }}/{{ .Values.bss.deployment.image.name }}:{{ .Values.bss.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.bss.deployment.image.pullPolicy }}
+          ports:
+            - name: bss
+              containerPort: {{ .Values.bss.deployment.containerPort }}
+              protocol: TCP
+          env:
+            - name: BSS_USESQL
+              value: "true"
+            - name: BSS_INSECURE
+              value: "true"
+            - name: BSS_DBHOST
+              value: "postgres.{{ .Release.Namespace }}.svc.cluster.local"
+            - name: BSS_DBNAME
+              value: {{ .Values.init.dbname }}
+            - name: BSS_DBPORT
+              value: "{{ .Values.postgres.service.port }}"
+            - name: BSS_DBUSER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: username
+            - name: BSS_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: password
