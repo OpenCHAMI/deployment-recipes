@@ -20,3 +20,6 @@ oidc:
       - public
     pairwise:
       salt: youReallyNeedToChangeThis
+
+strategies:
+  access_token: jwt
