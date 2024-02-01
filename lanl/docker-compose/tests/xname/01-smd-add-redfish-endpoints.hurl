@@ -9,7 +9,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 	"Password": "password",
 	"MACRequired": true,
 	"RediscoverOnUpdate": false,
-	"MACAddr": "ae:12:e2:ff:89:9d",
+	"MACAddr": "ae:12:e2:ff:91:9d",
 	"IPAddress": "10.254.2.10",
 	"Chassis": [
 		{
@@ -715,7 +715,7 @@ POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 	"Password": "password",
 	"MACRequired": true,
 	"RediscoverOnUpdate": false,
-	"MACAddr": "ae:12:e2:ff:89:9e",
+	"MACAddr": "ae:12:e2:ff:91:9e",
 	"IPAddress": "10.254.2.11",
 	"Chassis": [
 		{
@@ -1428,7 +1428,7 @@ GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 #			 "User": "admin",
 #			 "Password": "password",
 #			 "MACRequired": true,
-#			 "MACAddr": "ae:12:e2:ff:89:9d",
+#			 "MACAddr": "ae:12:e2:ff:91:9d",
 #			 "IPAddress": "10.254.2.10",
 #			 "RediscoverOnUpdate": false,
 #			 "DiscoveryInfo": {
@@ -1446,7 +1446,7 @@ GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 #			 "User": "admin",
 #			 "Password": "password",
 #			 "MACRequired": true,
-#			 "MACAddr": "ae:12:e2:ff:89:9e",
+#			 "MACAddr": "ae:12:e2:ff:91:9e",
 #			 "IPAddress": "10.254.2.11",
 #			 "RediscoverOnUpdate": false,
 #			 "DiscoveryInfo": {
@@ -1462,7 +1462,7 @@ jsonpath "$.RedfishEndpoints[*].ID" includes "x0c2s1b0"
 jsonpath "$.RedfishEndpoints[*].ID" includes "x0c2s3b0"
 jsonpath "$.RedfishEndpoints[*].Hostname" includes "x0c2s3b0"
 jsonpath "$.RedfishEndpoints[*].Hostname" includes "x0c2s3b0"
-jsonpath "$.RedfishEndpoints[*].MACAddr" includes "ae:12:e2:ff:89:9d"
-jsonpath "$.RedfishEndpoints[*].MACAddr" includes "ae:12:e2:ff:89:9e"
+jsonpath "$.RedfishEndpoints[*].MACAddr" includes "ae:12:e2:ff:91:9d"
+jsonpath "$.RedfishEndpoints[*].MACAddr" includes "ae:12:e2:ff:91:9e"
 jsonpath "$.RedfishEndpoints[*].IPAddress" includes "10.254.2.10"
 jsonpath "$.RedfishEndpoints[*].IPAddress" includes "10.254.2.11"
