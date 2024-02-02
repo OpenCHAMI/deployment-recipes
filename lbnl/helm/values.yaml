@@ -1,0 +1,57 @@
+---
+postgres:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/openchami
+      name: postgres
+      tag: "11.5-alpine"
+      pullPolicy: IfNotPresent
+    containerPort: 5432
+
+  service:
+    type: ClusterIP
+    port: 5432
+
+init:
+  job:
+    image:
+      repository: ghcr.io/openchami
+      name: ochami-init
+      tag: "v0.0.20"
+      pullPolicy: IfNotPresent
+  dbname: ochami
+
+smd:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/openchami
+      name: smd
+      tag: "v2.13.6"
+      pullPolicy: IfNotPresent
+    containerPort: 27779
+
+  service:
+    type: LoadBalancer
+    port: 27779
+    annotations:
+      # An annotation borrowed from CSM to select the subnet for the service.
+      metallb.universe.tf/address-pool: node-management
+
+bss:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/openchami
+      name: bss
+      pullPolicy: IfNotPresent
+      tag: "v1.28.1"
+    containerPort: 27778
+
+  service:
+    type: LoadBalancer
+    port: 27778
+    annotations:
+      # An annotation borrowed from CSM to select the subnet for the service.
+      metallb.universe.tf/address-pool: node-management

@@ -1,10 +1,45 @@
 # Deployment Recipe for use with Docker compose
 
+1. Run the `generate-creds.sh` script to generate a `.env` file populated with randomly-generated passwords for each Postgres database. This file will be read by Docker Compose.
+1. Run:
 
-1. `echo "POSTGRES_PASSWORD=$(openssl rand -base64 32)" > .env`
-1. `echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 32)" >> .env`
-1. `docker compose -f ochami-services.yml -f ochami-krakend-ce.yml up`
+   ```
+   docker compose -f ochami-services.yml -f ochami-krakend-ce.yml up
+   ```
 
-Keep in mind that docker compose doesn't dispose of ephemeral volumes unless you run
+   to bring up ochami services.
+1. After a minute or so you can check the health of SMD:
 
-`docker compose -f ochami-services.yml -f ochami-krakend-ce.yml -f hydra.yml down --volumes`
+   ```
+   curl http://<smd_host>:27779/hsm/v2/service/ready
+   ```
+1. And BSS:
+
+   ```
+   curl http://<bss_host>:27778/boot/v1/service/status
+   ```
+
+### Running Hurl Tests
+
+The hurl tests use [Hurl](https://hurl.dev/) to send API calls to SMD and BSS to
+perform integration testing. `ochami-hurl-tests.yml` depends on
+`ochami-services.yml`, so run the tests with:
+
+```
+docker compose -f ochami-services.yml -f ochami-hurl-tests.yml up
+```
+
+### Note on ochami-init errors
+
+Docker compose doesn't dispose of ephemeral volumes unless you run
+
+```
+docker compose -f ochami-services.yml -f ochami-krakend-ce.yml -f hydra.yml down --volumes
+```
+
+Try disposing of the volumes if you're seeing an error that looks something like this:
+
+```
+ochami-init      | time="2024-01-23T17:58:49Z" level=fatal msg="pq: role \"smd-init-user\" already exists"
+postgres         | 2024-01-23 17:58:49.664 UTC [26] ERROR:  role "smd-init-user" already exists
+```
