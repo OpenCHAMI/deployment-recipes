@@ -1,10 +1,10 @@
 # Add two MAC addresses to BSS.
 POST http://bss:27778/boot/v1/bootparameters
 {
-	"kernel": "https://testkerneluri2.tld",
-	"initrd": "https://testinitrduri2.tld",
+	"kernel": "https://testkerneluri1.tld",
+	"initrd": "https://testinitrduri1.tld",
 	"macs": ["02:0b:b8:00:30:00", "02:0b:b8:00:30:02"],
-	"params": "param3,param4"
+	"params": "console=tty0 console=ttyS0,115200n8"
 }
 
 HTTP 201
@@ -14,10 +14,10 @@ HTTP 201
 # as lower case.
 POST http://bss:27778/boot/v1/bootparameters
 {
-	"kernel": "https://testkerneluri2.tld",
-	"initrd": "https://testinitrduri2.tld",
+	"kernel": "https://testkerneluri1.tld",
+	"initrd": "https://testinitrduri1.tld",
 	"macs": ["02:0B:B8:00:30:04"],
-	"params": "param3,param4"
+	"params": "console=tty0 console=ttyS0,115200n8"
 }
 
 HTTP 201
@@ -31,9 +31,9 @@ GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:00
 #		 "macs": [
 #			 "02:0b:b8:00:30:00"
 #		 ],
-#		 "params": "param3,param4",
-#		 "kernel": "https://testkerneluri2.tld",
-#		 "initrd": "https://testinitrduri2.tld",
+#		 "params": "console=tty0 console=ttyS0,115200n8",
+#		 "kernel": "https://testkerneluri1.tld",
+#		 "initrd": "https://testinitrduri1.tld",
 #		 "cloud-init": {
 #			 "meta-data": null,
 #			 "user-data": null,
@@ -52,9 +52,9 @@ HTTP 200
 Content-Type: application/json; charset=UTF-8
 [Asserts]
 jsonpath "$[0].macs[0]" == "02:0b:b8:00:30:00"
-jsonpath "$[0].params" == "param3,param4"
-jsonpath "$[0].kernel" == "https://testkerneluri2.tld"
-jsonpath "$[0].initrd" == "https://testinitrduri2.tld"
+jsonpath "$[0].params" == "console=tty0 console=ttyS0,115200n8"
+jsonpath "$[0].kernel" == "https://testkerneluri1.tld"
+jsonpath "$[0].initrd" == "https://testinitrduri1.tld"
 
 GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:02
 
@@ -65,9 +65,9 @@ GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:02
 #		 "macs": [
 #			 "02:0b:b8:00:30:02"
 #		 ],
-#		 "params": "param3,param4",
-#		 "kernel": "https://testkerneluri2.tld",
-#		 "initrd": "https://testinitrduri2.tld",
+#		 "params": "console=tty0 console=ttyS0,115200n8",
+#		 "kernel": "https://testkerneluri1.tld",
+#		 "initrd": "https://testinitrduri1.tld",
 #		 "cloud-init": {
 #			 "meta-data": null,
 #			 "user-data": null,
@@ -86,9 +86,9 @@ HTTP 200
 Content-Type: application/json; charset=UTF-8
 [Asserts]
 jsonpath "$[0].macs[0]" == "02:0b:b8:00:30:02"
-jsonpath "$[0].params" == "param3,param4"
-jsonpath "$[0].kernel" == "https://testkerneluri2.tld"
-jsonpath "$[0].initrd" == "https://testinitrduri2.tld"
+jsonpath "$[0].params" == "console=tty0 console=ttyS0,115200n8"
+jsonpath "$[0].kernel" == "https://testkerneluri1.tld"
+jsonpath "$[0].initrd" == "https://testinitrduri1.tld"
 
 GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:04
 
@@ -99,9 +99,9 @@ GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:04
 #		 "macs": [
 #			 "02:0b:b8:00:30:04"
 #		 ],
-#		 "params": "param3,param4",
-#		 "kernel": "https://testkerneluri2.tld",
-#		 "initrd": "https://testinitrduri2.tld",
+#		 "params": "console=tty0 console=ttyS0,115200n8",
+#		 "kernel": "https://testkerneluri1.tld",
+#		 "initrd": "https://testinitrduri1.tld",
 #		 "cloud-init": {
 #			 "meta-data": null,
 #			 "user-data": null,
@@ -120,6 +120,6 @@ HTTP 200
 Content-Type: application/json; charset=UTF-8
 [Asserts]
 jsonpath "$[0].macs[0]" == "02:0b:b8:00:30:04"
-jsonpath "$[0].params" == "param3,param4"
-jsonpath "$[0].kernel" == "https://testkerneluri2.tld"
-jsonpath "$[0].initrd" == "https://testinitrduri2.tld"
+jsonpath "$[0].params" == "console=tty0 console=ttyS0,115200n8"
+jsonpath "$[0].kernel" == "https://testkerneluri1.tld"
+jsonpath "$[0].initrd" == "https://testinitrduri1.tld"

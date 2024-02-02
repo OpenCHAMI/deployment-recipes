@@ -1,9 +1,9 @@
-# Delete everything (by boot config).
+# Delete NIDs (by boot config).
 DELETE http://bss:27778/boot/v1/bootparameters
 {
-	"kernel": "https://testkerneluri3.tld",
-	"initrd": "https://testinitrduri3.tld",
-	"params": "param5,param6"
+	"kernel": "https://testkerneluri2.tld",
+	"initrd": "https://testinitrduri2.tld",
+	"params": "console=tty1 console=ttyS1,115200n8"
 }
 
 HTTP 200

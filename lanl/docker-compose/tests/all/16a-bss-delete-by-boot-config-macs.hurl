@@ -1,9 +1,9 @@
-# Delete everything (by boot config).
+# Delete mac addresses we added (by boot config).
 DELETE http://bss:27778/boot/v1/bootparameters
 {
-	"kernel": "https://testkerneluri2.tld",
-	"initrd": "https://testinitrduri2.tld",
-	"params": "param3,param4"
+	"kernel": "https://testkerneluri1.tld",
+	"initrd": "https://testinitrduri1.tld",
+	"params": "console=tty0 console=ttyS0,115200n8"
 }
 
 HTTP 200

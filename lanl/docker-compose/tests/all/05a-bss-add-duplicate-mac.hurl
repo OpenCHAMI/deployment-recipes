@@ -4,7 +4,7 @@ POST http://bss:27778/boot/v1/bootparameters
 	"kernel": "https://testkerneluri0.tld",
 	"initrd": "https://testinitrduri0.tld",
 	"macs": ["02:0B:B8:00:30:04"],
-	"params": "param0"
+	"params": "quiet"
 }
 
 HTTP 400
@@ -20,9 +20,9 @@ GET http://bss:27778/boot/v1/bootparameters?mac=02:0B:B8:00:30:04
 #		 "macs": [
 #			 "02:0b:b8:00:30:04"
 #		 ],
-#		 "params": "param3,param4",
-#		 "kernel": "https://testkerneluri2.tld",
-#		 "initrd": "https://testinitrduri2.tld",
+#		 "params": "console=tty0 console=ttyS0,115200n8",
+#		 "kernel": "https://testkerneluri1.tld",
+#		 "initrd": "https://testinitrduri1.tld",
 #		 "cloud-init": {
 #			 "meta-data": null,
 #			 "user-data": null,
@@ -42,6 +42,6 @@ Content-Type: application/json; charset=UTF-8
 [Asserts]
 jsonpath "$[0].macs" count == 1
 jsonpath "$[0].macs[0]" == "02:0b:b8:00:30:04"
-jsonpath "$[0].params" == "param3,param4"
-jsonpath "$[0].kernel" == "https://testkerneluri2.tld"
-jsonpath "$[0].initrd" == "https://testinitrduri2.tld"
+jsonpath "$[0].params" == "console=tty0 console=ttyS0,115200n8"
+jsonpath "$[0].kernel" == "https://testkerneluri1.tld"
+jsonpath "$[0].initrd" == "https://testinitrduri1.tld"

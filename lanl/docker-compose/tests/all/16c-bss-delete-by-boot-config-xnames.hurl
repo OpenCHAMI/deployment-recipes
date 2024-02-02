@@ -1,9 +1,9 @@
-# Delete everything (by boot config).
+# Delete XNames (by boot config).
 DELETE http://bss:27778/boot/v1/bootparameters
 {
-	"kernel": "https://testkerneluri1.tld",
-	"initrd": "https://testinitrduri1.tld",
-	"params": "param1,param2"
+	"kernel": "https://testkerneluri3.tld",
+	"initrd": "https://testinitrduri3.tld",
+	"params": "console=tty2 console=ttyS2,115200n8"
 }
 
 HTTP 200

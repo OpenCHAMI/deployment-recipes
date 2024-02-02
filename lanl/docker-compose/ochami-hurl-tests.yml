@@ -1,21 +1,12 @@
 version: '3.7'
 
 services:
-  bss-mac-tests:
+  bss-tests:
     image: ghcr.io/openchami/hurl-test
     volumes:
-      - ./tests/mac:/tests:ro
+      - ./tests/all:/tests:ro
+    networks:
+      - internal
     depends_on:
         smd:
           condition: service_healthy
-    networks:
-      - internal
-  bss-xname-tests:
-    image: ghcr.io/openchami/hurl-test
-    volumes:
-      - ./tests/xname:/tests:ro
-    depends_on:
-        smd:
-          condition: service_healthy
-    networks:
-      - internal

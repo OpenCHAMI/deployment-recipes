@@ -1,4 +1,4 @@
-# Create SMD Redfish endpoints for first xname.
+# Create SMD Redfish endpoints for first mac.
 POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 {
 	"ID": "x0c0s1b0",
@@ -704,7 +704,7 @@ Content-Type: application/json
 [Asserts]
 jsonpath "$[0].URI" == "/hsm/v2/Inventory/RedfishEndpoints/x0c0s1b0"
 
-# Create SMD Redfish endpoints for third xname (the second will be deleted).
+# Create SMD Redfish endpoints for third mac (the second will be deleted).
 POST http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
 {
 	"ID": "x0c0s3b0",
@@ -1410,59 +1410,65 @@ Content-Type: application/json
 [Asserts]
 jsonpath "$[0].URI" == "/hsm/v2/Inventory/RedfishEndpoints/x0c0s3b0"
 
+#
 # Get RedfishEndpoints we just added.
-GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints
+#
+
+GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints/x0c0s1b0
 
 # Response should be:
 #
 # {
-#	 "RedfishEndpoints": [
-#		 {
-#			 "ID": "x0c0s1b0",
-#			 "Type": "NodeBMC",
-#			 "Name": "x0c0s1b0",
-#			 "Hostname": "x0c0s1b0",
-#			 "Domain": "",
-#			 "FQDN": "x0c0s1b0",
-#			 "Enabled": true,
-#			 "User": "admin",
-#			 "Password": "password",
-#			 "MACRequired": true,
-#			 "MACAddr": "ae:12:e2:ff:89:9d",
-#			 "IPAddress": "10.254.2.10",
-#			 "RediscoverOnUpdate": false,
-#			 "DiscoveryInfo": {
-#				 "LastDiscoveryStatus": "NotYetQueried"
-#			 }
-#		 },
-#		 {
-#			 "ID": "x0c0s3b0",
-#			 "Type": "NodeBMC",
-#			 "Name": "x0c0s3b0",
-#			 "Hostname": "x0c0s3b0",
-#			 "Domain": "",
-#			 "FQDN": "x0c0s3b0",
-#			 "Enabled": true,
-#			 "User": "admin",
-#			 "Password": "password",
-#			 "MACRequired": true,
-#			 "MACAddr": "ae:12:e2:ff:89:9e",
-#			 "IPAddress": "10.254.2.11",
-#			 "RediscoverOnUpdate": false,
-#			 "DiscoveryInfo": {
-#				 "LastDiscoveryStatus": "NotYetQueried"
-#			 }
-#		 }
-#	 ]
+#	 "ID": "x0c0s1b0",
+#	 "Type": "NodeBMC",
+#	 "Name": "x0c0s1b0",
+#	 "Hostname": "x0c0s1b0",
+#	 "Domain": "",
+#	 "FQDN": "x0c0s1b0",
+#	 "Enabled": true,
+#	 "User": "admin",
+#	 "Password": "password",
+#	 "MACRequired": true,
+#	 "MACAddr": "ae:12:e2:ff:89:9d",
+#	 "IPAddress": "10.254.2.10",
+#	 "RediscoverOnUpdate": false,
+#	 "DiscoveryInfo": {
+#		 "LastDiscoveryStatus": "NotYetQueried"
+#	 }
 # }
 HTTP 200
 Content-Type: application/json
 [Asserts]
-jsonpath "$.RedfishEndpoints[*].ID" includes "x0c0s1b0"
-jsonpath "$.RedfishEndpoints[*].ID" includes "x0c0s3b0"
-jsonpath "$.RedfishEndpoints[*].Hostname" includes "x0c0s3b0"
-jsonpath "$.RedfishEndpoints[*].Hostname" includes "x0c0s3b0"
-jsonpath "$.RedfishEndpoints[*].MACAddr" includes "ae:12:e2:ff:89:9d"
-jsonpath "$.RedfishEndpoints[*].MACAddr" includes "ae:12:e2:ff:89:9e"
-jsonpath "$.RedfishEndpoints[*].IPAddress" includes "10.254.2.10"
-jsonpath "$.RedfishEndpoints[*].IPAddress" includes "10.254.2.11"
+jsonpath "$.ID" == "x0c0s1b0"
+jsonpath "$.Hostname" == "x0c0s1b0"
+jsonpath "$.MACAddr" == "ae:12:e2:ff:89:9d"
+jsonpath "$.IPAddress" == "10.254.2.10"
+
+GET http://smd:27779/hsm/v2/Inventory/RedfishEndpoints/x0c0s3b0
+# Response should be:
+#
+# {
+#	 "ID": "x0c0s3b0",
+#	 "Type": "NodeBMC",
+#	 "Name": "x0c0s3b0",
+#	 "Hostname": "x0c0s3b0",
+#	 "Domain": "",
+#	 "FQDN": "x0c0s3b0",
+#	 "Enabled": true,
+#	 "User": "admin",
+#	 "Password": "password",
+#	 "MACRequired": true,
+#	 "MACAddr": "ae:12:e2:ff:89:9e",
+#	 "IPAddress": "10.254.2.11",
+#	 "RediscoverOnUpdate": false,
+#	 "DiscoveryInfo": {
+#		 "LastDiscoveryStatus": "NotYetQueried"
+#	 }
+# }
+HTTP 200
+Content-Type: application/json
+[Asserts]
+jsonpath "$.ID" == "x0c0s3b0"
+jsonpath "$.Hostname" == "x0c0s3b0"
+jsonpath "$.MACAddr" == "ae:12:e2:ff:89:9e"
+jsonpath "$.IPAddress" == "10.254.2.11"

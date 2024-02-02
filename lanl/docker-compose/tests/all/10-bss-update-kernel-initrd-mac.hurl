@@ -2,8 +2,8 @@
 PATCH http://bss:27778/boot/v1/bootparameters
 {
 	"macs": ["02:0b:b8:00:30:02"],
-	"kernel": "https://testkerneluri3.tld",
-	"initrd": "https://testinitrduri3.tld"
+	"kernel": "https://testkerneluri0.tld",
+	"initrd": "https://testinitrduri0.tld"
 }
 
 HTTP 200
@@ -26,9 +26,9 @@ GET http://bss:27778/boot/v1/bootparameters?mac=02:0b:b8:00:30:02
 #		 "macs": [
 #			 "02:0b:b8:00:30:02"
 #		 ],
-#		 "params": "param3 param4",
-#		 "kernel": "https://testkerneluri3.tld",
-#		 "initrd": "https://testinitrduri3.tld",
+#		 "params": "quiet",
+#		 "kernel": "https://testkerneluri0.tld",
+#		 "initrd": "https://testinitrduri0.tld",
 #		 "cloud-init": {
 #			 "meta-data": null,
 #			 "user-data": null,
@@ -47,6 +47,6 @@ HTTP 200
 [Asserts]
 jsonpath "$[0].macs" count == 1
 jsonpath "$[0].macs[0]" == "02:0b:b8:00:30:02"
-jsonpath "$[0].params" == "param3 param4"
-jsonpath "$[0].kernel" == "https://testkerneluri3.tld"
-jsonpath "$[0].initrd" == "https://testinitrduri3.tld"
+jsonpath "$[0].params" == "quiet"
+jsonpath "$[0].kernel" == "https://testkerneluri0.tld"
+jsonpath "$[0].initrd" == "https://testinitrduri0.tld"

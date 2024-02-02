@@ -1,10 +1,10 @@
 # Add two NIDs to BSS.
 POST http://bss:27778/boot/v1/bootparameters
 {
-	"kernel": "https://testkerneluri3.tld",
-	"initrd": "https://testinitrduri3.tld",
+	"kernel": "https://testkerneluri2.tld",
+	"initrd": "https://testinitrduri2.tld",
 	"nids": [1, 2],
-	"params": "param5,param6"
+	"params": "console=tty1 console=ttyS1,115200n8"
 }
 
 HTTP 201
@@ -13,10 +13,10 @@ HTTP 201
 # creating another).
 POST http://bss:27778/boot/v1/bootparameters
 {
-	"kernel": "https://testkerneluri3.tld",
-	"initrd": "https://testinitrduri3.tld",
+	"kernel": "https://testkerneluri2.tld",
+	"initrd": "https://testinitrduri2.tld",
 	"nids": [3],
-	"params": "param5,param6"
+	"params": "console=tty1 console=ttyS1,115200n8"
 }
 
 HTTP 201
@@ -30,9 +30,9 @@ GET http://bss:27778/boot/v1/bootparameters?nid=1
 #		 "nids": [
 #			 1
 #		 ],
-#		 "params": "param5,param6",
-#		 "kernel": "https://testkerneluri3.tld",
-#		 "initrd": "https://testinitrduri3.tld",
+#		 "params": "console=tty1 console=ttyS1,115200n8",
+#		 "kernel": "https://testkerneluri2.tld",
+#		 "initrd": "https://testinitrduri2.tld",
 #		 "cloud-init": {
 #			 "meta-data": null,
 #			 "user-data": null,
@@ -51,9 +51,9 @@ HTTP 200
 Content-Type: application/json; charset=UTF-8
 [Asserts]
 jsonpath "$[0].nids[0]" == 1
-jsonpath "$[0].params" includes "param5,param6"
-jsonpath "$[0].kernel" includes "https://testkerneluri3.tld"
-jsonpath "$[0].initrd" includes "https://testinitrduri3.tld"
+jsonpath "$[0].params" == "console=tty1 console=ttyS1,115200n8"
+jsonpath "$[0].kernel" == "https://testkerneluri2.tld"
+jsonpath "$[0].initrd" == "https://testinitrduri2.tld"
 
 GET http://bss:27778/boot/v1/bootparameters?nid=2
 
@@ -64,9 +64,9 @@ GET http://bss:27778/boot/v1/bootparameters?nid=2
 #		 "nids": [
 #			 2
 #		 ],
-#		 "params": "param5,param6",
-#		 "kernel": "https://testkerneluri3.tld",
-#		 "initrd": "https://testinitrduri3.tld",
+#		 "params": "console=tty1 console=ttyS1,115200n8",
+#		 "kernel": "https://testkerneluri2.tld",
+#		 "initrd": "https://testinitrduri2.tld",
 #		 "cloud-init": {
 #			 "meta-data": null,
 #			 "user-data": null,
@@ -85,9 +85,9 @@ HTTP 200
 Content-Type: application/json; charset=UTF-8
 [Asserts]
 jsonpath "$[0].nids[0]" == 2
-jsonpath "$[0].params" includes "param5,param6"
-jsonpath "$[0].kernel" includes "https://testkerneluri3.tld"
-jsonpath "$[0].initrd" includes "https://testinitrduri3.tld"
+jsonpath "$[0].params" == "console=tty1 console=ttyS1,115200n8"
+jsonpath "$[0].kernel" == "https://testkerneluri2.tld"
+jsonpath "$[0].initrd" == "https://testinitrduri2.tld"
 
 GET http://bss:27778/boot/v1/bootparameters?nid=3
 
@@ -98,9 +98,9 @@ GET http://bss:27778/boot/v1/bootparameters?nid=3
 #		 "nids": [
 #			 3
 #		 ],
-#		 "params": "param5,param6",
-#		 "kernel": "https://testkerneluri3.tld",
-#		 "initrd": "https://testinitrduri3.tld",
+#		 "params": "console=tty1 console=ttyS1,115200n8",
+#		 "kernel": "https://testkerneluri2.tld",
+#		 "initrd": "https://testinitrduri2.tld",
 #		 "cloud-init": {
 #			 "meta-data": null,
 #			 "user-data": null,
@@ -119,6 +119,6 @@ HTTP 200
 Content-Type: application/json; charset=UTF-8
 [Asserts]
 jsonpath "$[0].nids[0]" == 3
-jsonpath "$[0].params" includes "param5,param6"
-jsonpath "$[0].kernel" includes "https://testkerneluri3.tld"
-jsonpath "$[0].initrd" includes "https://testinitrduri3.tld"
+jsonpath "$[0].params" == "console=tty1 console=ttyS1,115200n8"
+jsonpath "$[0].kernel" == "https://testkerneluri2.tld"
+jsonpath "$[0].initrd" == "https://testinitrduri2.tld"
