@@ -35,7 +35,7 @@ services:
     ports:
       - 5432:5432
     healthcheck:
-      test: ["CMD", "pg_isready", "-d", "ochami"]
+      test: ["CMD", "pg_isready", "-d", "ochami", "-U", "ochami"]
       interval: 10s
       timeout: 10s
       retries: 5
