@@ -45,7 +45,7 @@ services:
   # sets up postgres for SMD data
   smd-init:
     container_name: smd-init
-    image: ghcr.io/openchami/smd:v2.13.7
+    image: ghcr.io/openchami/smd:v2.13.6
     environment:
       - SMD_DBHOST=postgres
       - SMD_DBPORT=5432
@@ -64,7 +64,7 @@ services:
   # SMD 
   smd:
     container_name: smd
-    image: ghcr.io/openchami/smd:v2.13.7
+    image: ghcr.io/openchami/smd:v2.13.6
     environment:
       - SMD_DBHOST=postgres
       - SMD_DBPORT=5432
