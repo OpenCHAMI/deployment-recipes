@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  bss-tests:
+    image: ghcr.io/openchami/hurl-test
+    volumes:
+      - ./tests/all:/tests:ro
+    networks:
+      - internal
+    depends_on:
+        smd:
+          condition: service_healthy
+        bss:
+          condition: service_healthy
