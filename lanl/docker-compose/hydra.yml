@@ -3,6 +3,11 @@ version: "3.7"
 services:
   hydra:
     image: oryd/hydra:v2.2.0-rc.3
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://127.0.0.1:44445/health/alive"]
+        interval: 10s
+        timeout: 10s
+        retries: 10
     ports:
       - "4444:4444" # Public port
       - "4445:4445" # Admin port
