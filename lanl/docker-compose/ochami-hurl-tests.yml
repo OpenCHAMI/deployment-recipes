@@ -10,3 +10,5 @@ services:
     depends_on:
         smd:
           condition: service_healthy
+        bss:
+          condition: service_healthy

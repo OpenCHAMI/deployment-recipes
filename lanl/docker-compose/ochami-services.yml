@@ -132,6 +132,6 @@ services:
       - internal
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:27778/boot/v1"]
-      interval: 30s
+      interval: 5s
       timeout: 10s
-      retries: 5
+      retries: 60
