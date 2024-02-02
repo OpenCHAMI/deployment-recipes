@@ -1,0 +1,27 @@
+apiVersion: v1
+data:
+  ochami-config.yaml: |
+    ---
+    networks:
+    - name: hardware_management
+      subnet: 10.10.10.10/24
+    - name: system_management
+      subnet: 10.10.10.10/24
+    - name: high_speed
+      subnet: 192.168.1.128/24
+    # TODO: One should of course not store passwords in a ConfigMap.
+    databases:
+    - name: smd
+      users:
+      - name: smd-init-user
+        password: SMD_DB_PASSWD
+      - name: smd-user
+        password: SMD_DB_PASSWD
+    - name: bssdb
+      users:
+      - name: bss-user
+        password: BSS_DB_PASSWD
+kind: ConfigMap
+metadata:
+  name: ochami-config
+  namespace: {{ .Release.Namespace }}

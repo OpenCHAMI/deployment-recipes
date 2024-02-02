@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smd
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: smd
+spec:
+  replicas: {{ .Values.smd.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: smd
+  template:
+    metadata:
+      labels:
+        app: smd
+    spec:
+      containers:
+        - name: smd
+          image: {{ .Values.smd.deployment.image.repository }}/{{ .Values.smd.deployment.image.name }}:{{ .Values.smd.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.smd.deployment.image.pullPolicy }}
+          ports:
+            - name: smd
+              containerPort: {{ .Values.smd.deployment.containerPort }}
+              protocol: TCP
+          env:
+            - name: SMD_DBHOST
+              value: postgres.{{ .Release.Namespace }}.svc.cluster.local
+            - name: SMD_DBPORT
+              value: "{{ .Values.postgres.deployment.containerPort }}"
+            - name: SMD_DBUSER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: username
+            - name: SMD_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: password
+            - name: SMD_DBNAME
+              value: {{ .Values.init.dbname }}
+            - name: SMD_DBOPTS
+              value: sslmode=disable
