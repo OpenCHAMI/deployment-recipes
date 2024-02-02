@@ -11,7 +11,7 @@ urls:
 
 secrets:
   system:
-    - youReallyNeedToChangeThis
+    - ${HYDRA_SYSTEM_SECRET} # set in .env
 
 oidc:
   subject_identifiers:
@@ -19,7 +19,7 @@ oidc:
       - pairwise
       - public
     pairwise:
-      salt: youReallyNeedToChangeThis
+      salt: ${HYDRA_OIDC_SALT} # set in .env
 
 strategies:
   access_token: jwt
