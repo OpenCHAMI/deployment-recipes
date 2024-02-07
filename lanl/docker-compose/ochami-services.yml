@@ -138,7 +138,7 @@ services:
   dnsmasq:
     hostname: dnsmasq-dhcp
     container_name: dnsmasq-dhcp
-    TODO: we need to either store this image somewhere, or build it on startup
+    #TODO: we need to either store this image somewhere, or build it on startup
     image: dnsmasq:dynamic
     environment:
       - smd_endpoint=172.16.0.253
