@@ -16,8 +16,6 @@ services:
       - DSN=postgres://hydra-user:${HYDRA_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
     restart: unless-stopped
     depends_on:
-      ochami-init:
-        condition: service_completed_successfully
       hydra-migrate:
         condition: service_completed_successfully
     networks:
@@ -27,9 +25,6 @@ services:
     environment:
       - DSN=postgres://hydra-user:${HYDRA_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
     command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
-    depends_on:
-      ochami-init:
-        condition: service_completed_successfully
     volumes:
       - type: bind
         source: ./configs/hydra
