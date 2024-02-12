@@ -16,7 +16,7 @@ def main():
     #this for loop writes host entries
     for i in ei_data:
         if i['Type'] != 'NodeBMC':
-            print(f"{i['MACAddress']},set:{i['ComponentID']},tag:IPXEBOOT,{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=f)
+            print(f"{i['MACAddress']},set:{i['ComponentID']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=f)
         else:
            print(f"{i['MACAddress']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=f)
     f.close()
