@@ -138,8 +138,7 @@ services:
   dnsmasq:
     hostname: dnsmasq-dhcp
     container_name: dnsmasq-dhcp
-    #TODO: we need to either store this image somewhere, or build it on startup
-    image: dnsmasq:dynamic
+    image: ghcr.io/openchami/dnsmasq:dyanmic-test 
     environment:
       - smd_endpoint=172.16.0.253
       - bss_endpoint=172.16.0.253
@@ -150,12 +149,10 @@ services:
     network_mode: "host"
     #TODO I'd rather not run this privileged, but dhcpd really likes opening privilged ports and the like
     privileged: true
-    #TODO I don't actually know what networks does
     networks: 
       - internal
     healthcheck: 
-      #TODO need a real health check, should just find how others have done
-      test: ["false"]
+      test: pgrep dnsmasq
       interval: 5s
       timeout: 10s
       retries: 60
