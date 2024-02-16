@@ -55,3 +55,30 @@ bss:
     annotations:
       # An annotation borrowed from CSM to select the subnet for the service.
       metallb.universe.tf/address-pool: node-management
+
+krakend:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: docker.io/devopsfaith
+      name: krakend
+      pullPolicy: IfNotPresent
+      tag: "2.5.1"
+    containerPort: 8080
+
+  service:
+    type: ClusterIP
+    port: 80
+    annotations:
+      # Specify which BackendConfig to use for GKE to ensure the ingress
+      # backend is healthy. The GKE docs say that sufficient annotation of the
+      # KrakenD Deployment using the standard K8s API should be sufficient to
+      # inspect the ingress backend, but I have not been successful in making
+      # that work. Specifying the BackendConfig by hand seems to help.
+      cloud.google.com/backend-config: '{"default": "krakend-hc-config"}'
+
+# Parameters specific to deploying into Google Kubernetes Engine
+gke:
+  gateway:
+    class: gke-l7-global-external-managed
+    port: 80
