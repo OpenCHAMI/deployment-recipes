@@ -33,7 +33,7 @@ smd:
     containerPort: 27779
 
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 27779
     annotations:
       # An annotation borrowed from CSM to select the subnet for the service.
@@ -50,7 +50,7 @@ bss:
     containerPort: 27778
 
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 27778
     annotations:
       # An annotation borrowed from CSM to select the subnet for the service.
