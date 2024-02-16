@@ -1,0 +1,50 @@
+
+version: "3.7"
+services:
+  kratos:
+    image: oryd/kratos:latest
+    container_name: kratos
+    hostname: kratos
+    ports:
+      - "4455:4455"
+      - "4433:4433" # public
+      - "4434:4434" # admin
+    #command: serve -c /etc/config/kratos/kratos.yml all --dev --watch-courier
+    volumes:
+      - type: bind
+        source: ./configs/kratos
+        target: /etc/config/kratos
+    environment:
+      - DSN=postgres://kratos-user:${KRATOS_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
+    restart: unless-stopped
+    depends_on:
+      kratos-migrate:
+        condition:
+          service_completed_successfully
+  kratos-migrate:
+    image: oryd/kratos:latest
+    environment:
+      - DSN=postgres://kratos-user:${KRATOS_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
+    volumes:
+      - type: bind
+        source: ./configs/kratos
+        target: /etc/config/kratos
+    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    restart: on-failure
+    networks:
+      - internal
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:v1.0.0
+    environment:
+      - KRATOS_PUBLIC_URL=http://kratos:4433/
+      - KRATOS_BROWSER_URL=http://127.0.0.1:4433/
+    networks:
+      - internal
+    restart: on-failure
+  mailslurper:
+    image: oryd/mailslurper:latest-smtps
+    ports:
+      - '4436:4436'
+      - '4437:4437'
+    networks:
+      - internal
