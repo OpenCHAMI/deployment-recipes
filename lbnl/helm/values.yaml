@@ -36,8 +36,6 @@ smd:
     type: ClusterIP
     port: 27779
     annotations:
-      # An annotation borrowed from CSM to select the subnet for the service.
-      metallb.universe.tf/address-pool: node-management
 
 bss:
   deployment:
@@ -53,8 +51,6 @@ bss:
     type: ClusterIP
     port: 27778
     annotations:
-      # An annotation borrowed from CSM to select the subnet for the service.
-      metallb.universe.tf/address-pool: node-management
 
 krakend:
   deployment:
