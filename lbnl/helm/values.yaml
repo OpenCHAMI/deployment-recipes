@@ -3,7 +3,7 @@ postgres:
   deployment:
     replicaCount: 1
     image:
-      repository: ghcr.io/openchami
+      repository: docker.io
       name: postgres
       tag: "11.5-alpine"
       pullPolicy: IfNotPresent
