@@ -18,6 +18,22 @@ selfservice:
     - exp://localhost:8081/--/Callback
 
   methods:
+    oidc:
+      enabled: true
+      config:
+        base_redirect_uri: http://127.0.0.1
+        providers:
+          - id: gitlab
+            provider: gitlab
+            client_id: 041e5fa58113cc5891fb6c8aa9702298c9b444a7a4d9c148902625e4053dbadb
+            client_secret: a52ba279ebf2e18af53440811641ba37338aa7c6fc546b45a3bb1c869a90c6f3
+            issuer_url: https://gitlab.newmexicoconsortium.org/users/sign_in
+            mapper_url: "base://bG9jYWwgY2xhaW1zID0gewogIGVtYWlsX3ZlcmlmaWVkOiBmYWxzZQp9ICsgc3RkLmV4dFZhcignY2xhaW1zJyk7Cgp7CiAgaWRlbnRpdHk6IHsKICAgIHRyYWl0czogewogICAgICAvLyBBbGxvd2luZyB1bnZlcmlmaWVkIGVtYWlsIGFkZHJlc3NlcyBlbmFibGVzIGFjY291bnQKICAgICAgLy8gZW51bWVyYXRpb24gYXR0YWNrcywgZXNwZWNpYWxseSBpZiB0aGUgdmFsdWUgaXMgdXNlZCBmb3IKICAgICAgLy8gZS5nLiB2ZXJpZmljYXRpb24gb3IgYXMgYSBwYXNzd29yZCBsb2dpbiBpZGVudGlmaWVyLgogICAgICAvLwogICAgICAvLyBUaGVyZWZvcmUgd2Ugb25seSByZXR1cm4gdGhlIGVtYWlsIGlmIGl0IChhKSBleGlzdHMgYW5kIChiKSBpcyBtYXJrZWQgdmVyaWZpZWQKICAgICAgLy8gYnkgR2l0TGFiLgogICAgICBbaWYgImVtYWlsIiBpbiBjbGFpbXMgJiYgY2xhaW1zLmVtYWlsX3ZlcmlmaWVkIHRoZW4gImVtYWlsIiBlbHNlIG51bGxdOiBjbGFpbXMuZW1haWwsCiAgICB9LAogIH0sCn0K"
+            scope:
+              - read_user
+              - openid
+              - profile
+              - email 
     password:
       enabled: true
     totp:
