@@ -1,4 +1,3 @@
-
 version: "3.7"
 services:
   kratos:
@@ -9,22 +8,31 @@ services:
       - "4455:4455"
       - "4433:4433" # public
       - "4434:4434" # admin
-    #command: serve -c /etc/config/kratos/kratos.yml all --dev --watch-courier
+    command: serve -c /etc/config/kratos/kratos.yml all --dev --watch-courier
     volumes:
       - type: bind
         source: ./configs/kratos
         target: /etc/config/kratos
     environment:
-      - DSN=postgres://kratos-user:${KRATOS_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
+      - DSN=postgres://kratos-user:${KRATOS_POSTGRES_PASSWORD}@postgres:5432/kratosdb?sslmode=disable&max_conns=20&max_idle_conns=4
     restart: unless-stopped
     depends_on:
       kratos-migrate:
         condition:
           service_completed_successfully
+      postgres:
+        condition:
+          service_healthy
+    networks:
+      - internal
   kratos-migrate:
     image: oryd/kratos:latest
+    container_name: kratos-migrate
     environment:
-      - DSN=postgres://kratos-user:${KRATOS_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
+      - DSN=postgres://kratos-user:${KRATOS_POSTGRES_PASSWORD}@postgres:5432/kratosdb?sslmode=disable&max_conns=20&max_idle_conns=4
+      - USER_ID=40946
+      - GROUP_ID=20
+    user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - type: bind
         source: ./configs/kratos
