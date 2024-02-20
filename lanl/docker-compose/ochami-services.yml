@@ -138,7 +138,7 @@ services:
   dnsmasq:
     hostname: dnsmasq-dhcp
     container_name: dnsmasq-dhcp
-    image: ghcr.io/openchami/dnsmasq:dnsmasq-dhcpd-dynamic 
+    image: ghcr.io/openchami/dnsmasq:dyanmic-test
     environment:
       - smd_endpoint=172.16.0.253
       - bss_endpoint=172.16.0.253
