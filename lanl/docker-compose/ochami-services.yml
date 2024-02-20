@@ -26,7 +26,7 @@ services:
     environment:
       POSTGRES_USER: ochami
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Set in .env file for now.
-      POSTGRES_MULTIPLE_DATABASES: hmsds:smd-user:${SMD_POSTGRES_PASSWORD},bssdb:bss-user:${BSS_POSTGRES_PASSWORD}
+      POSTGRES_MULTIPLE_DATABASES: hmsds:smd-user:${SMD_POSTGRES_PASSWORD},bssdb:bss-user:${BSS_POSTGRES_PASSWORD},kratosdb:kratos-user:${KRATOS_POSTGRES_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./pg-init:/docker-entrypoint-initdb.d

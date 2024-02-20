@@ -15,6 +15,8 @@ services:
         target: /etc/config/kratos
     environment:
       - DSN=postgres://kratos-user:${KRATOS_POSTGRES_PASSWORD}@postgres:5432/kratosdb?sslmode=disable&max_conns=20&max_idle_conns=4
+      - USER_ID=$(id -u)
+      - GROUP_ID=$(id -g)
     restart: unless-stopped
     depends_on:
       kratos-migrate:
@@ -30,8 +32,8 @@ services:
     container_name: kratos-migrate
     environment:
       - DSN=postgres://kratos-user:${KRATOS_POSTGRES_PASSWORD}@postgres:5432/kratosdb?sslmode=disable&max_conns=20&max_idle_conns=4
-      - USER_ID=40946
-      - GROUP_ID=20
+      - USER_ID=$(id -u)
+      - GROUP_ID=$(id -g)
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - type: bind
