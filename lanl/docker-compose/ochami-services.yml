@@ -142,8 +142,6 @@ services:
     environment:
       - smd_endpoint=172.16.0.253
       - bss_endpoint=172.16.0.253
-    ports:
-      - 67/UDP
     depends_on:
       - bss
       - smd
