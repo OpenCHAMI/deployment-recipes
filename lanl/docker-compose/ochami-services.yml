@@ -138,7 +138,7 @@ services:
   dnsmasq:
     hostname: dnsmasq-dhcp
     container_name: dnsmasq-dhcp
-    image: ghcr.io/openchami/dnsmasq:dyanmic-test 
+    image: ghcr.io/openchami/dnsmasq:dnsmasq-dhcpd-dynamic 
     environment:
       - smd_endpoint=172.16.0.253
       - bss_endpoint=172.16.0.253
@@ -147,8 +147,8 @@ services:
       - bss
       - smd
     network_mode: "host"
-    #TODO I'd rather not run this privileged, but dhcpd really likes opening privilged ports and the like
-    privileged: true
+    cap_add:
+      - NET_ADMIN
     networks: 
       - internal
     healthcheck: 
