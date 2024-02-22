@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  bss-tests-noauth:
+    image: ghcr.io/openchami/hurl-test
+    volumes:
+      - ./tests/noauth:/tests:ro
+    networks:
+      - internal
+    depends_on:
+        smd-noauth:
+          condition: service_healthy
+        bss-noauth:
+          condition: service_healthy

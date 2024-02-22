@@ -72,6 +72,7 @@ services:
       - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
       - SMD_DBNAME=hmsds
       - SMD_DBOPTS=sslmode=disable
+      - SMD_JWKS_URL=http://hydra:4444/.well-known/jwks.json
     hostname: smd
     depends_on:
       - postgres
@@ -122,6 +123,8 @@ services:
       - BSS_DBPORT=5432
       - BSS_DBUSER=bss-user
       - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
+      - BSS_AUTH_REQUIRED=true
+      - BSS_JWKS_URL=http://hydra:4444/.well-known/jwks.json
     ports:
       - '27778:27778'
     depends_on:

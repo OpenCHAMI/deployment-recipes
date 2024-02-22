@@ -1,0 +1,73 @@
+version: '3.7'
+
+## Because hardcoding passwords is bad, we use openssl to generate a random password
+## and store it in a .env file.  This file is not checked into git, so it is not
+## shared with anyone else.  This is a temporary solution until we can use docker secrets.
+## The generate-creds.sh script performs the following commands.
+# echo "POSTGRES_PASSWORD=$(openssl rand -base64 32 | openssl dgst | cut -d' ' -f2)" > .env
+# echo "SMD_POSTGRES_PASSWORD=$(openssl rand -base64 32 | openssl dgst | cut -d' ' -f2)" >> .env
+# echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 32 | openssl dgst | cut -d' ' -f2)" >> .env
+# echo "HYDRA_POSTGRES_PASSWORD=$(openssl rand -base64 32 | openssl dgst | cut -d' ' -f2)" >> .env
+
+
+networks:
+  internal:
+  external:
+    external: true
+
+volumes:
+  postgres-data:
+
+services:
+  # SMD with auth requirement disabled
+  smd-noauth:
+    hostname: smd-noauth
+    container_name: smd-noauth
+    image: ghcr.io/openchami/smd:v2.14.1
+    environment:
+      - SMD_DBHOST=postgres
+      - SMD_DBPORT=5432
+      - SMD_DBUSER=smd-user
+      - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
+      - SMD_DBNAME=hmsds
+      - SMD_DBOPTS=sslmode=disable
+    depends_on:
+      - postgres
+      - smd-init
+    ports:
+      - "37779:27779"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:27779/hsm/v2/service/ready"]
+      interval: 5s
+      retries: 60
+      start_period: 20s
+      timeout: 10s
+    networks:
+      - internal
+  # boot-script-service
+  bss-noauth:
+    hostname: bss-noauth
+    container_name: bss-noauth
+    image: ghcr.io/openchami/bss:v1.28.1
+    environment:
+      - BSS_USESQL=true
+      - BSS_INSECURE=true
+      - BSS_DBHOST=postgres
+      - BSS_DBNAME=bssdb
+      - BSS_DBPORT=5432
+      - BSS_DBUSER=bss-user
+      - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
+      - HSM_URL=http://smd-noauth:27779
+    ports:
+      - '37778:27778'
+    depends_on:
+      - postgres
+      - bss-init
+      - smd
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:27778/boot/v1/service/status"]
+      interval: 5s
+      timeout: 10s
+      retries: 60
