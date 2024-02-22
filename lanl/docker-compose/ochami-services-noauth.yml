@@ -48,7 +48,7 @@ services:
   bss-noauth:
     hostname: bss-noauth
     container_name: bss-noauth
-    image: ghcr.io/openchami/bss:v1.28.1
+    image: ghcr.io/openchami/bss:v1.29.0
     environment:
       - BSS_USESQL=true
       - BSS_INSECURE=true
