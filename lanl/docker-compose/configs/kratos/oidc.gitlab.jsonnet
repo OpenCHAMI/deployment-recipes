@@ -13,5 +13,9 @@ local claims = {
       // by GitLab.
       [if "email" in claims && claims.email_verified then "email" else null]: claims.email,
     },
+    verified_addresses: std.prune([
+      // Carry over verified status from Social Sign-In provider.
+      if 'email' in claims && claims.email_verified then { via: 'email', value: claims.email },
+    ]),
   },
 }

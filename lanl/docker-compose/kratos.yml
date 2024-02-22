@@ -5,7 +5,6 @@ services:
     container_name: kratos
     hostname: kratos
     ports:
-      - "4455:4455"
       - "4433:4433" # public
       - "4434:4434" # admin
     command: serve -c /etc/config/kratos/kratos.yml all --dev --watch-courier
@@ -17,6 +16,7 @@ services:
       - DSN=postgres://kratos-user:${KRATOS_POSTGRES_PASSWORD}@postgres:5432/kratosdb?sslmode=disable&max_conns=20&max_idle_conns=4
       - USER_ID=$(id -u)
       - GROUP_ID=$(id -g)
+      - LOG_LEVEL=trace
     restart: unless-stopped
     depends_on:
       kratos-migrate:
@@ -46,11 +46,20 @@ services:
   kratos-selfservice-ui-node:
     image: oryd/kratos-selfservice-ui-node:latest
     environment:
+      - PORT=4455
+      - SECURITY_MODE=
+      - HYDRA_ADMIN_URL=http://127.0.0.1:4445/
       - KRATOS_PUBLIC_URL=http://kratos:4433/
-      - KRATOS_BROWSER_URL=http://kratos:4433/
+      - KRATOS_BROWSER_URL=http://127.0.0.1:4433/
+      - COOKE_SECRET=1234567890
+      - CSRF_COOKIE_NAME=_OPENCHAMI-CSRF
+      - CSRF_COOKIE_SECRET=OCHAMI1234
+      - COOKIE_SECRET=testTESTtestTESTtestTEST
     networks:
       - internal
     restart: on-failure
+    ports:
+      - "4455:4455"
   mailslurper:
     image: oryd/mailslurper:latest-smtps
     ports:

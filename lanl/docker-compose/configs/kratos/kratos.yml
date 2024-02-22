@@ -21,14 +21,14 @@ selfservice:
     oidc:
       enabled: true
       config:
-        base_redirect_uri: http://127.0.0.1
+        base_redirect_uri: http://127.0.0.1:4433
         providers:
           - id: gitlab
             provider: gitlab
-            client_id: 041e5fa58113cc5891fb6c8aa9702298c9b444a7a4d9c148902625e4053dbadb
-            client_secret: a52ba279ebf2e18af53440811641ba37338aa7c6fc546b45a3bb1c869a90c6f3
-            issuer_url: https://gitlab.newmexicoconsortium.org/users/sign_in
-            mapper_url: "base://bG9jYWwgY2xhaW1zID0gewogIGVtYWlsX3ZlcmlmaWVkOiBmYWxzZQp9ICsgc3RkLmV4dFZhcignY2xhaW1zJyk7Cgp7CiAgaWRlbnRpdHk6IHsKICAgIHRyYWl0czogewogICAgICAvLyBBbGxvd2luZyB1bnZlcmlmaWVkIGVtYWlsIGFkZHJlc3NlcyBlbmFibGVzIGFjY291bnQKICAgICAgLy8gZW51bWVyYXRpb24gYXR0YWNrcywgZXNwZWNpYWxseSBpZiB0aGUgdmFsdWUgaXMgdXNlZCBmb3IKICAgICAgLy8gZS5nLiB2ZXJpZmljYXRpb24gb3IgYXMgYSBwYXNzd29yZCBsb2dpbiBpZGVudGlmaWVyLgogICAgICAvLwogICAgICAvLyBUaGVyZWZvcmUgd2Ugb25seSByZXR1cm4gdGhlIGVtYWlsIGlmIGl0IChhKSBleGlzdHMgYW5kIChiKSBpcyBtYXJrZWQgdmVyaWZpZWQKICAgICAgLy8gYnkgR2l0TGFiLgogICAgICBbaWYgImVtYWlsIiBpbiBjbGFpbXMgJiYgY2xhaW1zLmVtYWlsX3ZlcmlmaWVkIHRoZW4gImVtYWlsIiBlbHNlIG51bGxdOiBjbGFpbXMuZW1haWwsCiAgICB9LAogIH0sCn0K"
+            client_id: 991c214d24818ac266a2aae26151ccfdb5936ab821cdf8f4fdcac7412542d76e
+            client_secret: 455593e0228f4a1a9501e57d4106e7a1b090d64122fbf0e3d2e69ba141dd3864
+            issuer_url: https://gitlab.newmexicoconsortium.org
+            mapper_url: "base64://bG9jYWwgY2xhaW1zID0gewogIGVtYWlsX3ZlcmlmaWVkOiBmYWxzZQp9ICsgc3RkLmV4dFZhcignY2xhaW1zJyk7Cgp7CiAgaWRlbnRpdHk6IHsKICAgIHRyYWl0czogewogICAgICAvLyBBbGxvd2luZyB1bnZlcmlmaWVkIGVtYWlsIGFkZHJlc3NlcyBlbmFibGVzIGFjY291bnQKICAgICAgLy8gZW51bWVyYXRpb24gYXR0YWNrcywgZXNwZWNpYWxseSBpZiB0aGUgdmFsdWUgaXMgdXNlZCBmb3IKICAgICAgLy8gZS5nLiB2ZXJpZmljYXRpb24gb3IgYXMgYSBwYXNzd29yZCBsb2dpbiBpZGVudGlmaWVyLgogICAgICAvLwogICAgICAvLyBUaGVyZWZvcmUgd2Ugb25seSByZXR1cm4gdGhlIGVtYWlsIGlmIGl0IChhKSBleGlzdHMgYW5kIChiKSBpcyBtYXJrZWQgdmVyaWZpZWQKICAgICAgLy8gYnkgR2l0TGFiLgogICAgICBbaWYgImVtYWlsIiBpbiBjbGFpbXMgJiYgY2xhaW1zLmVtYWlsX3ZlcmlmaWVkIHRoZW4gImVtYWlsIiBlbHNlIG51bGxdOiBjbGFpbXMuZW1haWwsCiAgICB9LAogIH0sCn0K"
             scope:
               - read_user
               - openid
