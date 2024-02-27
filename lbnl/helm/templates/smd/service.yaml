@@ -8,7 +8,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  type: LoadBalancer
+  type: {{ .Values.smd.service.type }}
   ports:
     - port: {{ .Values.smd.service.port }}
       targetPort: {{ .Values.smd.deployment.containerPort }}
