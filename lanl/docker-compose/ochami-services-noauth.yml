@@ -23,7 +23,7 @@ services:
   smd-noauth:
     hostname: smd-noauth
     container_name: smd-noauth
-    image: ghcr.io/openchami/smd:v2.14.1
+    image: ghcr.io/openchami/smd:v2.14.2
     environment:
       - SMD_DBHOST=postgres
       - SMD_DBPORT=5432
