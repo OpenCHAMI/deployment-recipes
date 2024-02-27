@@ -1,6 +1,8 @@
 # Deployment Recipe for use with Docker compose
 
-1. Run the `generate-creds.sh` script to generate a `.env` file populated with randomly-generated passwords for each Postgres database. This file will be read by Docker Compose.
+1. Run the `generate-creds.sh` script to generate a `.env` file populated with
+   randomly-generated passwords for each Postgres database. This file will be
+   read by Docker Compose.
 1. Run:
 
    ```
@@ -37,7 +39,8 @@ Docker compose doesn't dispose of ephemeral volumes unless you run
 docker compose -f ochami-services.yml -f ochami-krakend-ce.yml -f hydra.yml down --volumes
 ```
 
-Try disposing of the volumes if you're seeing an error that looks something like this:
+Try disposing of the volumes if you're seeing an error that looks something like
+this:
 
 ```
 ochami-init      | time="2024-01-23T17:58:49Z" level=fatal msg="pq: role \"smd-init-user\" already exists"
