@@ -2,6 +2,8 @@ version: '3.7'
 
 services:
   bss-tests-noauth:
+    hostname: bss-tests-noauth
+    container_name: bss-tests-noauth
     image: ghcr.io/openchami/hurl-test
     volumes:
       - ./tests/noauth:/tests:ro
