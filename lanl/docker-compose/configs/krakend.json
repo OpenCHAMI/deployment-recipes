@@ -37,21 +37,6 @@
       ]
     },
     {
-      "endpoint": "/v1/ochami/physical/datacenters",
-      "method": "GET",
-      "output_encoding": "json",
-      "backend": [
-        {
-          "url_pattern": "/hsm/v2/memberships",
-          "encoding": "json",
-          "sd": "static",
-          "host": [
-            "http://smd:27779"
-          ]
-        }
-      ]
-    },
-    {
       "endpoint": "/v1/ochami/physical/datacenters/{id}",
       "method": "GET",
       "output_encoding": "json",
