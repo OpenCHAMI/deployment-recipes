@@ -3,6 +3,11 @@ version: "3.7"
 services:
   hydra:
     image: oryd/hydra:v2.2.0-rc.3
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://127.0.0.1:4444/health/alive"]
+        interval: 10s
+        timeout: 10s
+        retries: 10
     ports:
       - "4444:4444" # Public port
       - "4445:4445" # Admin port
@@ -16,8 +21,6 @@ services:
       - DSN=postgres://hydra-user:${HYDRA_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
     restart: unless-stopped
     depends_on:
-      ochami-init:
-        condition: service_completed_successfully
       hydra-migrate:
         condition: service_completed_successfully
     networks:
@@ -27,9 +30,6 @@ services:
     environment:
       - DSN=postgres://hydra-user:${HYDRA_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
     command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
-    depends_on:
-      ochami-init:
-        condition: service_completed_successfully
     volumes:
       - type: bind
         source: ./configs/hydra
