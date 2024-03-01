@@ -14,6 +14,8 @@ secrets:
     - ${HYDRA_SYSTEM_SECRET} # set in .env
 
 oidc:
+  dynamic_client_registration:
+    enabled: true
   subject_identifiers:
     supported_types:
       - pairwise
