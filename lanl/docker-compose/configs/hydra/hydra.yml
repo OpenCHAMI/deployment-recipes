@@ -9,6 +9,9 @@ urls:
   login: http://127.0.0.1:3000/login
   logout: http://127.0.0.1:3000/logout
 
+strategies:
+  access_token: jwt
+
 secrets:
   system:
     - youReallyNeedToChangeThis
