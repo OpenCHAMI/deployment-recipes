@@ -125,6 +125,8 @@ services:
       - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
       - BSS_AUTH_REQUIRED=true
       - BSS_JWKS_URL=http://hydra:4444/.well-known/jwks.json
+      - BSS_OAUTH2_ADMIN_BASE_URL=http://hydra:4445
+      - BSS_OAUTH2_PUBLIC_BASE_URL=http://hydra:4444
     ports:
       - '27778:27778'
     depends_on:
