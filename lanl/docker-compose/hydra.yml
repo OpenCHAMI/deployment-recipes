@@ -3,6 +3,8 @@ version: "3.7"
 services:
   hydra:
     image: oryd/hydra:v2.2.0-rc.3
+    container_name: hydra
+    hostname: hydra
     healthcheck:
         test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:4444/health/alive"]
         interval: 10s
@@ -27,6 +29,8 @@ services:
       - internal
   hydra-migrate:
     image: oryd/hydra:v2.2.0-rc.3
+    container_name: hydra-migrate
+    hostname: hydra-migrate
     environment:
       - DSN=postgres://hydra-user:${HYDRA_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
     command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
@@ -41,6 +45,8 @@ services:
     environment:
       - HYDRA_ADMIN_URL=http://hydra:4445
     image: oryd/hydra-login-consent-node:v2.2.0-rc.3
+    container_name: consent
+    hostname: consent
     ports:
       - "3000:3000"
     restart: unless-stopped
