@@ -23,5 +23,12 @@ oidc:
     pairwise:
       salt: ${HYDRA_OIDC_SALT} # set in .env
 
+oauth2:
+  grant:
+    jwt:
+      jti_optional: true
+      iat_optional: true
+      max_ttl: 24h
+
 strategies:
   access_token: jwt
