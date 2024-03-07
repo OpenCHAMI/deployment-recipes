@@ -44,39 +44,41 @@ services:
 ###
   # sets up postgres for SMD data
   smd-init:
-    container_name: smd-init
     image: ghcr.io/openchami/smd:v2.14.2
+    container_name: smd-init
+    hostname: smd-init
     environment:
       - SMD_DBHOST=postgres
       - SMD_DBPORT=5432
+      - SMD_DBNAME=hmsds
       - SMD_DBUSER=smd-user
       - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
-      - SMD_DBNAME=hmsds
       - SMD_DBOPTS=sslmode=disable
-    hostname: smd-init
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - internal
     entrypoint:
-      - /smd-init 
-  # SMD 
+      - /smd-init
+  # SMD
   smd:
-    container_name: smd
     image: ghcr.io/openchami/smd:v2.14.2
+    container_name: smd
+    hostname: smd
     environment:
       - SMD_DBHOST=postgres
       - SMD_DBPORT=5432
+      - SMD_DBNAME=hmsds
       - SMD_DBUSER=smd-user
       - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
-      - SMD_DBNAME=hmsds
       - SMD_DBOPTS=sslmode=disable
       - SMD_JWKS_URL=http://hydra:4444/.well-known/jwks.json
-    hostname: smd
     depends_on:
-      - postgres
-      - smd-init
+      postgres:
+        condition: service_healthy
+      smd-init:
+        condition: service_completed_successfully
     ports:
       - "27779:27779"
     healthcheck:
@@ -92,15 +94,15 @@ services:
 ###
 # sets up postgres for BSS data
   bss-init:
-    hostname: bss-init
-    container_name: bss-init
     image: ghcr.io/openchami/bss:v1.29.0
+    container_name: bss-init
+    hostname: bss-init
     environment:
       - BSS_USESQL=true
       - BSS_INSECURE=true
       - BSS_DBHOST=postgres
-      - BSS_DBNAME=bssdb
       - BSS_DBPORT=5432
+      - BSS_DBNAME=bssdb
       - BSS_DBUSER=bss-user
       - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
     depends_on:
@@ -112,15 +114,16 @@ services:
       - /usr/local/bin/bss-init
   # boot-script-service
   bss:
-    hostname: bss
-    container_name: bss
     image: ghcr.io/openchami/bss:v1.29.0
+    container_name: bss
+    hostname: bss
     environment:
       - BSS_USESQL=true
       - BSS_INSECURE=true
+      - BSS_DEBUG=true
       - BSS_DBHOST=postgres
-      - BSS_DBNAME=bssdb
       - BSS_DBPORT=5432
+      - BSS_DBNAME=bssdb
       - BSS_DBUSER=bss-user
       - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
       - BSS_AUTH_REQUIRED=true
@@ -130,10 +133,14 @@ services:
     ports:
       - '27778:27778'
     depends_on:
-      - postgres
-      - bss-init
-      - smd
-      - hydra
+      postgres:
+        condition: service_healthy
+      smd:
+        condition: service_healthy
+      bss-init:
+        condition: service_completed_successfully
+      hydra:
+        condition: service_healthy
     networks:
       - internal
     healthcheck:
@@ -142,19 +149,21 @@ services:
       timeout: 10s
       retries: 60
   dnsmasq:
-    hostname: dnsmasq-dhcp
-    container_name: dnsmasq-dhcp
     image: ghcr.io/openchami/dnsmasq:dynamic
+    container_name: dnsmasq-dhcp
+    hostname: dnsmasq-dhcp
     environment:
       - smd_endpoint=172.16.0.253
       - bss_endpoint=172.16.0.253
     depends_on:
-      - bss
-      - smd
+      bss:
+        condition: service_healthy
+      smd:
+        condition: service_healthy
     network_mode: "host"
     cap_add:
       - NET_ADMIN
-    healthcheck: 
+    healthcheck:
       test: pgrep dnsmasq
       interval: 5s
       timeout: 10s
