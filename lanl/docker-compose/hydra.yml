@@ -4,7 +4,7 @@ services:
   hydra:
     image: oryd/hydra:v2.2.0-rc.3
     healthcheck:
-        test: ["CMD", "curl", "-f", "http://127.0.0.1:4444/health/alive"]
+        test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:4444/health/alive"]
         interval: 10s
         timeout: 10s
         retries: 10
