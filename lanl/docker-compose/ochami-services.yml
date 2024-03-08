@@ -79,6 +79,8 @@ services:
         condition: service_healthy
       smd-init:
         condition: service_completed_successfully
+      hydra-gen-jwks:
+        condition: service_completed_successfully
     ports:
       - "27779:27779"
     healthcheck:
@@ -140,6 +142,8 @@ services:
         condition: service_completed_successfully
       hydra:
         condition: service_healthy
+      hydra-gen-jwks:
+        condition: service_completed_successfully
     networks:
       - internal
     healthcheck:
