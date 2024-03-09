@@ -78,3 +78,49 @@ gke:
   gateway:
     class: gke-l7-global-external-managed
     port: 80
+
+tftpd:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/openchami
+      name: tftpd
+      pullPolicy: IfNotPresent
+      tag: "0.1"
+    containerPort: 69
+
+  service:
+    type: LoadBalancer
+    port: 69
+    # Since GKE external network LoadBalancers are not proxied, it might be a
+    # good idea to add an annotation like loadBalancerSourceRanges to limit who
+    # can access the Service.
+    annotations:
+
+dnsmasq:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/openchami
+      name: dnsmasq
+      pullPolicy: IfNotPresent
+      tag: dynamic
+    dhcp_port: 67
+    tftp_port: 69
+
+  service:
+    dhcp:
+      type: LoadBalancer
+      port: 67
+      # Since GKE external network LoadBalancers are not proxied, it might be a
+      # good idea to add an annotation like loadBalancerSourceRanges to limit who
+      # can access the Service.
+      annotations:
+
+    tftp:
+      type: LoadBalancer
+      port: 69
+      # Since GKE external network LoadBalancers are not proxied, it might be a
+      # good idea to add an annotation like loadBalancerSourceRanges to limit who
+      # can access the Service.
+      annotations:
