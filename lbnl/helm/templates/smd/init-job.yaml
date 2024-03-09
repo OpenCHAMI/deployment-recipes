@@ -1,0 +1,35 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: smd
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    spec:
+      containers:
+        - name: smd-init
+          image: {{ .Values.smd.deployment.image.repository }}/{{ .Values.smd.deployment.image.name }}:{{ .Values.smd.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.smd.deployment.image.pullPolicy }}
+          command: ["/smd-init"]
+          env:
+            - name: SMD_DBHOST
+              value: postgres.{{ .Release.Namespace }}.svc.cluster.local
+            - name: SMD_DBPORT
+              value: "{{ .Values.postgres.deployment.containerPort }}"
+            - name: SMD_DBUSER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: smd_postgres_username
+            - name: SMD_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: smd_postgres_password
+            - name: SMD_DBNAME
+              value: {{ .Values.smd.dbname }}
+            - name: SMD_DBOPTS
+              value: sslmode=disable
+      restartPolicy: OnFailure
+  backoffLimit: 4
