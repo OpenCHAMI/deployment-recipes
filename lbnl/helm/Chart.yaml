@@ -1,12 +1,19 @@
 ---
-# This Helm chart deploys the PostgreSQL, SMD, and BSS components of OCHAMI.
 # Most of these deployments rely on PostgreSQL credentials to be stored in a
-# Secret called `postgres-creds`, which is not included in this repo and must be
-# created separately.
+# Secret called `postgres-creds`, which is not included in this repo and must
+# be created separately. The Secret must include the following keys:
+#
+#   - bss_postgres_password
+#   - bss_postgres_username
+#   - hydra_postgres_password
+#   - postgres_password
+#   - postgres_username
+#   - smd_postgres_password
+#   - smd_postgres_username
 
 apiVersion: v2
-name: ochami
-description: A Helm chart for OCHAMI
+name: ochami-services
+description: A Helm chart for OpenCHAMI
 
 type: application
 
