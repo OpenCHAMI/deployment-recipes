@@ -10,3 +10,5 @@ spec:
     port: {{ .Values.krakend.deployment.containerPort }}
     type: HTTP
     requestPath: /__health
+  securityPolicy:
+    name: {{ default "" .Values.gke.securityPolicy }}
