@@ -37,13 +37,13 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: postgres-creds
-                  key: username
+                  key: smd_postgres_username
             - name: SMD_DBPASS
               valueFrom:
                 secretKeyRef:
                   name: postgres-creds
-                  key: password
+                  key: smd_postgres_password
             - name: SMD_DBNAME
-              value: {{ .Values.init.dbname }}
+              value: {{ .Values.smd.dbname }}
             - name: SMD_DBOPTS
               value: sslmode=disable

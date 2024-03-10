@@ -16,24 +16,66 @@ spec:
       labels:
         app: postgres
     spec:
+      volumes:
+        - name: {{ .Values.postgres.pvc_name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.postgres.pvc_name }}
+        - name: multi-psql-db
+          configMap:
+            name: multi-psql-db
+            defaultMode: 493
       containers:
         - name: postgres
           image: {{ .Values.postgres.deployment.image.repository }}/{{ .Values.postgres.deployment.image.name }}:{{ .Values.postgres.deployment.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.postgres.deployment.image.pullPolicy }}
+          #command: ["bash", "-c"]
+          #args:
+          #- |
+          #  sleep 10
+          #  /docker-entrypoint-initdb.d/multi-psql-db.sh
           ports:
             - name: postgres
               containerPort: {{ .Values.postgres.deployment.containerPort }}
               protocol: TCP
+          volumeMounts:
+            - mountPath: {{ .Values.postgres.dbmount }}
+              name: {{ .Values.postgres.pvc_name }}
+            - name: multi-psql-db
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-d", "ochami", "-U", "ochami"]
+            initialDelaySeconds: 10
           env:
             - name: POSTGRES_DB
               value: {{ .Values.init.dbname }}
+            - name: PGDATA
+              value: {{ .Values.postgres.dbmount }}/pgdata
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: postgres-creds
-                  key: username
+                  key: postgres_username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-creds
-                  key: password
+                  key: postgres_password
+            - name: SMD_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: smd_postgres_password
+            - name: BSS_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: bss_postgres_password
+            - name: HYDRA_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: hydra_postgres_password
+            - name: POSTGRES_MULTIPLE_DATABASES
+              value: "hmsds:smd-user:$(SMD_POSTGRES_PASSWORD),bssdb:bss-user:$(BSS_POSTGRES_PASSWORD),hydradb:hydra-user:$(HYDRA_POSTGRES_PASSWORD)"

@@ -36,16 +36,16 @@ spec:
             - name: BSS_DBHOST
               value: postgres.{{ .Release.Namespace }}.svc.cluster.local
             - name: BSS_DBNAME
-              value: {{ .Values.init.dbname }}
+              value: {{ .Values.bss.dbname }}
             - name: BSS_DBPORT
               value: "{{ .Values.postgres.service.port }}"
             - name: BSS_DBUSER
               valueFrom:
                 secretKeyRef:
                   name: postgres-creds
-                  key: username
+                  key: bss_postgres_username
             - name: BSS_DBPASS
               valueFrom:
                 secretKeyRef:
                   name: postgres-creds
-                  key: password
+                  key: bss_postgres_password

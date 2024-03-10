@@ -13,14 +13,8 @@ postgres:
     type: ClusterIP
     port: 5432
 
-init:
-  job:
-    image:
-      repository: ghcr.io/openchami
-      name: ochami-init
-      tag: "v0.0.20"
-      pullPolicy: IfNotPresent
-  dbname: ochami
+  pvc_name: postgres-data
+  dbmount: /var/lib/postgresql/data
 
 smd:
   deployment:
@@ -28,9 +22,10 @@ smd:
     image:
       repository: ghcr.io/openchami
       name: smd
-      tag: "v2.13.6"
+      tag: "v2.14.2"
       pullPolicy: IfNotPresent
     containerPort: 27779
+  dbname: hmsds
 
   service:
     type: ClusterIP
@@ -44,8 +39,9 @@ bss:
       repository: ghcr.io/openchami
       name: bss
       pullPolicy: IfNotPresent
-      tag: "v1.28.1"
+      tag: "v1.29.1"
     containerPort: 27778
+  dbname: bssdb
 
   service:
     type: ClusterIP
