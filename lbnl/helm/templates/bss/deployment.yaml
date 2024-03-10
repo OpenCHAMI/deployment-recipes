@@ -34,7 +34,7 @@ spec:
             - name: BSS_INSECURE
               value: "true"
             - name: BSS_DBHOST
-              value: "postgres.{{ .Release.Namespace }}.svc.cluster.local"
+              value: postgres.{{ .Release.Namespace }}.svc.cluster.local
             - name: BSS_DBNAME
               value: {{ .Values.init.dbname }}
             - name: BSS_DBPORT
