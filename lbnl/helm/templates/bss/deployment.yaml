@@ -24,6 +24,10 @@ spec:
             - name: bss
               containerPort: {{ .Values.bss.deployment.containerPort }}
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /boot/v1/service/status
+              port: {{ .Values.bss.deployment.containerPort }}
           env:
             - name: BSS_USESQL
               value: "true"
