@@ -78,6 +78,7 @@ gke:
   gateway:
     class: gke-l7-global-external-managed
     port: 80
+  securityPolicy: lbnl-nersc
 
 tftpd:
   deployment:
