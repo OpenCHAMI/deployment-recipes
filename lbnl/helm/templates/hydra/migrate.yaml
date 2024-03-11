@@ -1,0 +1,33 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hydra-migrate
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    spec:
+      containers:
+      - name: hydra-migrate
+        image: {{ .Values.hydra.deployment.image.repository }}/{{ .Values.hydra.deployment.image.name }}:{{ .Values.hydra.deployment.image.tag }}
+        imagePullPolicy: {{ .Values.hydra.deployment.image.pullPolicy }}
+        command: ["hydra"]
+        args: ["migrate", "-c", "/etc/config/hydra/hydra.yml", "sql", "-e", "--yes"]
+        volumeMounts:
+        - name: hydra-config
+          mountPath: /etc/config/hydra
+          readOnly: true
+        env:
+        - name: HYDRA_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-creds
+              key: hydra_postgres_password
+        - name: DSN
+          value: postgres://hydra-user:$(HYDRA_POSTGRES_PASSWORD)@postgres.{{ .Release.Namespace }}.svc.cluster.local:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
+      volumes:
+      - name: hydra-config
+        configMap:
+          name: hydra-config
+      restartPolicy: OnFailure
+  backoffLimit: 4

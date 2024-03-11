@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: hydra
+  {{- with .Values.hydra.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.hydra.service.type }}
+  ports:
+    - port: {{ .Values.hydra.service.ports.public }}
+      targetPort: {{ .Values.hydra.deployment.containerPorts.public }}
+      name: public
+    - port: {{ .Values.hydra.service.ports.admin }}
+      targetPort: {{ .Values.hydra.deployment.containerPorts.admin }}
+      name: admin
+    - port: {{ .Values.hydra.service.ports.tokenuser }}
+      targetPort: {{ .Values.hydra.deployment.containerPorts.tokenuser }}
+      name: tokenuser
+  selector:
+    app: hydra

@@ -121,3 +121,40 @@ dnsmasq:
       # good idea to add an annotation like loadBalancerSourceRanges to limit who
       # can access the Service.
       annotations:
+
+hydra:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: hub.docker.io
+      name: hydra
+      pullPolicy: IfNotPresent
+      tag: "v2.2.0"
+    containerPorts:
+      public: 4444
+      admin: 4445
+      tokenuser: 5555
+
+  service:
+    type: ClusterIP
+    ports:
+      public: 4444
+      admin: 4445
+      tokenuser: 5555
+    annotations:
+
+hydra_consent:
+  deployment:
+    image:
+      repository: hub.docker.io
+      name: hydra-login-consent-node
+      pullPolicy: IfNotPresent
+      tag: "v2.2.0"
+    containerPorts:
+      consent: 3000
+
+  service:
+    type: ClusterIP
+    ports:
+      consent: 3000
+    annotations:

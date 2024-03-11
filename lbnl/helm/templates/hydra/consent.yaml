@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hydra-consent
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: hydra-consent
+spec:
+  replicas: {{ .Values.hydra_consent.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: hydra-consent
+  template:
+    metadata:
+      labels:
+        app: hydra-consent
+    spec:
+      containers:
+      - name: hydra-consent
+        image: {{ .Values.hydra_consent.deployment.image.repository }}/{{ .Values.hydra_consent.deployment.image.name }}:{{ .Values.hydra_consent.deployment.image.tag }}
+        imagePullPolicy: {{ .Values.hydra_consent.deployment.image.pullPolicy }}
+        ports:
+        - name: consent
+          containerPort: {{ .Values.hydra_consent.deployment.containerPorts.consent }}
+          protocol: TCP
+        volumeMounts:
+        - name: hydra-config
+          mountPath: /etc/config/hydra
+          readOnly: true
+        env:
+        - name: HYDRA_ADMIN_URL
+          value: http://hydra.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.hydra.service.ports.admin }}
+      volumes:
+      - name: hydra-config
+        configMap:
+          name: hydra-config
