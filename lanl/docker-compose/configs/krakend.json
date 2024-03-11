@@ -5,6 +5,10 @@
   "timeout": "3000ms",
   "cache_ttl": "300s",
   "output_encoding": "json",
+  "tls": {
+  "public_key": "/root/.acme.sh/krakend-ce_ecc/krakend-ce.cer",
+  "private_key": "/root/.acme.sh/krakend-ce_ecc/krakend-ce.key"
+  },
   "endpoints": [
     {
       "endpoint": "/v1/ochami/login",
