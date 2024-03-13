@@ -16,7 +16,7 @@ services:
   krakend-ce:
     hostname: SI.krakend
     container_name: SI.krakend
-    image: devopsfaith/krakend
+    image: ghcr.io/openchami/krakend:acme
     environment:
       - KRAKEND_CONFIG=/etc/krakend/krakend.json
       - KRAKEND_PORT=8080
