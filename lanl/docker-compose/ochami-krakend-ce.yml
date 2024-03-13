@@ -1,14 +1,25 @@
 version: '3.7'
 
 services:
-  
+  step-ca:
+    hostname: SI.ca
+    container_name: SI.ca
+    image: ghcr.io/openchami/local-ca:acme
+    ports: "443:443"
+    networks:
+      - internal
+    volumes:
+      - ./configs/step-ca:/mnt
   krakend-ce:
-    container_name: krakend-ce
+    hostname: SI.krakend
+    container_name: SI.krakend
     image: devopsfaith/krakend
     environment:
       - KRAKEND_CONFIG=/etc/krakend/krakend.json
       - KRAKEND_PORT=8080
     hostname: krakend-ce
+    healthcheck:
+      test: ["CMD", "CURL_CA_BUNDLE=/root/.acme.sh/SI.krakend_ecc/SI.krakend.cer", "curl", "-f" "https:/SI.endpoint:8080/__health"]
     depends_on:
       - bss
       - smd
@@ -18,3 +29,4 @@ services:
       - internal
     volumes:
       - ./configs/krakend.json:/etc/krakend/krakend.json:ro
+      - ./configs/step-ca/config/defaults.json:/mnt/defaults.json:ro
