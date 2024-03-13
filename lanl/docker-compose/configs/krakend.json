@@ -6,8 +6,8 @@
   "cache_ttl": "300s",
   "output_encoding": "json",
   "tls": {
-  "public_key": "/root/.acme.sh/krakend-ce_ecc/krakend-ce.cer",
-  "private_key": "/root/.acme.sh/krakend-ce_ecc/krakend-ce.key"
+  "public_key": "/root/.acme.sh/SI.krakend_ecc/SI.krakend.cer",
+  "private_key": "/root/.acme.sh/SI.krakend_ecc/SI.krakend.key"
   },
   "endpoints": [
     {
