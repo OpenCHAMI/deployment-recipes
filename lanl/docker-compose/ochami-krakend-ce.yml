@@ -19,9 +19,8 @@ services:
     environment:
       - KRAKEND_CONFIG=/etc/krakend/krakend.json
       - KRAKEND_PORT=8080
-    hostname: krakend-ce
     healthcheck:
-      test: ["CMD", "CURL_CA_BUNDLE=/root/.acme.sh/SI.krakend_ecc/SI.krakend.cer", "curl", "-f" "https:/SI.endpoint:8080/__health"]
+      test: ["CMD", "CURL_CA_BUNDLE=/root/.acme.sh/SI.krakend_ecc/SI.krakend.cer", "curl", "-f", "https:/SI.endpoint:8080/__health"]
     depends_on:
       - bss
       - smd
