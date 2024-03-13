@@ -6,6 +6,8 @@ services:
     container_name: SI.ca
     image: ghcr.io/openchami/local-ca:acme
     ports: "443:443"
+    healthcheck: 
+      test: ["CMD", "step", "ca", "health", "--ca-url", "https://SI.ca", "--root", "$(step path)/certs/root_ca.crt"]
     networks:
       - internal
     volumes:
@@ -23,6 +25,7 @@ services:
     depends_on:
       - bss
       - smd
+      - SI.ca
     ports:
       - "8080:8080"
     networks:
