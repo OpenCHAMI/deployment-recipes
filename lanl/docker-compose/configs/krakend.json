@@ -16,7 +16,7 @@
       "output_encoding": "json",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/memberships", // need to replace with hydra route
+          "url_pattern": "/hsm/v2/memberships", 
           "encoding": "json",
           "sd": "static",
           "host": [
