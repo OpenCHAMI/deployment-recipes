@@ -8,7 +8,7 @@ services:
     ports: 
       - "443:443"
     healthcheck: 
-      test: ["CMD", "step", "ca", "health", "--ca-url", "https://SI.ca", "--root", "$(step path)/certs/root_ca.crt"]
+      test: ["CMD-SHELL", "step", "ca", "health", "--ca-url", "https://SI.ca", "--root", "$(step path)/certs/root_ca.crt"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -25,7 +25,7 @@ services:
       - KRAKEND_CONFIG=/etc/krakend/krakend.json
       - KRAKEND_PORT=8080
     healthcheck:
-      test: ["CMD", "CURL_CA_BUNDLE=/root/.acme.sh/SI.krakend_ecc/SI.krakend.cer", "curl", "-f", "https:/SI.krakend:8080/__health"]
+      test: ["CMD-SHELL", "CURL_CA_BUNDLE=/root/.acme.sh/SI.krakend_ecc/SI.krakend.cer", "curl", "-f", "https:/SI.krakend:8080/__health"]
       interval: 30s
       timeout: 10s
       retries: 5
