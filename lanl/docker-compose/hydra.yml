@@ -33,11 +33,10 @@ services:
   # To prevent this, this container does it first and services that need to request
   # the JWKS must rely on this service completing.
   hydra-gen-jwks:
-    image: curlimages/curl:latest
+    image: cgr.dev/chainguard/curl:latest
     container_name: hydra-gen-jwks
     hostname: hydra-gen-jwks
     command:
-      - 'curl'
       - '--retry'
       - '10'
       - '--retry-delay'
