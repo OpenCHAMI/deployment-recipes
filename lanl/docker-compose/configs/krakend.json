@@ -5,6 +5,10 @@
   "timeout": "3000ms",
   "cache_ttl": "300s",
   "output_encoding": "json",
+  "tls": {
+  "public_key": "/root/.acme.sh/SI.krakend_ecc/SI.krakend.cer",
+  "private_key": "/root/.acme.sh/SI.krakend_ecc/SI.krakend.key"
+  },
   "endpoints": [
     {
       "endpoint": "/v1/ochami/login",
@@ -12,7 +16,7 @@
       "output_encoding": "json",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/memberships", // need to replace with hydra route
+          "url_pattern": "/hsm/v2/memberships", 
           "encoding": "json",
           "sd": "static",
           "host": [

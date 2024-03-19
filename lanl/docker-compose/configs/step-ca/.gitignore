@@ -1,0 +1,3 @@
+#step-ca uses machine generated configs
+#this directory exists for automated standup
+!.gitignore
