@@ -158,3 +158,12 @@ hydra_consent:
     ports:
       consent: 3000
     annotations:
+
+swiss_army_knife:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: hub.docker.io/leodotcloud
+      name: swiss-army-knife
+      pullPolicy: IfNotPresent
+      tag: latest
