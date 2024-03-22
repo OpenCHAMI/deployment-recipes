@@ -2,9 +2,11 @@ version: '3.7'
 
 services:
   bss-tests:
+    hostname: bss-tests
+    container_name: bss-tests
     image: ghcr.io/openchami/hurl-test
     volumes:
-      - ./tests/all:/tests:ro
+      - ./tests/auth:/tests:ro
     networks:
       - internal
     depends_on:
