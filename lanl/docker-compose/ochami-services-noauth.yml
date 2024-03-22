@@ -44,7 +44,7 @@ services:
 ###
   # sets up postgres for SMD data
   smd-init-noauth:
-    image: ghcr.io/openchami/smd:v2.14.2
+    image: ghcr.io/openchami/smd:v2.15.0
     container_name: smd-init-noauth
     hostname: smd-init-noauth
     environment:
@@ -63,7 +63,7 @@ services:
       - /smd-init
   # SMD with auth requirement disabled
   smd-noauth:
-    image: ghcr.io/openchami/smd:v2.14.2
+    image: ghcr.io/openchami/smd:v2.15.0
     container_name: smd-noauth
     hostname: smd-noauth
     environment:
