@@ -146,8 +146,10 @@ services:
     container_name: dnsmasq-dhcp-noauth
     hostname: dnsmasq-dhcp-noauth
     environment:
-      - smd_endpoint=172.16.0.253
-      - bss_endpoint=172.16.0.253
+      - smd_endpoint=localhost
+      - smd_port=27799
+      - bss_endpoint=localhost
+      - bss_port=27788
     depends_on:
       bss-noauth:
         condition: service_healthy
