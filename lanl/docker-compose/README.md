@@ -13,6 +13,9 @@
   authentication-enabled BSS and SMD in `ochami-services.yml`.
 - `ochami-hurl-tests-noauth.yml`: Runs integration tests using Hurl against the
   authentication-disabled BSS and SMD in `ochami-services-noauth.yml`.
+- `opaal.yml`: Runs the OPAAL OIDC login helper tool. BSS requests a token from
+  OPAAL, which then reaches out to Hydra to verify the client. This file is a
+  dependency of `ochami-services.yml`.
 - `ochami-krakend-ce.yml`: Runs the Krakend-CE API gateway for SMD and BSS.
 - `hydra.yml`: Runs the Hydra OAuth2/OIDC server used for authentication-enabled
   BSS and SMD. This file is a dependency of `ochami-services.yml`.
@@ -29,7 +32,7 @@
    To run the services with JWT authentication enabled:
 
    ```
-   docker compose -f ochami-services.yml -f hydra.yml -f ochami-krakend-ce.yml up
+   docker compose -f ochami-services.yml -f hydra.yml -f opaal.yml -f ochami-krakend-ce.yml up
    ```
 
    **NOTE:** Authenticated BSS and SMD run on host ports 27778 and 27779,
@@ -51,6 +54,7 @@
      -f ochami-services.yml \
      -f ochami-services-noauth.yml \
      -f hydra.yml \
+     -f opaal.yml \
      -f ochami-krakend-ce.yml \
      up
    ```
