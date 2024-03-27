@@ -130,9 +130,9 @@ services:
       - BSS_DBNAME=bssdb
       - BSS_DBUSER=bss-user
       - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
-      - BSS_JWKS_URL=http://hydra:4444/.well-known/jwks.json
-      - BSS_OAUTH2_ADMIN_BASE_URL=http://hydra:4445
-      - BSS_OAUTH2_PUBLIC_BASE_URL=http://hydra:4444
+      - BSS_JWKS_URL=http://opaal:3333/keys
+      - BSS_OAUTH2_ADMIN_BASE_URL=http://opaal:3333
+      - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
     ports:
       - '27778:27778'
     depends_on:
@@ -146,6 +146,8 @@ services:
         condition: service_healthy
       hydra-gen-jwks:
         condition: service_completed_successfully
+      opaal:
+        condition: service_healthy
     networks:
       - internal
     healthcheck:
