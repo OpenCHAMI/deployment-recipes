@@ -158,8 +158,10 @@ services:
     container_name: dnsmasq-dhcp
     hostname: dnsmasq-dhcp
     environment:
-      - smd_endpoint=172.16.0.253
-      - bss_endpoint=172.16.0.253
+      - smd_endpoint=localhost
+      - smd_port=27779
+      - bss_endpoint=localhost
+      - bss_port=27778
     depends_on:
       bss:
         condition: service_healthy
