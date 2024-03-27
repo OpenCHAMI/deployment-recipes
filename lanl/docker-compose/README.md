@@ -9,13 +9,13 @@
 - `ochami-services-noauth.yml`: Like `ochami-services.yml`, but runs SMD and BSS
   with JWT authentication disabled. This file can be run independently of or
   alongside `ochami-services.yml`.
-- `ochami-hurl-tests.yaml`: Runs integration tests using Hurl against the
+- `ochami-hurl-tests.yml`: Runs integration tests using Hurl against the
   authentication-enabled BSS and SMD in `ochami-services.yml`.
 - `ochami-hurl-tests-noauth.yml`: Runs integration tests using Hurl against the
   authentication-disabled BSS and SMD in `ochami-services-noauth.yml`.
 - `ochami-krakend-ce.yml`: Runs the Krakend-CE API gateway for SMD and BSS.
 - `hydra.yml`: Runs the Hydra OAuth2/OIDC server used for authentication-enabled
-  BSS and SMD.
+  BSS and SMD. This file is a dependency of `ochami-services.yml`.
 
 ## Running Deployments
 
