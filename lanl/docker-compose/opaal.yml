@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  opaal:
+    image: ghcr.io/openchami/opaal:0.1
+    container_name: opaal
+    hostname: opaal
+    command:
+      - '/opaal/opaal'
+      - 'login'
+      - '--config'
+      - '/opaal/config.yaml'
+    volumes:
+      - ./configs/opaal.yaml:/opaal/config.yaml
+    networks:
+      - internal
+    ports:
+      - 3333:3333
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:3333/status"]
+      interval: 5s
+      timeout: 10s
+      retries: 60
