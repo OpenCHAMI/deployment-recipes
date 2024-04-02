@@ -28,11 +28,6 @@ spec:
         - name: postgres
           image: {{ .Values.postgres.deployment.image.repository }}/{{ .Values.postgres.deployment.image.name }}:{{ .Values.postgres.deployment.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.postgres.deployment.image.pullPolicy }}
-          #command: ["bash", "-c"]
-          #args:
-          #- |
-          #  sleep 10
-          #  /docker-entrypoint-initdb.d/multi-psql-db.sh
           ports:
             - name: postgres
               containerPort: {{ .Values.postgres.deployment.containerPort }}
