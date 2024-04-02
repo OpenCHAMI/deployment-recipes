@@ -15,6 +15,7 @@ postgres:
 
   pvc_name: postgres-data
   dbmount: /var/lib/postgresql/data
+  dbname: ochami
 
 smd:
   deployment:
