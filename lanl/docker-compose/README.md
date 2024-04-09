@@ -41,7 +41,7 @@
    To run the services without JWT authentication enabled:
 
    ```
-   docker compose -f ochami-services-noauth.yml -f ochami-krakend-ce.yml
+   docker compose -f ochami-services-noauth.yml -f ochami-krakend-ce.yml up
    ```
 
    **NOTE:** Non-authenticated BSS and SMD run on host ports 37778 and 37779,
