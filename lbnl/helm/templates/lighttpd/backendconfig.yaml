@@ -2,13 +2,13 @@
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
-  name: krakend-hc-config
+  name: lighttpd-backendconfig
   namespace: {{ .Release.Namespace }}
 spec:
   healthCheck:
     checkIntervalSec: 30
     port: {{ .Values.krakend.deployment.containerPort }}
     type: HTTP
-    requestPath: /__health
+    requestPath: /foo
   securityPolicy:
     name: {{ default "" .Values.gke.securityPolicy }}

@@ -13,13 +13,8 @@ postgres:
     type: ClusterIP
     port: 5432
 
-init:
-  job:
-    image:
-      repository: ghcr.io/openchami
-      name: ochami-init
-      tag: "v0.0.20"
-      pullPolicy: IfNotPresent
+  pvc_name: postgres-data
+  dbmount: /var/lib/postgresql/data
   dbname: ochami
 
 smd:
@@ -28,9 +23,10 @@ smd:
     image:
       repository: ghcr.io/openchami
       name: smd
-      tag: "v2.13.6"
+      tag: "v2.14.2"
       pullPolicy: IfNotPresent
     containerPort: 27779
+  dbname: hmsds
 
   service:
     type: ClusterIP
@@ -44,8 +40,9 @@ bss:
       repository: ghcr.io/openchami
       name: bss
       pullPolicy: IfNotPresent
-      tag: "v1.28.1"
+      tag: "v1.29.1"
     containerPort: 27778
+  dbname: bssdb
 
   service:
     type: ClusterIP
@@ -78,3 +75,115 @@ gke:
   gateway:
     class: gke-l7-global-external-managed
     port: 80
+  securityPolicy: lbnl-nersc
+
+tftpd:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/openchami
+      name: tftpd
+      pullPolicy: IfNotPresent
+      tag: "0.1"
+    containerPort: 69
+
+  service:
+    type: LoadBalancer
+    port: 69
+    # Since GKE external network LoadBalancers are not proxied, it might be a
+    # good idea to add an annotation like loadBalancerSourceRanges to limit who
+    # can access the Service.
+    annotations:
+
+dnsmasq:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/openchami
+      name: dnsmasq
+      pullPolicy: IfNotPresent
+      tag: dynamic
+    dhcp_port: 67
+    tftp_port: 69
+
+  service:
+    dhcp:
+      type: LoadBalancer
+      port: 67
+      # Since GKE external network LoadBalancers are not proxied, it might be a
+      # good idea to add an annotation like loadBalancerSourceRanges to limit who
+      # can access the Service.
+      annotations:
+
+    tftp:
+      type: LoadBalancer
+      port: 69
+      # Since GKE external network LoadBalancers are not proxied, it might be a
+      # good idea to add an annotation like loadBalancerSourceRanges to limit who
+      # can access the Service.
+      annotations:
+
+hydra:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: hub.docker.io
+      name: hydra
+      pullPolicy: IfNotPresent
+      tag: "v2.2.0"
+    containerPorts:
+      public: 4444
+      admin: 4445
+      tokenuser: 5555
+
+  service:
+    type: ClusterIP
+    ports:
+      public: 4444
+      admin: 4445
+      tokenuser: 5555
+    annotations:
+
+hydra_consent:
+  deployment:
+    image:
+      repository: hub.docker.io
+      name: hydra-login-consent-node
+      pullPolicy: IfNotPresent
+      tag: "v2.2.0"
+    containerPorts:
+      consent: 3000
+
+  service:
+    type: ClusterIP
+    ports:
+      consent: 3000
+    annotations:
+
+swiss_army_knife:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: hub.docker.io/leodotcloud
+      name: swiss-army-knife
+      pullPolicy: IfNotPresent
+      tag: latest
+
+lighttpd:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/openchami
+      name: lighttpd
+      pullPolicy: IfNotPresent
+      tag: 0.1
+    containerPort: 8080
+
+  pvc_name: lighttpd
+  mount_path: /var/www/html
+
+  service:
+    type: ClusterIP
+    port: 80
+    annotations:
+      cloud.google.com/backend-config: '{"default": "lighttpd-backendconfig"}'

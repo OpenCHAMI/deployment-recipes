@@ -1,0 +1,24 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swiss-army-knife
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: swiss-army-knife
+spec:
+  replicas: {{ .Values.swiss_army_knife.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: swiss-army-knife
+  template:
+    metadata:
+      labels:
+        app: swiss-army-knife
+    spec:
+      containers:
+        - name: swiss-army-knife
+          image: {{ .Values.swiss_army_knife.deployment.image.repository }}/{{ .Values.swiss_army_knife.deployment.image.name }}:{{ .Values.swiss_army_knife.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.swiss_army_knife.deployment.image.pullPolicy }}
+          command: ["/bin/bash"]
+          args: ["-c", "while true; do sleep 3600; done"]

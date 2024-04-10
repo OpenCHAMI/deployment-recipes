@@ -1,33 +1,17 @@
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: bss
   namespace: {{ .Release.Namespace }}
-  labels:
-    app: bss
 spec:
-  replicas: {{ .Values.bss.deployment.replicaCount }}
-  selector:
-    matchLabels:
-      app: bss
   template:
-    metadata:
-      labels:
-        app: bss
     spec:
       containers:
-        - name: bss
+        - name: bss-init
           image: {{ .Values.bss.deployment.image.repository }}/{{ .Values.bss.deployment.image.name }}:{{ .Values.bss.deployment.image.tag }}
           imagePullPolicy: {{ .Values.bss.deployment.image.pullPolicy }}
-          ports:
-            - name: bss
-              containerPort: {{ .Values.bss.deployment.containerPort }}
-              protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /boot/v1/service/status
-              port: {{ .Values.bss.deployment.containerPort }}
+          command: ["/usr/local/bin/bss-init"]
           env:
             - name: BSS_USESQL
               value: "true"
@@ -49,3 +33,5 @@ spec:
                 secretKeyRef:
                   name: postgres-creds
                   key: bss_postgres_password
+      restartPolicy: OnFailure
+  backoffLimit: 4

@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dnsmasq
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: dnsmasq
+spec:
+  replicas: {{ .Values.dnsmasq.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: dnsmasq
+  template:
+    metadata:
+      labels:
+        app: dnsmasq
+    spec:
+      containers:
+        - name: dnsmasq
+          image: {{ .Values.dnsmasq.deployment.image.repository }}/{{ .Values.dnsmasq.deployment.image.name }}:{{ .Values.dnsmasq.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.dnsmasq.deployment.image.pullPolicy }}
+          command: ["/bin/bash", "/bin/init.sh"]
+          volumeMounts:
+          - name: dnsmasq-config
+            mountPath: /etc/dnsmasq.conf
+            subPath: dnsmasq.conf
+          - name: dnsmasq-config
+            mountPath: /bin/init.sh
+            subPath: init.sh
+          env:
+          - name: smd_endpoint
+            value: smd.{{ .Release.Namespace }}.svc.cluster.local
+          - name: bss_endpoint
+            value: bss.{{ .Release.Namespace }}.svc.cluster.local
+          ports:
+            - name: dnsmasq-dhcp
+              containerPort: {{ .Values.dnsmasq.deployment.dhcp_port}}
+              protocol: UDP
+            - name: dnsmasq-tftp
+              containerPort: {{ .Values.dnsmasq.deployment.tftp_port}}
+              protocol: UDP
+          readinessProbe:
+            exec:
+              command: ["pgrep", "dnsmasq"]
+      volumes:
+      - name: dnsmasq-config
+        configMap:
+          name: dnsmasq-config

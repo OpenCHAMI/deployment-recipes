@@ -21,6 +21,10 @@ data:
       users:
       - name: bss-user
         password: BSS_DB_PASSWD
+    - name: hydradb
+      users:
+      - name: hydra-user
+        password: HYDRA_DB_PASSWD
 kind: ConfigMap
 metadata:
   name: ochami-config

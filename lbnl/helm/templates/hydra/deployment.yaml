@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hydra
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: hydra
+spec:
+  replicas: {{ .Values.hydra.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: hydra
+  template:
+    metadata:
+      labels:
+        app: hydra
+    spec:
+      containers:
+      - name: hydra
+        image: {{ .Values.hydra.deployment.image.repository }}/{{ .Values.hydra.deployment.image.name }}:{{ .Values.hydra.deployment.image.tag }}
+        imagePullPolicy: {{ .Values.hydra.deployment.image.pullPolicy }}
+        command: ["hydra"]
+        args: ["serve", "-c", "/etc/config/hydra/hydra.yml", "all", "--dev"]
+        ports:
+        - name: public
+          containerPort: {{ .Values.hydra.deployment.containerPorts.public }}
+          protocol: TCP
+        - name: admin
+          containerPort: {{ .Values.hydra.deployment.containerPorts.admin }}
+          protocol: TCP
+        - name: tokenuser
+          containerPort: {{ .Values.hydra.deployment.containerPorts.tokenuser }}
+          protocol: TCP
+        volumeMounts:
+        - name: hydra-config
+          mountPath: /etc/config/hydra
+          readOnly: true
+        env:
+        - name: HYDRA_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-creds
+              key: hydra_postgres_password
+        - name: DSN
+          value: postgres://hydra-user:$(HYDRA_POSTGRES_PASSWORD)@postgres.{{ .Release.Namespace }}.svc.cluster.local:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
+      volumes:
+      - name: hydra-config
+        configMap:
+          name: hydra-config

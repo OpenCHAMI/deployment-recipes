@@ -1,33 +1,17 @@
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: smd
   namespace: {{ .Release.Namespace }}
-  labels:
-    app: smd
 spec:
-  replicas: {{ .Values.smd.deployment.replicaCount }}
-  selector:
-    matchLabels:
-      app: smd
   template:
-    metadata:
-      labels:
-        app: smd
     spec:
       containers:
-        - name: smd
+        - name: smd-init
           image: {{ .Values.smd.deployment.image.repository }}/{{ .Values.smd.deployment.image.name }}:{{ .Values.smd.deployment.image.tag }}
           imagePullPolicy: {{ .Values.smd.deployment.image.pullPolicy }}
-          ports:
-            - name: smd
-              containerPort: {{ .Values.smd.deployment.containerPort }}
-              protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /hsm/v2/service/ready
-              port: {{ .Values.smd.deployment.containerPort }}
+          command: ["/smd-init"]
           env:
             - name: SMD_DBHOST
               value: postgres.{{ .Release.Namespace }}.svc.cluster.local
@@ -47,3 +31,5 @@ spec:
               value: {{ .Values.smd.dbname }}
             - name: SMD_DBOPTS
               value: sslmode=disable
+      restartPolicy: OnFailure
+  backoffLimit: 4
