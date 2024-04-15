@@ -6,6 +6,10 @@ volumes:
 
 networks:
   openchami-certs:
+  external:
+    driver: bridge
+
+
 
 services:
   # step-ca is a local CA that can be used to issue certificates.  
@@ -40,7 +44,7 @@ services:
   # certbot is EFF's official tool for interacting with ACME servers to request and update certificates.
   # We use it to request certificates from our local CA.
   # See https://github.com/certbot/certbot for more information.
-  certbot:
+  certbot-issue-cert:
     container_name: certbot
     hostname: certbot
     image: certbot/certbot:v2.10.0
@@ -56,7 +60,7 @@ services:
       - local-certs:/etc/letsencrypt
       - certbot-challenges:/var/www/html/
       - step-root-ca:/root-ca:ro
-  nginx:
+  nginx-certbot-challenge-kraken:
     container_name: nginx
     hostname: openchami.bikeshack.dev
     image: nginx:1.21.3-alpine
@@ -65,10 +69,25 @@ services:
     ports:
       - "80:80"
     volumes:
-      - certbot-challenges:/var/www/html/:ro
+      - certbot-challenges:/usr/share/nginx/html/:ro
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 10s
       timeout: 10s
       retries: 5
-    
+  krakend-ce:
+    hostname: openchami.bikeshack.dev
+    container_name: krakend-ce
+    image: devopsfaith/krakend:2
+    environment:
+      - KRAKEND_CONFIG=/etc/krakend/krakend.json  
+    depends_on:
+      certbot-issue-cert:
+        condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+    networks:
+      - external
+    volumes:
+      - ./configs/:/etc/krakend/:ro
+      - local-certs:/etc/letsencrypt

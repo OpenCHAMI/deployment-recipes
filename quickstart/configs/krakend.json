@@ -1,0 +1,40 @@
+{
+  "$schema": "https://www.krakend.io/schema/krakend.json",
+  "version": 3,
+  "name": "KrakenD - API Gateway",
+  "timeout": "3000ms",
+  "cache_ttl": "300s",
+  "output_encoding": "json",
+  "tls": {
+    "public_key": "/etc/letsencrypt/live/openchami.bikeshack.dev/fullchain.pem",
+    "private_key": "/etc/letsencrypt/live/openchami.bikeshack.dev/privkey.pem"
+  },
+  "extra_config": {
+    "github.com/devopsfaith/krakend-tls": {
+      "force_https": true
+    },
+    "telemetry/logging": {
+      "level": "DEBUG",
+      "syslog": false,
+      "stdout": true
+    }
+  },
+  "endpoints": [
+    {
+      "endpoint": "/v1/ochami/login",
+      "method": "POST",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/memberships", 
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://localhost:3000"
+          ]
+        }
+      ]
+    }
+    
+  ]
+}
