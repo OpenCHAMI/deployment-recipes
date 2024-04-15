@@ -1,0 +1,140 @@
+services:
+###
+# SMD Init and Server Containers
+###
+  # sets up postgres for SMD data
+  smd-init:
+    image: ghcr.io/openchami/smd:v2.15.0
+    container_name: smd-init
+    hostname: smd-init
+    environment:
+      - SMD_DBHOST=postgres
+      - SMD_DBPORT=5432
+      - SMD_DBNAME=hmsds
+      - SMD_DBUSER=smd-user
+      - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
+      - SMD_DBOPTS=sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+    entrypoint:
+      - /smd-init
+  # SMD
+  smd:
+    image: ghcr.io/openchami/smd:v2.15.0
+    container_name: smd
+    hostname: smd
+    environment:
+      - SMD_DBHOST=postgres
+      - SMD_DBPORT=5432
+      - SMD_DBNAME=hmsds
+      - SMD_DBUSER=smd-user
+      - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
+      - SMD_DBOPTS=sslmode=disable
+      - SMD_JWKS_URL=http://hydra:4444/.well-known/jwks.json
+    depends_on:
+      postgres:
+        condition: service_healthy
+      smd-init:
+        condition: service_completed_successfully
+      hydra:
+        condition: service_healthy
+      hydra-gen-jwks:
+        condition: service_completed_successfully
+    ports:
+      - "27779:27779"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:27779/hsm/v2/service/ready"]
+      interval: 5s
+      retries: 60
+      start_period: 20s
+      timeout: 10s
+    networks:
+      - internal
+###
+# BSS Init and Server Containers
+###
+# sets up postgres for BSS data
+  bss-init:
+    image: ghcr.io/openchami/bss:v1.30.2
+    container_name: bss-init
+    hostname: bss-init
+    environment:
+      - BSS_USESQL=true
+      - BSS_INSECURE=true
+      - BSS_DBHOST=postgres
+      - BSS_DBPORT=5432
+      - BSS_DBNAME=bssdb
+      - BSS_DBUSER=bss-user
+      - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+    entrypoint:
+      - /usr/local/bin/bss-init
+  # boot-script-service
+  bss:
+    image: ghcr.io/openchami/bss:v1.30.2
+    container_name: bss
+    hostname: bss
+    environment:
+      - BSS_USESQL=true
+      - BSS_INSECURE=true
+      - BSS_DEBUG=true
+      - BSS_DBHOST=postgres
+      - BSS_DBPORT=5432
+      - BSS_DBNAME=bssdb
+      - BSS_DBUSER=bss-user
+      - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
+      - BSS_JWKS_URL=http://opaal:3333/keys
+      - BSS_OAUTH2_ADMIN_BASE_URL=http://opaal:3333
+      - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
+    ports:
+      - '27778:27778'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      smd:
+        condition: service_healthy
+      bss-init:
+        condition: service_completed_successfully
+      hydra:
+        condition: service_healthy
+      hydra-gen-jwks:
+        condition: service_completed_successfully
+      opaal:
+        condition: service_healthy
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:27778/boot/v1/service/status"]
+      interval: 5s
+      timeout: 10s
+      retries: 60
+  dnsmasq:
+    image: ghcr.io/openchami/dnsmasq:dynamic
+    container_name: dnsmasq-dhcp
+    hostname: dnsmasq-dhcp
+    environment:
+      - smd_endpoint=localhost
+      - smd_port=27779
+      - bss_endpoint=localhost
+      - bss_port=27778
+    depends_on:
+      bss:
+        condition: service_healthy
+      smd:
+        condition: service_healthy
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+    healthcheck:
+      test: pgrep dnsmasq
+      interval: 5s
+      timeout: 10s
+      retries: 60
+

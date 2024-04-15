@@ -75,19 +75,3 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-  krakend-ce:
-    hostname: openchami.bikeshack.dev
-    container_name: krakend-ce
-    image: devopsfaith/krakend:2
-    environment:
-      - KRAKEND_CONFIG=/etc/krakend/krakend.json  
-    depends_on:
-      certbot-issue-cert:
-        condition: service_completed_successfully
-    ports:
-      - "8080:8080"
-    networks:
-      - external
-    volumes:
-      - ./configs/:/etc/krakend/:ro
-      - local-certs:/etc/letsencrypt
