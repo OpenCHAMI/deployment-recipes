@@ -1,0 +1,74 @@
+volumes:
+  step-ca-db:
+  step-root-ca:
+  local-certs:
+  certbot-challenges:
+
+networks:
+  openchami-certs:
+
+services:
+  # step-ca is a local CA that can be used to issue certificates.  
+  # It supports the ACME standard for automatic certificate issuance and rotation.
+  # See https://github.com/smallstep/certificates for more information.
+  # Our container is based on wolfi and an entrypoint from the step-ca repository.
+  step-ca:
+    container_name: step-ca
+    hostname: step-ca
+    image: ghcr.io/openchami/local-ca:v0.1.0
+    ports: 
+      - "9000:9000"
+    networks:
+      - openchami-certs
+    volumes:
+      - ./configs/step-ca/:/home/step
+      # Keeping the database in a volume improves performance.  I don't understand why.
+      - step-ca-db:/home/step/db
+      # Keeping the root CA in a volume allows us to back it up and restore it.
+      - step-root-ca:/root-ca/
+    environment:
+      # To initialize your CA, modify these environment variables
+      - STEPPATH=/home/step
+      - DOCKER_STEPCA_INIT_NAME=OpenCHAMI
+      - DOCKER_STEPCA_INIT_DNS_NAMES=localhost,$(hostname -f),step-ca,SI.ca
+      - DOCKER_STEPCA_INIT_ACME=true
+    healthcheck:
+      test: ["CMD", "step", "ca", "health", "--ca-url", "https://step-ca:9000", "--root", "/root-ca/root_ca.crt"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+  # certbot is EFF's official tool for interacting with ACME servers to request and update certificates.
+  # We use it to request certificates from our local CA.
+  # See https://github.com/certbot/certbot for more information.
+  certbot:
+    container_name: certbot
+    hostname: certbot
+    image: certbot/certbot:v2.10.0
+    depends_on:
+      step-ca:
+        condition: service_healthy
+    environment:
+      - REQUESTS_CA_BUNDLE=/root-ca/root_ca.crt # This is the root CA certificate that we use to verify the local CA.
+    command: [ "certonly", "--webroot", "--server", "https://step-ca:9000/acme/acme/directory", "--webroot-path", "/var/www/html", "--agree-tos", "--email", "docker-compose@example.com", "-d", "openchami.bikeshack.dev", "-n" ]
+    networks:
+      - openchami-certs
+    volumes:
+      - local-certs:/etc/letsencrypt
+      - certbot-challenges:/var/www/html/
+      - step-root-ca:/root-ca:ro
+  nginx:
+    container_name: nginx
+    hostname: openchami.bikeshack.dev
+    image: nginx:1.21.3-alpine
+    networks:
+      - openchami-certs
+    ports:
+      - "80:80"
+    volumes:
+      - certbot-challenges:/var/www/html/:ro
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    
