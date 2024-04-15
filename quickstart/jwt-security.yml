@@ -19,19 +19,22 @@ services:
     ports:
       - 3333:3333
     healthcheck:
-      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:3333/status"]
+      test: ["CMD", "curl", "--fail", "--silent", "http://opaal:3333/keys"]
       interval: 5s
       timeout: 10s
       retries: 60
+    depends_on:
+      hydra:
+        condition: service_healthy
   hydra:
     image: oryd/hydra:v2.2.0-rc.3
     container_name: hydra
     hostname: hydra
     healthcheck:
-        test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:4444/health/alive"]
-        interval: 10s
-        timeout: 10s
-        retries: 10
+      test: ["CMD", "wget", "--spider", "-q", "http://hydra:4444/health/alive"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
     ports:
       - "4444:4444" # Public port
       - "4445:4445" # Admin port
@@ -45,28 +48,6 @@ services:
     depends_on:
       hydra-migrate:
         condition: service_completed_successfully
-    networks:
-      - internal
-  # Hydra has a race condition that prevents more than one service from requesting
-  # the JWKS in a close interval: doing so will cause hydra to generate the JWKS twice,
-  # changing the key(s) used to verify valid JWTs and thus cause them to be unauthorized.
-  # To prevent this, this container does it first and services that need to request
-  # the JWKS must rely on this service completing.
-  hydra-gen-jwks:
-    image: cgr.dev/chainguard/curl:latest
-    container_name: hydra-gen-jwks
-    hostname: hydra-gen-jwks
-    command:
-      - '--retry'
-      - '10'
-      - '--retry-delay'
-      - '5'
-      - '--retry-all-errors'
-      - '--verbose'
-      - 'http://hydra:4444/.well-known/jwks.json'
-    depends_on:
-      hydra:
-        condition: service_healthy
     networks:
       - internal
   hydra-migrate:
