@@ -17,24 +17,45 @@
       "level": "DEBUG",
       "syslog": false,
       "stdout": true
+    },
+    "security/http": {
+      "allowed_hosts": [],
+      "ssl_proxy_headers": {},
+      "ssl_redirect": true
     }
   },
   "endpoints": [
     {
-      "endpoint": "/v1/ochami/login",
-      "method": "POST",
-      "output_encoding": "json",
+      "endpoint": "/login",
+      "method": "GET",
+      "output_encoding": "negotiate",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/memberships", 
-          "encoding": "json",
+          "url_pattern": "/login",
+          "encoding": "xml",
           "sd": "static",
           "host": [
             "http://localhost:3000"
           ]
         }
       ]
+    },
+    {
+      "endpoint": "/token",
+      "method": "GET",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/token",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://opaal:3333"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
     }
-    
   ]
 }

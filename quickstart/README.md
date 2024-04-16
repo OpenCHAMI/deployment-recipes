@@ -19,13 +19,25 @@ cd deployment-recipes/quickstart/
 ./generate-configs.sh
 # Start the services
 docker compose \
--f autocert.yml \ # The 3rd-party open source automatic certificate management services
--f postgres.yml \ # The 3rd-party open source database server.  The only one used with OpenCHAMI
--f jwt-security.yml \ # The 3rd-party open source services necessary for using JWTs to authenticate and authorize
--f api-gateway.yml \ # The 3rd-party open source API Gateway that serves as a frontdoor for the rest of the services and integrates jwts and certs
--f openchami-svcs.yml \ # The custom services at the core of OpenCHAMI along with a heavily customized container for dnsmasq
-
+-f autocert.yml \ 
+-f postgres.yml \ 
+-f jwt-security.yml \ 
+-f api-gateway.yml \ 
+-f openchami-svcs.yml \ 
+up -d
 ```
 
-
 ## What's next?
+
+## Helpful docker cheatsheet
+
+This quickstart uses `docker compose` to start up services and define dependencies.  If you have a basic understanding of docker, you should be able to work with the included services.  Some handy items to remember for when you are exploring the deployment are below.
+
+
+`docker volume list` This lists all the volumes.  If they exist, the project will try to reuse them.  That might not be what you want.
+`docker network list` ditto for networks
+`docker ps -a` the -a shows you containers that aren't running.  We have several containers that are designed to do their thing and then exit.
+`docker logs <container-id>` allows you to check the logs of containers even after they have exited
+`docker compose ... down --volumes` will not only bring down all the services, but also delete the volumes
+
+## Going even further
