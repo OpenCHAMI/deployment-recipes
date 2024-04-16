@@ -19,11 +19,11 @@ cd deployment-recipes/quickstart/
 ./generate-configs.sh
 # Start the services
 docker compose \
--f autocert.yml \ 
--f postgres.yml \ 
--f jwt-security.yml \ 
--f api-gateway.yml \ 
--f openchami-svcs.yml \ 
+  -f autocert.yml \ 
+  -f postgres.yml \
+  -f jwt-security.yml \ 
+  -f api-gateway.yml \ 
+  -f openchami-svcs.yml \ 
 up -d
 ```
 
