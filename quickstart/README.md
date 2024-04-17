@@ -12,7 +12,7 @@ If you want to test with the same operating system and configuration we use at L
 
 ```
 # Clone the repository
-git clone git@github.com:OpenCHAMI/deployment-recipes.git
+git clone https://github.com/OpenCHAMI/deployment-recipes.git
 # Enter the quickstart directory
 cd deployment-recipes/quickstart/
 # Create the secrets.  Do not share them with anyone

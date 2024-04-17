@@ -112,9 +112,9 @@ services:
     container_name: dnsmasq-dhcp
     hostname: dnsmasq-dhcp
     environment:
-      - smd_endpoint=localhost
+      - smd_endpoint=smd
       - smd_port=27779
-      - bss_endpoint=localhost
+      - bss_endpoint=bss
       - bss_port=27778
     depends_on:
       bss:

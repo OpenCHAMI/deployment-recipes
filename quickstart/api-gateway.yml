@@ -4,7 +4,8 @@ services:
     container_name: krakend-ce
     image: devopsfaith/krakend:2
     environment:
-      - KRAKEND_CONFIG=/etc/krakend/krakend.json  
+      - KRAKEND_CONFIG=/etc/krakend/krakend.json
+      - KRAKEND_ALLOW_INSECURE_CONNECTIONS=true 
     depends_on:
       certbot-issue-cert:
         condition: service_completed_successfully
@@ -15,3 +16,4 @@ services:
     volumes:
       - ./configs/:/etc/krakend/:ro
       - local-certs:/etc/letsencrypt
+      - step-root-ca:/usr/local/share/ca-certificates/:ro

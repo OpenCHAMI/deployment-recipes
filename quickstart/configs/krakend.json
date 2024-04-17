@@ -5,23 +5,11 @@
   "timeout": "3000ms",
   "cache_ttl": "300s",
   "output_encoding": "json",
-  "tls": {
-    "public_key": "/etc/letsencrypt/live/openchami.bikeshack.dev/fullchain.pem",
-    "private_key": "/etc/letsencrypt/live/openchami.bikeshack.dev/privkey.pem"
-  },
   "extra_config": {
-    "github.com/devopsfaith/krakend-tls": {
-      "force_https": true
-    },
     "telemetry/logging": {
       "level": "DEBUG",
       "syslog": false,
       "stdout": true
-    },
-    "security/http": {
-      "allowed_hosts": [],
-      "ssl_proxy_headers": {},
-      "ssl_redirect": true
     }
   },
   "endpoints": [
@@ -35,7 +23,7 @@
           "encoding": "xml",
           "sd": "static",
           "host": [
-            "http://localhost:3000"
+            "http://opaal:3333"
           ]
         }
       ]
@@ -54,6 +42,118 @@
             "http://opaal:3333"
           ],
           "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/Inventroy/EthernetInterfaces",
+      "method": "GET",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/Inventroy/EthernetInterfaces",
+          "method": "GET",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/Inventroy/EthernetInterfaces",
+      "method": "POST",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/Inventroy/EthernetInterfaces",
+          "method": "POST",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/Inventroy/EthernetInterfaces/{id}",
+      "method": "DELETE",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/Inventroy/EthernetInterfaces/{id}",
+          "method": "DELETE",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/State/Components",
+      "method": "GET",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components",
+          "method": "GET",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/State/Components/{id}",
+      "method": "GET",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components/{id}",
+          "method": "GET",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/State/Components/{id}",
+      "method": "DELETE",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components/{id}",
+          "method": "DELETE",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/State/Components",
+      "method": "POST",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components",
+          "method": "POST",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
         }
       ]
     }
