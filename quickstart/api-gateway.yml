@@ -6,14 +6,10 @@ services:
     environment:
       - KRAKEND_CONFIG=/etc/krakend/krakend.json
       - KRAKEND_ALLOW_INSECURE_CONNECTIONS=true 
-    depends_on:
-      certbot-issue-cert:
-        condition: service_completed_successfully
     ports:
       - "8080:8080"
     networks:
       - external
+      - internal
     volumes:
       - ./configs/:/etc/krakend/:ro
-      - local-certs:/etc/letsencrypt
-      - step-root-ca:/usr/local/share/ca-certificates/:ro

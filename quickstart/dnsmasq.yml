@@ -1,0 +1,15 @@
+services:
+  dnsmasq:
+    image: ghcr.io/openchami/dnsmasq:0.1.0
+    container_name: dnsmasq
+    hostname: dnsmasq
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./configs/dnsmasq:/etc/dnsmasq:ro
+    healthcheck:
+      test: pgrep dnsmasq
+      interval: 5s
+      timeout: 10s
+      retries: 60

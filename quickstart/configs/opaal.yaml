@@ -1,24 +1,23 @@
 version: "0.0.1"
 server:
-  host: "0.0.0.0"
+  host: "opaal"
   port: 3333
   callback: "/oidc/callback"
+  issuer: # Opaal-idp only uses this section of the config
+    host: "opaal-idp"
+    port: 3332
 
 providers:
-  gitlab: "https://gitlab.newmexicoconsortium.org"
+  ochami: "http://localhost:8080"
 
 authentication:
   state: ""
   test-all: false
   clients:
-    - id: "7c0fab1153674a258a705976fcb9468350df3addd91de4ec622fc9ed24bfbcdd"
-      secret: "a9a8bc55b0cd99236756093adc00ab17855fa507ce106b8038e7f9390ef2ad99"
-      name: "gitlab"
-      issuer: "http://gitlab.newmexicoconsortium.org"
-      scope:
-        - "openid"
-        - "profile"
-        - "email"
+    - id: "ochami"
+      secret: "ochami"
+      name: "ochami"
+      issuer: "http://opaal-idp:3332"
       redirect-uris:
         - "http://opaal:3333/oidc/callback"
 
@@ -36,9 +35,9 @@ authorization:
     issuer: http://hydra:4444
     config: http://hydra:4444/.well-known/openid-configuration
     jwks: http://hydra:4444/.well-known/jwks.json
-    #identities: http://hydra:4434/admin/identities
+    #identities: http://127.0.0.1:4434/admin/identities
     trusted-issuers: http://hydra:4445/admin/trust/grants/jwt-bearer/issuers
-    #login: http://127.0.0.1:4433/self-service/login/api
+    login: http://hydra:4433/self-service/login/api
     clients: http://hydra:4445/admin/clients
     authorize: http://hydra:4444/oauth2/auth
     register: http://hydra:4444/oauth2/register
@@ -51,3 +50,7 @@ options:
   flow: authorization_code
   cache-only: false
   verbose: true
+
+examples:
+  host: 127.0.0.1
+  port: 3330

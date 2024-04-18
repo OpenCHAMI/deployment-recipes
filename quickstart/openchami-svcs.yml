@@ -107,26 +107,5 @@ services:
       interval: 5s
       timeout: 10s
       retries: 60
-  dnsmasq:
-    image: ghcr.io/openchami/dnsmasq:dynamic
-    container_name: dnsmasq-dhcp
-    hostname: dnsmasq-dhcp
-    environment:
-      - smd_endpoint=smd
-      - smd_port=27779
-      - bss_endpoint=bss
-      - bss_port=27778
-    depends_on:
-      bss:
-        condition: service_healthy
-      smd:
-        condition: service_healthy
-    network_mode: "host"
-    cap_add:
-      - NET_ADMIN
-    healthcheck:
-      test: pgrep dnsmasq
-      interval: 5s
-      timeout: 10s
-      retries: 60
+
 

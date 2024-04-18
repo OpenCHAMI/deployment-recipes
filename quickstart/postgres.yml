@@ -15,6 +15,7 @@ services:
       - ./pg-init:/docker-entrypoint-initdb.d
     networks:
       - internal
+      - jwt-internal
     ports:
       - 5432:5432
     healthcheck:

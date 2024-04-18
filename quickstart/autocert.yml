@@ -6,10 +6,6 @@ volumes:
 
 networks:
   openchami-certs:
-  external:
-    driver: bridge
-
-
 
 services:
   # step-ca is a local CA that can be used to issue certificates.  
@@ -19,7 +15,7 @@ services:
   step-ca:
     container_name: step-ca
     hostname: step-ca
-    image: ghcr.io/openchami/local-ca:v0.1.0
+    image: ghcr.io/openchami/local-ca:0.2.0
     ports: 
       - "9000:9000"
     networks:
@@ -37,7 +33,7 @@ services:
       - DOCKER_STEPCA_INIT_DNS_NAMES=localhost,$(hostname -f),step-ca,SI.ca
       - DOCKER_STEPCA_INIT_ACME=true
     healthcheck:
-      test: ["CMD", "step", "ca", "health", "--ca-url", "https://step-ca:9000", "--root", "/root-ca/root_ca.crt"]
+      test: ["CMD", "step", "ca", "health", "--ca-url", "http://step-ca:9000", "--root", "/root-ca/root_ca.crt"]
       interval: 10s
       timeout: 10s
       retries: 5

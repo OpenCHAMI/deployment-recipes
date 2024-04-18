@@ -14,6 +14,36 @@
   },
   "endpoints": [
     {
+      "endpoint": "/api/login",
+      "method": "POST",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/api/login",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://opaal-idp:3332"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/browser/login",
+      "method": "GET",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/browser/login",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://opaal-idp:3332"
+          ]
+        }
+      ]
+    },
+    {
       "endpoint": "/login",
       "method": "GET",
       "output_encoding": "negotiate",
@@ -22,6 +52,7 @@
           "url_pattern": "/login",
           "encoding": "xml",
           "sd": "static",
+          "method": "GET",
           "host": [
             "http://opaal:3333"
           ]
@@ -46,12 +77,12 @@
       ]
     },
     {
-      "endpoint": "/hsm/v2/Inventroy/EthernetInterfaces",
+      "endpoint": "/hsm/v2/Inventory/EthernetInterfaces",
       "method": "GET",
       "output_encoding": "negotiate",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/Inventroy/EthernetInterfaces",
+          "url_pattern": "/hsm/v2/Inventory/EthernetInterfaces",
           "method": "GET",
           "encoding": "json",
           "sd": "static",
@@ -62,12 +93,12 @@
       ]
     },
     {
-      "endpoint": "/hsm/v2/Inventroy/EthernetInterfaces",
+      "endpoint": "/hsm/v2/Inventory/EthernetInterfaces",
       "method": "POST",
       "output_encoding": "negotiate",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/Inventroy/EthernetInterfaces",
+          "url_pattern": "/hsm/v2/Inventory/EthernetInterfaces",
           "method": "POST",
           "encoding": "json",
           "sd": "static",
@@ -78,12 +109,12 @@
       ]
     },
     {
-      "endpoint": "/hsm/v2/Inventroy/EthernetInterfaces/{id}",
+      "endpoint": "/hsm/v2/Inventory/EthernetInterfaces/{id}",
       "method": "DELETE",
       "output_encoding": "negotiate",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/Inventroy/EthernetInterfaces/{id}",
+          "url_pattern": "/hsm/v2/Inventory/EthernetInterfaces/{id}",
           "method": "DELETE",
           "encoding": "json",
           "sd": "static",
