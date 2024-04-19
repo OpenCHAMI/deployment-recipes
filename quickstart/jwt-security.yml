@@ -1,4 +1,3 @@
-
 services:
   opaal-idp:
     image: ghcr.io/openchami/opaal:0.3

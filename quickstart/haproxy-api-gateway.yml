@@ -1,0 +1,58 @@
+volumes:
+  haproxy-certs:
+  acme-certs:
+
+
+services:
+  haproxy:
+    container_name: haproxy
+    image: cgr.dev/chainguard/haproxy
+    ports:
+      - "8081:80"
+      - "443:443"
+    networks:
+      - external
+      - internal
+      - jwt-internal
+    depends_on:
+      opaal-idp:
+        condition: service_healthy
+      opaal:
+        condition: service_healthy
+      smd:
+        condition: service_healthy
+    volumes:
+      - ./configs/:/usr/local/etc/haproxy/:ro
+      - haproxy-certs:/etc/haproxy/certs/:ro
+  acme-register:
+    container_name: foobar.bikeshack.dev
+    image: ghcr.io/openchami/local-ca:v0.2.1
+    networks:
+      - openchami-certs
+    depends_on:
+      step-ca:
+        condition: service_healthy
+    volumes:
+      - step-root-ca:/root_ca/:ro
+      - .acme-certs:/root/.acme.sh
+    entrypoint: ["/usr/bin/acme.sh", "-d", "foobar.bikeshack.dev", "--issue", "--standalone", "--server" ,"https://step-ca:9000/acme/acme/directory", "--ca-path", "/root_ca/"]
+  acme-deploy:
+    container_name: acme-deploy
+    image: ghcr.io/openchami/local-ca:v0.2.1
+    networks:
+      - openchami-certs
+    depends_on:
+      acme-register:
+        condition: service_completed_successfully
+    volumes:
+      - step-root-ca:/root_ca/:ro
+      - acme-certs:/root/.acme.sh
+      - haproxy-certs:/root/certs/
+    environment:
+      - DEPLOY_HAPROXY_PEM_PATH=/root/certs/
+    entrypoint: ["/usr/bin/acme.sh", "--deploy", "--deploy-hook", "haproxy", "--ca-path", "/root_ca/", "--domain", "foobar.bikeshack.dev"]
+
+
+  
+
+  

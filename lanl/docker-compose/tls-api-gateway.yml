@@ -17,5 +17,5 @@ services:
       - internal
     volumes:
       - ./configs/:/etc/krakend/:ro
-      - local-certs:/etc/letsencrypt
+      - local-certs:/etc/letsencrypt:ro
       - step-root-ca:/usr/local/share/ca-certificates/:ro
