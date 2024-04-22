@@ -3,7 +3,6 @@ volumes:
   step-ca-home:
   step-root-ca:
   local-certs:
-  certbot-challenges:
 
 networks:
   cert-internal:
