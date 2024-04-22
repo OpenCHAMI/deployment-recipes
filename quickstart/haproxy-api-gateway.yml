@@ -14,6 +14,11 @@ services:
       - external
       - internal
       - jwt-internal
+    healthcheck:
+      test: ["CMD", "haproxy", "-c", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
     depends_on:
       opaal-idp:
         condition: service_healthy
@@ -26,33 +31,28 @@ services:
       - haproxy-certs:/etc/haproxy/certs/:ro
   acme-register:
     container_name: foobar.bikeshack.dev
-    image: ghcr.io/openchami/local-ca:v0.2.1
+    image: ghcr.io/openchami/acme.sh:v0.2.2
     networks:
-      - openchami-certs
+      - cert-internal
     depends_on:
       step-ca:
         condition: service_healthy
     volumes:
       - step-root-ca:/root_ca/:ro
-      - .acme-certs:/root/.acme.sh
-    entrypoint: ["/usr/bin/acme.sh", "-d", "foobar.bikeshack.dev", "--issue", "--standalone", "--server" ,"https://step-ca:9000/acme/acme/directory", "--ca-path", "/root_ca/"]
+      - acme-certs:/root/.acme.sh
+    entrypoint: ["/usr/bin/acme.sh", "--server", "https://step-ca:9000/acme/acme/directory", "--ca-bundle", "/root_ca/root_ca.crt", "-d", "foobar.bikeshack.dev", "--issue", "--standalone", "--debug"]
   acme-deploy:
     container_name: acme-deploy
-    image: ghcr.io/openchami/local-ca:v0.2.1
+    image: ghcr.io/openchami/acme.sh:v0.2.2
     networks:
-      - openchami-certs
+      - cert-internal
     depends_on:
       acme-register:
         condition: service_completed_successfully
     volumes:
-      - step-root-ca:/root_ca/:ro
+      - /:/root_ca/:ro
       - acme-certs:/root/.acme.sh
       - haproxy-certs:/root/certs/
     environment:
       - DEPLOY_HAPROXY_PEM_PATH=/root/certs/
-    entrypoint: ["/usr/bin/acme.sh", "--deploy", "--deploy-hook", "haproxy", "--ca-path", "/root_ca/", "--domain", "foobar.bikeshack.dev"]
-
-
-  
-
-  
+    entrypoint: ["/usr/bin/acme.sh", "--server", "https://step-ca:9000/acme/acme/directory", "--ca-bundle", "/root_ca/root_ca.crt", "--deploy", "--deploy-hook", "haproxy", "--domain", "foobar.bikeshack.dev"]

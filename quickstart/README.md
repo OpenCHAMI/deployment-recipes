@@ -18,13 +18,7 @@ cd deployment-recipes/quickstart/
 # Create the secrets.  Do not share them with anyone
 ./generate-configs.sh
 # Start the services
-docker compose \
-  -f autocert.yml \ 
-  -f postgres.yml \
-  -f jwt-security.yml \ 
-  -f api-gateway.yml \ 
-  -f openchami-svcs.yml \ 
-up -d
+docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml up -d
 ```
 
 ## What's next?
