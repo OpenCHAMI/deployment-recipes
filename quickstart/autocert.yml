@@ -16,8 +16,8 @@ services:
     container_name: step-ca
     hostname: step-ca
     image: ghcr.io/openchami/local-ca:v0.2.2
-    ports: 
-      - "9000:9000"
+    #ports: 
+    #  - "9000:9000"
     networks:
       - cert-internal
     volumes:

@@ -9,10 +9,6 @@ urls:
   login: http://127.0.0.1:3000/login
   logout: http://127.0.0.1:3000/logout
 
-secrets:
-  system:
-    - ${HYDRA_SYSTEM_SECRET} # set in .env
-
 oidc:
   dynamic_client_registration:
     enabled: true
@@ -21,7 +17,7 @@ oidc:
       - pairwise
       - public
     pairwise:
-      salt: ${HYDRA_OIDC_SALT} # set in .env
+      salt: ${HYDRA_OIDC_SALT} # This needs to be a 16 character string.  Maybe use cat /dev/urandom | tr -dc '[:alnum:][:punct:]' | fold -w 16 | head -n 1
 
 oauth2:
   grant:

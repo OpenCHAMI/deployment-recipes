@@ -39,8 +39,8 @@ services:
         condition: service_healthy
       smd-init:
         condition: service_completed_successfully
-    ports:
-      - "27779:27779"
+    #ports:
+    #  - "27779:27779"
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:27779/hsm/v2/service/ready"]
       interval: 5s
@@ -89,8 +89,8 @@ services:
       - BSS_JWKS_URL=http://opaal:3333/keys
       - BSS_OAUTH2_ADMIN_BASE_URL=http://opaal:3333
       - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
-    ports:
-      - '27778:27778'
+    #ports:
+    #  - '27778:27778'
     depends_on:
       postgres:
         condition: service_healthy

@@ -16,8 +16,8 @@ services:
     networks:
       - internal
       - jwt-internal
-    ports:
-      - 5432:5432
+    #ports:
+    #  - 5432:5432
     healthcheck:
       test: ["CMD", "pg_isready", "--dbname", "ochami", "--username", "ochami"]
       interval: 10s

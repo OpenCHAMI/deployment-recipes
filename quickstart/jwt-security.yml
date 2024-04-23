@@ -12,8 +12,8 @@ services:
       - ./configs:/opaal/config/
     networks:
       - jwt-internal
-    ports:
-      - 3332:3332
+    #ports:
+    #  - 3332:3332
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://opaal-idp:3332/.well-known/jwks.json"]
       interval: 5s
@@ -33,8 +33,8 @@ services:
     networks:
       - internal
       - jwt-internal
-    ports:
-      - 3333:3333
+    #ports:
+    #  - 3333:3333
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://opaal:3333/keys"]
       interval: 5s
@@ -54,14 +54,15 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
-    ports:
-      - "4444:4444" # Public port
-      - "4445:4445" # Admin port
-      - "5555:5555" # Port for hydra token user
+    #ports:
+    #  - "4444:4444" # Public port
+    #  - "4445:4445" # Admin port
+    #  - "5555:5555" # Port for hydra token user
     command: serve -c /etc/config/hydra/hydra.yml all --dev
     volumes:
       - ./configs/:/etc/config/hydra
     environment:
+      - SECRETS_SYSTEM=${HYDRA_SYSTEM_SECRET} # set in .env
       - DSN=postgres://hydra-user:${HYDRA_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
     restart: unless-stopped
     depends_on:
@@ -74,6 +75,7 @@ services:
     container_name: hydra-migrate
     hostname: hydra-migrate
     environment:
+      - SECRETS_SYSTEM=${HYDRA_SYSTEM_SECRET} # set in .env
       - DSN=postgres://hydra-user:${HYDRA_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
     command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
     volumes:
