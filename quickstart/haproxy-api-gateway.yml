@@ -55,4 +55,4 @@ services:
       - haproxy-certs:/root/certs/
     environment:
       - DEPLOY_HAPROXY_PEM_PATH=/root/certs/
-    entrypoint: ["/usr/bin/acme.sh", "--server", "https://step-ca:9000/acme/acme/directory", "--ca-bundle", "/root_ca/root_ca.crt", "--deploy", "--deploy-hook", "haproxy", "--domain", "foobar.bikeshack.dev"]
+    entrypoint: ["/usr/bin/acme.sh", "--server", "https://step-ca:9000/acme/acme/directory", "--ca-bundle", "/root_ca/root_ca.crt", "--deploy", "--deploy-hook", "haproxy", "--domain", "${SYSTEM_NAME}.openchami.cluster"]

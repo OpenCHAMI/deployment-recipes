@@ -2,22 +2,12 @@ serve:
   cookies:
     same_site_mode: Lax
 
-urls:
-  self:
-    issuer: http://hydra:4444
-  consent: http://127.0.0.1:3000/consent
-  login: http://127.0.0.1:3000/login
-  logout: http://127.0.0.1:3000/logout
-
 oidc:
   dynamic_client_registration:
     enabled: true
   subject_identifiers:
     supported_types:
-      - pairwise
       - public
-    pairwise:
-      salt: ${HYDRA_OIDC_SALT} # This needs to be a 16 character string.  Maybe use cat /dev/urandom | tr -dc '[:alnum:][:punct:]' | fold -w 16 | head -n 1
 
 oauth2:
   grant:
