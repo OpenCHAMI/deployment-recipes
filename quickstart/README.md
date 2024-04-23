@@ -15,10 +15,16 @@ If you want to test with the same operating system and configuration we use at L
 git clone https://github.com/OpenCHAMI/deployment-recipes.git
 # Enter the quickstart directory
 cd deployment-recipes/quickstart/
-# Create the secrets.  Do not share them with anyone
-./generate-configs.sh
+# Create the secrets in the .env file.  Do not share them with anyone. 
+# This also sets the system name for your certificates.  In our case, we'll call our system foobar.  The full url will be foobar.openchami.cluster which you can set in /etc/hosts to make life easier for you later
+./generate-configs.sh foobar
 # Start the services
 docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml up -d
+# This shouldn't take too long.  A minute or two depending on how long pulling containers takes.
+# Once you get the prompt back, you can download the public certificate from your ca.
+docker exec -it step-ca step ca root > cacert.pem
+# Use curl to confirm that everything is working
+ curl --cacert cacert.pem https://foobar.openchami.cluster/login
 ```
 
 ## What's next?

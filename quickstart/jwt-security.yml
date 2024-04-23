@@ -1,6 +1,6 @@
 services:
   opaal-idp:
-    image: ghcr.io/openchami/opaal:0.3
+    image: ghcr.io/openchami/opaal:0.3.2
     container_name: opaal-idp
     hostname: opaal-idp
     command:
@@ -20,7 +20,7 @@ services:
       timeout: 10s
       retries: 60
   opaal:
-    image: ghcr.io/openchami/opaal:0.3
+    image: ghcr.io/openchami/opaal:0.3.2
     container_name: opaal
     hostname: opaal
     command:
@@ -33,8 +33,9 @@ services:
     networks:
       - internal
       - jwt-internal
-    #ports:
-    #  - 3333:3333
+    extra_hosts:
+      - "${SYSTEM_NAME}.openchami.cluster:${LOCAL_IP}"
+
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://opaal:3333/keys"]
       interval: 5s

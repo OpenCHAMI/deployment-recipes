@@ -7,9 +7,6 @@ server:
     host: "opaal-idp"
     port: 3332
 
-providers:
-  ochami: "http://localhost:8080"
-
 authentication:
   state: ""
   test-all: false
@@ -17,7 +14,9 @@ authentication:
     - id: "ochami"
       secret: "ochami"
       name: "ochami"
-      issuer: "http://opaal-idp:3332"
+      provider: 
+        issuer-public: "https://badger.openchami.cluster"
+        issuer-private: "http://opaal-idp:3332"
       redirect-uris:
         - "http://opaal:3333/oidc/callback"
 
@@ -35,7 +34,6 @@ authorization:
     issuer: http://hydra:4444
     config: http://hydra:4444/.well-known/openid-configuration
     jwks: http://hydra:4444/.well-known/jwks.json
-    #identities: http://127.0.0.1:4434/admin/identities
     trusted-issuers: http://hydra:4445/admin/trust/grants/jwt-bearer/issuers
     login: http://hydra:4433/self-service/login/api
     clients: http://hydra:4445/admin/clients
@@ -50,7 +48,3 @@ options:
   flow: authorization_code
   cache-only: false
   verbose: true
-
-examples:
-  host: 127.0.0.1
-  port: 3330
