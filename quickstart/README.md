@@ -2,13 +2,18 @@
 
 ## Dependencies
 
-The quickstart uses freely available components without external dependencies.  If you can run `docker compose`, it should work on your machine.
+The OpenCHAMI services themselves are all containerized and tested running under `docker compose`.  It should be possible to run OpenCHAMI services on any system with docker installed.
 
-If you want to test with the same operating system and configuration we use at LANL, we've created a [Vagrantfile](https://gist.github.com/alexlovelltroy/1aa6d07119ef59fd966417c97baa2ff5) that provisions a VM based on [Rocky 9.3](https://app.vagrantup.com/generic/boxes/rocky9) with all the dependencies necessary for testing and development.
+This quickstart makes a few assumptions about the target operating system and is only tested on Rocky Linux 9.3 running on x86 processors.  Feel free to file bugs about other configurations, but we will prioritize support for systems that we can directly test at LANL.
 
+### Assumption
+
+* Linux - The quickstart automation makes several assumptions about the behavior Unix tools and their operation under bash from Rocky Linux 9.3
+* x86_64 - Some of the containers involved are built and tested for alternative operating systems and architectures, but the solution as a whole is only tested with x86 containers
+* Dedicated System - The docker compose setup assumes that it can take control of several TCP ports and interact with the host network for DHCP and TFTP.  It is tested on a dedicated virtual machine
+* Local Name Registration - The quickstart bootstraps a Certificate Authority and issues an SSL certificate with a predictable name.  For access, you will need to add that name/IP to /etc/hosts on all clients or make it resolvable through your site DNS
 
 ## Start Here
-
 
 ```
 # Clone the repository
@@ -16,7 +21,7 @@ git clone https://github.com/OpenCHAMI/deployment-recipes.git
 # Enter the quickstart directory
 cd deployment-recipes/quickstart/
 # Create the secrets in the .env file.  Do not share them with anyone. 
-# This also sets the system name for your certificates.  In our case, we'll call our system foobar.  The full url will be foobar.openchami.cluster which you can set in /etc/hosts to make life easier for you later
+# This also sets the system name for your certificates.  In our case, we'll call our system "foobar".  The full url will be https://foobar.openchami.cluster which you can set in /etc/hosts to make life easier for you later
 ./generate-configs.sh foobar
 # Start the services
 docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml up -d
