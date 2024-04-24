@@ -26,6 +26,8 @@ services:
         condition: service_healthy
       smd:
         condition: service_healthy
+      bss:
+        condition: service_healthy
     volumes:
       - ./configs/:/usr/local/etc/haproxy/:ro
       - haproxy-certs:/etc/haproxy/certs/:ro
