@@ -15,8 +15,7 @@ authentication:
       secret: "ochami"
       name: "ochami"
       provider: 
-        issuer-public: "https://badger.openchami.cluster"
-        issuer-private: "http://opaal-idp:3332"
+        issuer: "http://opaal-idp:3332"
       redirect-uris:
         - "http://opaal:3333/oidc/callback"
 

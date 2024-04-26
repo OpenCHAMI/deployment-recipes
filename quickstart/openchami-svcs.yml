@@ -33,12 +33,14 @@ services:
       - SMD_DBUSER=smd-user
       - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
       - SMD_DBOPTS=sslmode=disable
-      - SMD_JWKS_URL=http://hydra:4444/.well-known/jwks.json
+      - SMD_JWKS_URL=http://opaal:3333/keys
     depends_on:
       postgres:
         condition: service_healthy
       smd-init:
         condition: service_completed_successfully
+      opaal:
+        condition: service_healthy
     #ports:
     #  - "27779:27779"
     healthcheck:
