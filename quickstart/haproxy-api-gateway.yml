@@ -1,6 +1,7 @@
 volumes:
   haproxy-certs:
   acme-certs:
+  haproxy-jwt:
 
 
 services:
@@ -20,6 +21,8 @@ services:
       timeout: 10s
       retries: 5
     depends_on:
+      jwks-loader:
+        condition: service_completed_successfully
       opaal-idp:
         condition: service_healthy
       opaal:
@@ -31,6 +34,20 @@ services:
     volumes:
       - ./configs/:/usr/local/etc/haproxy/:ro
       - haproxy-certs:/etc/haproxy/certs/:ro
+      - haproxy-jwt:/etc/haproxy/jwt/:ro
+  jwks-loader:
+    container_name: jwks-loader
+    image: ghcr.io/openchami/jwks-loader:v0.1.0
+    networks:
+      - internal
+    depends_on:
+      opaal:
+        condition: service_healthy
+    volumes:
+      - haproxy-jwt:/jwt/:rw
+    environment:
+      - JWKS_URL=http://opaal:3333/keys
+      - JWKS_PATH=/jwt/
   acme-register:
     container_name: ${SYSTEM_NAME}.openchami.cluster
     image: ghcr.io/openchami/acme.sh:v0.2.2
