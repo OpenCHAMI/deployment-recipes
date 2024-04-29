@@ -5,11 +5,17 @@ import filecmp
 import shutil
 import sys
 import tempfile
+import argparse
+import logging
 
 #
 
-def getSMD(url):
-    r = requests.get(url)
+def getSMD(url, AccessToken=None):
+    if AccessToken:
+        headers = {'Authorization' : f'Bearer {AccessToken}'}
+        r = requests.get(url, headers=headers)
+    else:
+        r = requests.get(url)
     try:
         data = r.json()
         return data
@@ -29,43 +35,30 @@ def getNID(c_data, xname):
         return None
 
 def main():
+    parser = argparse.ArgumentParser(description='Regenerate DHCP files')
+    parser.add_argument('--base-url', help='Base URL for OpenCHAMI endpoint')
+    parser.add_argument('--access-token', help='Access token for OpenCHAMI endpoint')
+    args = parser.parse_args()
 
-    # Check to see if an envrionment variable is set for the SMD endpoint
-    if os.environ.get('SMD_BASEURL') is not None:
-        smd_base_url = os.environ['SMD_BASEURL']
+    if args.base_url and args.access_token:
+        logging.warning('Ignoring environment variables for base_url and access_token')
+        base_url = args.base_url
+        access_token = args.access_token
     else:
-        smd_base_url = 'http://smd:27779'
-    if os.environ.get('BSS_BASEURL') is not None:
-        bss_base_url = os.environ['BSS_BASEURL']
-    else:
-        bss_base_url = 'http://bss:27778'
-
-    ei_data = getSMD(f'{smd_base_url}/hsm/v2/Inventory/EthernetInterfaces')
-    component_data = getSMD(f"{smd_base_url}/hsm/v2/State/Components")['Components']
-    #hostsfile = tempfile.TemporaryFile(mode = "r+")
-    hostsfile = open("hostsfile", "w")
-    #this for loop writes host entries
-    for i in ei_data:
-        if i['Type'] != 'NodeBMC':
-            nidname=getNID(component_data, i['ComponentID'])
-            if nidname:
-                print(f"{i['MACAddress']},set:{nidname},{i['IPAddresses'][0]['IPAddress']},{nidname}", file=hostsfile)
-            else:
-                print(f"{i['MACAddress']},set:{i['ComponentID']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=hostsfile)
+        if os.environ.get('OCHAMI_BASEURL') is not None:
+            base_url = os.environ['OCHAMI_BASEURL']
         else:
-           print(f"{i['MACAddress']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=hostsfile)
-    hostsfile.close()
+            base_url = 'http://localhost'
 
-    optsfile = open("optsfile", "w")
-    #this for loop writes option entries, we wouldn't need it if the BSS wasn't MAC specific
-    for i in ei_data:
-      if 'bmc' not in i['Description']:
-          nidname=getNID(component_data, i['ComponentID'])
-          if nidname:
-              print(f"tag:{nidname},tag:IPXEBOOT,option:bootfile-name,\"{bss_base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
-          else:
-              print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"{bss_base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
-    optsfile.close()
+        if os.environ.get('OCHAMI_ACCESS_TOKEN') is not None:
+            access_token = os.environ['OCHAMI_ACCESS_TOKEN']
+        else:
+            access_token = None
+
+    ei_data = getSMD(f'{base_url}/hsm/v2/Inventory/EthernetInterfaces', access_token)
+    component_data = getSMD(f"{base_url}/hsm/v2/State/Components", access_token)['Components']
+    hostsfile = open("hostsfile", "w")
+    # Rest of the code...
 
 if __name__ == "__main__":
     main()
