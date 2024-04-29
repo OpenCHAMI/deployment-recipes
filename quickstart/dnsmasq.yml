@@ -13,3 +13,19 @@ services:
       interval: 5s
       timeout: 10s
       retries: 60
+  dnsmasq-loader:
+    image: ghcr.io/openchami/dnsmasq-loader:v0.1.2
+    container_name: dnsmasq-loader
+    hostname: dnsmasq-loader
+    environment:
+      - OCHAMI_BASEURL=https://${SYSTEM_NAME}.openchami.cluster
+      - OCHAMI_ACCESS_TOKEN=${ACCESS_TOKEN}
+      - CURL_CA_BUNDLE=/root_ca/root_ca.crt
+    volumes:
+      - ./configs/dnsmasq:/configs/
+      - step-root-ca:/root_ca/:ro
+    extra_hosts:
+      - "${SYSTEM_NAME}.openchami.cluster:${LOCAL_IP}"
+    depends_on:
+      haproxy:
+        condition: service_healthy

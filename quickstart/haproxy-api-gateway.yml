@@ -59,7 +59,7 @@ services:
     volumes:
       - step-root-ca:/root_ca/:ro
       - acme-certs:/root/.acme.sh
-    entrypoint: ["/usr/bin/acme.sh", "--server", "https://step-ca:9000/acme/acme/directory", "--ca-bundle", "/root_ca/root_ca.crt", "-d", "${SYSTEM_NAME}.openchami.cluster", "--issue", "--standalone"]
+    entrypoint: ["/usr/bin/acme.sh", "--server", "https://step-ca:9000/acme/acme/directory", "--ca-bundle", "/root_ca/root_ca.crt", "-d", "${SYSTEM_NAME}.openchami.cluster", "--issue", "--standalone", "--force"]
   acme-deploy:
     container_name: acme-deploy
     image: ghcr.io/openchami/acme.sh:v0.2.2

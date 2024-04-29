@@ -40,3 +40,5 @@ echo "SMD_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
 echo "HYDRA_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
 echo "HYDRA_SYSTEM_SECRET=$(generate_random_alphanumeric 32)" >> .env
 echo "LOCAL_IP"=$(get_eth0_ipv4) >> .env
+echo "OPENCHAMI_ACCESSS_TOKEN"="" >> .env
+
