@@ -19,7 +19,7 @@ services:
     hostname: dnsmasq-loader
     environment:
       - OCHAMI_BASEURL=https://${SYSTEM_NAME}.openchami.cluster
-      - OCHAMI_ACCESS_TOKEN=${ACCESS_TOKEN}
+      - OCHAMI_ACCESS_TOKEN=${DNSMASQ_ACCESS_TOKEN}
       - CURL_CA_BUNDLE=/root_ca/root_ca.crt
     volumes:
       - ./configs/dnsmasq:/configs/

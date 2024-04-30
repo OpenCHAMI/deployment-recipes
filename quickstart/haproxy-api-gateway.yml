@@ -20,8 +20,6 @@ services:
       timeout: 10s
       retries: 5
     depends_on:
-      jwks-loader:
-        condition: service_completed_successfully
       opaal-idp:
         condition: service_healthy
       opaal:
