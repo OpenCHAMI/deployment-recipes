@@ -6,18 +6,37 @@ server:
   issuer: # Opaal-idp only uses this section of the config
     host: "opaal-idp"
     port: 3332
+    endpoints:
+      authorization: "https://<your-subdomain-here>.openchami.cluster/oauth2/authorize"
+    clients:
+      - id: openchami
+        secret: openchami
+        name: openchami
+        redirect-uris:
+          - "https://<your-subdomain-here>.openchami.cluster/oidc/callback"
 
 authentication:
   state: ""
   test-all: false
   clients:
-    - id: "ochami"
-      secret: "ochami"
-      name: "ochami"
+    - id: "openchami"
+      secret: "openchami"
+      name: "openchami"
       provider: 
         issuer: "http://opaal-idp:3332"
       redirect-uris:
-        - "http://opaal:3333/oidc/callback"
+        - "https://<your-subdomain-here>.openchami.cluster/oidc/callback"
+    - id: "<gitlab-client-id>"
+      secret: "<gitlab-client-secret>"
+      name: "gitlab"
+      provider:
+        issuer: "<gitlab-instance-url>"
+      scope:
+        - "openid"
+        - "profile"
+        - "email"
+      redirect-uris:
+        - "https://<your-subdomain-here>.openchami.cluster/oidc/callback"
 
 authorization:
   token:
@@ -26,8 +45,8 @@ authorization:
     duration: 16h
     scope:
       - smd.read
-  token-duration: 16h
-  token-forwarding: false
+  audience: 
+    - https://<your-subdomain-here>.openchami.cluster/oauth2/token
   key-path: ./keys
   endpoints:
     issuer: http://hydra:4444

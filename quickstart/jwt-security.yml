@@ -1,6 +1,6 @@
 services:
   opaal-idp:
-    image: ghcr.io/openchami/opaal:v0.3.4
+    image: ghcr.io/openchami/opaal:v0.3.8
     container_name: opaal-idp
     hostname: opaal-idp
     command:
@@ -20,7 +20,7 @@ services:
       timeout: 10s
       retries: 60
   opaal:
-    image: ghcr.io/openchami/opaal:v0.3.4
+    image: ghcr.io/openchami/opaal:v0.3.8
     container_name: opaal
     hostname: opaal
     command:
