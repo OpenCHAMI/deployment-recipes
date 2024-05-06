@@ -15,31 +15,46 @@ This quickstart makes a few assumptions about the target operating system and is
 
 ## Start Here
 
-```bash
-# Clone the repository
-git clone https://github.com/OpenCHAMI/deployment-recipes.git
-# Enter the quickstart directory
-cd deployment-recipes/quickstart/
-# Create the secrets in the .env file.  Do not share them with anyone. 
-# This also sets the system name for your certificates.  In our case, we'll call our system "foobar".  The full url will be https://foobar.openchami.cluster which you can set in /etc/hosts to make life easier for you later
-##
-## Please make sure you set up /etc/hosts to resolve your cluster endpoint
-##
-./generate-configs.sh foobar
-# Start the services
-docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml up -d
-# This shouldn't take too long.  A minute or two depending on how long pulling containers takes.
-# Assuming you're using bash as your shell, you can use the included functions to simplify interactions with your new OpenCHAMI system.
-source bash_functions.sh
-# Download the root ca so you can validate the ssl certificates included with your system
-get_ca_cert > cacert.pem
-# Create a jwt access token for use with the apis.
-ACCESS_TOKEN=$(gen_access_token)
-# If you're curious about that token, you can safely copy and paste it into https://jwt.io to learn more.
-# Use curl to confirm that everything is working
- curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" https://foobar.openchami.cluster/hsm/v2/State/Components
- # This should respond with an empty set of Components: {"Components":[]}
-```
+1. Clone the repository and switch to that directory
+   ```bash
+   git clone https://github.com/OpenCHAMI/deployment-recipes.git
+   cd deployment-recipes/quickstart/
+   ```
+1. Create the secrets file and choose a name for your system.
+   This also sets the system name for your certificates.  In our case, we'll call our system "foobar".  The full url will be https://foobar.openchami.cluster which you can set in /etc/hosts to make life easier for you later
+   ```bash
+   # Create the secrets in the .env file.  Do not share them with anyone. 
+   ./generate-configs.sh foobar
+   ```
+1. Update your /etc/hosts to point your system name to your local ip (this is important for valid certs)
+1. Start the main services
+   ```bash 
+   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f  openchami-svcs.yml -f autocert.yml up -d
+   ```
+1. Use the running system to download your certs and create your access token(s)
+   ```bash
+   # Assuming you're using bash as your shell, you can use the included functions to simplify interactions with your new OpenCHAMI system.
+   source bash_functions.sh
+   # Download the root ca so you can validate the ssl certificates included with your system
+   get_ca_cert > cacert.pem
+   # Create a jwt access token for use with the apis.
+   ACCESS_TOKEN=$(gen_access_token)
+   # If you're curious about that token, you can safely copy and paste it into https://jwt.io to learn more.
+   # Use curl to confirm that everything is working
+   curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" https://foobar.openchami.cluster/hsm/v2/State/Components
+   # This should respond with an empty set of Components: {"Components":[]}
+   ```
+1. Create a token that can be used by the dnsmasq-loader which reads from smd.  This activates our automatic dns/dhcp system.  The command automatically adds it to .env
+   ```bash
+    echo "DNSMASQ_ACCESS_TOKEN=$(gen_access_token)" >> .env
+    ```
+1. Use docker-compose to bring up your dnsmasq contianers.  The only difference between this command and the one above is the addition of the `dnsmasq.yml` file.  Docker compose needs to know about all the files to follow dependencies.
+   ```bash
+   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml up -d
+   ```
+
+
+
 
 ## What's next?
 
@@ -54,21 +69,6 @@ docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-ga
 sleep 5
 docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml restart haproxy
 
-```
-
-### Create a token for automatic dns/dhcp
-
-The automation that reads the inventory container (smd) to update dnsmasq as nodes are added or changed needs an access token like any other client.  All access is controlled and tracked through tokens.
-
-```bash
-# Create a new token for dnsmasq-updater.  The bash functions help here too.
-DNSMASQ_ACCESS_TOKEN=$(gen_access_token)
-# Add the token to your .env file
- echo "DNSMASQ_ACCESS_TOKEN=$DNSMASQ_ACCESS_TOKEN" >> .env
-# Restart the loader container
-docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml restart dnsmasq-loader
-# Check the logs to see it update the file(s)
-docker logs dnsmasq-loader -f 
 ```
 
 ## Helpful docker cheatsheet
