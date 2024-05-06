@@ -15,7 +15,7 @@ fi
 
 get_eth0_ipv4() {
  local ipv4
- local first_eth=$(ip link show | grep UP |grep -v veth | grep -v LOOPBACK |grep -v br- |grep -v NO-CARRIER | head -1 | awk -e '{print $2}' |sed 's/:$//')
+ local first_eth=$(ip -j addr | jq -c '.[]' | grep UP |grep -v veth | grep -v LOOPBACK |grep -v br- |grep -v NO-CARRIER | grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -n 1 | jq -rc '.ifname')
  ipv4=$(ip -o -4 addr show $first_eth | awk '{print $4}')
  echo "${ipv4%/*}"
 }

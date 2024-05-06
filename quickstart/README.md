@@ -28,6 +28,8 @@ This quickstart makes a few assumptions about the target operating system and is
    ```bash
    # Create the secrets in the .env file.  Do not share them with anyone. 
    ./generate-configs.sh foobar
+   # Confirm that LOCAL_IP has a value and matches what you want the interface to OpenCHAMI to be. We do our best to guess what your primary interface is.
+   grep LOCAL_IP .env
    ```
    If you have problems with this step, check to make sure that the main IP address of your host is in `.env` as `LOCAL_IP`.
 1. Update your /etc/hosts to point your system name to your local ip (this is important for valid certs)
