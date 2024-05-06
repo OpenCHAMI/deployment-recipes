@@ -1,6 +1,9 @@
+volumes:
+  dnsmasq-hostsfiles:
+
 services:
   dnsmasq:
-    image: ghcr.io/openchami/dnsmasq:v0.1.5
+    image: ghcr.io/openchami/dnsmasq:v0.1.7
     container_name: dnsmasq
     hostname: dnsmasq
     network_mode: "host"
@@ -8,13 +11,14 @@ services:
       - NET_ADMIN
     volumes:
       - ./configs/dnsmasq:/etc/dnsmasq:ro
+      - dnsmasq-hostsfiles:/etc/dnsmasq/site/hosts/:rw
     healthcheck:
       test: pgrep dnsmasq
       interval: 5s
       timeout: 10s
       retries: 60
   dnsmasq-loader:
-    image: ghcr.io/openchami/dnsmasq-loader:v0.1.5
+    image: ghcr.io/openchami/dnsmasq-loader:v0.1.7
     container_name: dnsmasq-loader
     hostname: dnsmasq-loader
     environment:
@@ -24,6 +28,7 @@ services:
     volumes:
       - ./configs/dnsmasq:/configs/:rw
       - step-root-ca:/root_ca/:ro
+      - dnsmasq-hostsfiles:/configs/site/hosts/:rw
     extra_hosts:
       - "${SYSTEM_NAME}.openchami.cluster:${LOCAL_IP}"
     depends_on:

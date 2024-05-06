@@ -6,7 +6,7 @@ The OpenCHAMI services themselves are all containerized and tested running under
 
 This quickstart makes a few assumptions about the target operating system and is only tested on Rocky Linux 9.3 running on x86 processors.  Feel free to file bugs about other configurations, but we will prioritize support for systems that we can directly test at LANL.
 
-### Assumption
+### Assumptions
 
 * Linux - The quickstart automation makes several assumptions about the behavior Unix tools and their operation under bash from Rocky Linux 9.3
 * x86_64 - Some of the containers involved are built and tested for alternative operating systems and architectures, but the solution as a whole is only tested with x86 containers
@@ -26,6 +26,7 @@ This quickstart makes a few assumptions about the target operating system and is
    # Create the secrets in the .env file.  Do not share them with anyone. 
    ./generate-configs.sh foobar
    ```
+   If you have problems with this step, check to make sure that the main IP address of your host is in 
 1. Update your /etc/hosts to point your system name to your local ip (this is important for valid certs)
 1. Start the main services
    ```bash 
