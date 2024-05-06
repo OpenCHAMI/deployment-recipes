@@ -20,10 +20,10 @@ This quickstart makes a few assumptions about the target operating system and is
    git clone https://github.com/OpenCHAMI/deployment-recipes.git
    cd deployment-recipes/quickstart/
    ```
-1. Create the secrets file and choose a name for your system.
-   This also sets the system name for your certificates.  In our case, we'll call our system "foobar".
-   
-   The full url will be https://foobar.openchami.cluster which you should set manually in /etc/hosts and point to the same ip address as `LOCAL_IP` in `.env`.
+1. Create the secrets file and choose a name for your system.  We use `foobar` in our example.
+    - __Note__ The certificates for the system use the name you provide in this file.  It's not easy to change.
+    - __Note__ The script attempts to figure out which ip address is most likely to be your system ip.  If it is unsuccessful, `LOCAL_IP=` will be empty and you'll need to update it manually
+    - __Note__ The full url will be https://foobar.openchami.cluster which you should set manually in /etc/hosts and point to the same ip address as `LOCAL_IP` in `.env`.
    
    ```bash
    # Create the secrets in the .env file.  Do not share them with anyone. 
@@ -35,7 +35,7 @@ This quickstart makes a few assumptions about the target operating system and is
    ```bash 
    docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f  openchami-svcs.yml -f autocert.yml up -d
    ```
-   __If this step produces an error like: `Error response from daemon: invalid IP address in add-host: ""` it means you're missing the LOCAL_IP in step 2.___
+   __If this step produces an error like: `Error response from daemon: invalid IP address in add-host: ""` it means you're missing the LOCAL_IP in step 2.__
    You can fix it by destroying everything, editing `.env` manually and starting over.  The command to destroy is the same as the command to create, just replace `up -d` with `down --volumes`
    
 1. Use the running system to download your certs and create your access token(s)
