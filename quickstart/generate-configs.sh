@@ -1,4 +1,4 @@
-fi#!/bin/bash
+#!/bin/bash
 
 if [ -f .env ]
 then
