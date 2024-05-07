@@ -1,0 +1,18 @@
+
+services:
+  cloud-init:
+    image: ghcr.io/openchami/cloud-init:v0.0.9
+    container_name: cloud-init
+    hostname: cloud-init
+    restart: always
+    networks:
+      - internal
+    environment:
+      - SMD_TOKEN=${CLOUD_INIT_ACCESS_TOKEN}
+    depends_on:
+      - smd
+    healthcheck:
+      test: ["CMD", "pgrep", "cloud-init-server"]
+      interval: 5s
+      timeout: 10s
+      retries: 60

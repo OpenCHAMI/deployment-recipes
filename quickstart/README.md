@@ -53,13 +53,15 @@ This quickstart makes a few assumptions about the target operating system and is
    curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" https://foobar.openchami.cluster/hsm/v2/State/Components
    # This should respond with an empty set of Components: {"Components":[]}
    ```
-1. Create a token that can be used by the dnsmasq-loader which reads from smd.  This activates our automatic dns/dhcp system.  The command automatically adds it to .env
+1. Create tokens for services that need to read from SMD and can't request tokens directly and add them to the `.env` file.
+   Both cloud-init and dnsmasq-loader rely on acces to SMD to update their local caches of node information.
    ```bash
     echo "DNSMASQ_ACCESS_TOKEN=$(gen_access_token)" >> .env
+    echo "CLOUD_INIT_ACCESS_TOKEN=$(gen_access_token)" >> .env
     ```
 1. Use docker-compose to bring up your dnsmasq contianers.  The only difference between this command and the one above is the addition of the `dnsmasq.yml` file.  Docker compose needs to know about all the files to follow dependencies.
    ```bash
-   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml up -d
+   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml -f cloud-init.yml up -d
    ```
 
 
@@ -85,10 +87,10 @@ docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-ga
 This quickstart uses `docker compose` to start up services and define dependencies.  If you have a basic understanding of docker, you should be able to work with the included services.  Some handy items to remember for when you are exploring the deployment are below.
 
 
-`docker volume list` This lists all the volumes.  If they exist, the project will try to reuse them.  That might not be what you want.
-`docker network list` ditto for networks
-`docker ps -a` the -a shows you containers that aren't running.  We have several containers that are designed to do their thing and then exit.
-`docker logs <container-id>` allows you to check the logs of containers even after they have exited
-`docker compose ... down --volumes` will not only bring down all the services, but also delete the volumes
+- `docker volume list` This lists all the volumes.  If they exist, the project will try to reuse them.  That might not be what you want.
+- `docker network list` ditto for networks
+- `docker ps -a` the -a shows you containers that aren't running.  We have several containers that are designed to do their thing and then exit.
+- `docker logs <container-id>` allows you to check the logs of containers even after they have exited
+- `docker compose ... down --volumes` will not only bring down all the services, but also delete the volumes
 
 ## Going even further
