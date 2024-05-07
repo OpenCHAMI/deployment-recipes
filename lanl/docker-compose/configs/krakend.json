@@ -5,108 +5,103 @@
   "timeout": "3000ms",
   "cache_ttl": "300s",
   "output_encoding": "json",
-  "tls": {
-  "public_key": "/root/.acme.sh/SI.krakend_ecc/SI.krakend.cer",
-  "private_key": "/root/.acme.sh/SI.krakend_ecc/SI.krakend.key"
+  "extra_config": {
+    "telemetry/logging": {
+      "level": "DEBUG",
+      "syslog": false,
+      "stdout": true
+    }
   },
   "endpoints": [
     {
-      "endpoint": "/v1/ochami/login",
+      "endpoint": "/api/login",
       "method": "POST",
-      "output_encoding": "json",
+      "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/memberships", 
-          "encoding": "json",
+          "url_pattern": "/api/login",
           "sd": "static",
+          "method": "POST",
           "host": [
-            "http://localhost:3000"
+            "http://opaal-idp:3332"
           ]
         }
       ]
     },
     {
-      "endpoint": "/v1/ochami/physical/datacenters",
+      "endpoint": "/oauth/authorize",
       "method": "GET",
-      "output_encoding": "json",
+      "output_encoding": "no-op",
+      "input_query_strings": [
+        "client_id",
+        "redirect_uri",
+        "response_type",
+        "scope",
+        "state"
+      ],
       "backend": [
         {
-          "url_pattern": "/hsm/v2/memberships",
-          "encoding": "json",
-          "sd": "static",
+          "url_pattern": "/oauth/authorize",
+          "method": "GET",
           "host": [
-            "http://smd:27779"
+            "http://opaal-idp:3332"
           ]
         }
       ]
     },
     {
-      "endpoint": "/v1/ochami/physical/datacenters/{id}",
+      "endpoint": "/browser/login",
       "method": "GET",
-      "output_encoding": "json",
+      "output_encoding": "negotiate",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/memberships",
-          "encoding": "json",
+          "url_pattern": "/browser/login",
           "sd": "static",
+          "method": "GET",
           "host": [
-            "http://localhost:27779"
+            "http://opaal-idp:3332"
           ]
         }
       ]
     },
     {
-      "endpoint": "/v1/ochami/physical/racks",
+      "endpoint": "/login",
       "method": "GET",
-      "output_encoding": "json",
+      "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/State/Components?type=Cabinet",
-          "encoding": "json",
-          "sd": "static",
+          "url_pattern": "/login",
           "host": [
-            "http://smd:27779"
+            "http://opaal:3333"
           ]
         }
       ]
     },
     {
-      "endpoint": "/v1/ochami/physical/racks/{id}",
+      "endpoint": "/token",
       "method": "GET",
-      "output_encoding": "json",
+      "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/State/Components/{id}?type=Cabinet",
+          "url_pattern": "/token",
           "encoding": "json",
           "sd": "static",
+          "method": "GET",
           "host": [
-            "http://smd:27779"
-          ]
+            "http://opaal:3333"
+          ],
+          "disable_host_sanitize": false
         }
       ]
     },
     {
-      "endpoint": "/v1/ochami/physical/BMCs",
+      "endpoint": "/hsm/v2/Inventory/EthernetInterfaces",
       "method": "GET",
-      "output_encoding": "json",
+      "output_encoding": "negotiate",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/State/Components?type=ChassisBMC&type=NodeBMC&type=RouterBMC",
-          "encoding": "json",
-          "sd": "static",
-          "host": [
-            "http://smd:27779"
-          ]
-        }
-      ]
-    },
-    {
-      "endpoint": "/v1/ochami/physical/BMCs/{id}",
-      "method": "GET",
-      "output_encoding": "json",
-      "backend": [
-        {
-          "url_pattern": "/hsm/v2/State/Components/{id}?type=ChassisBMC&type=NodeBMC&type=RouterBMC",
+          "url_pattern": "/hsm/v2/Inventory/EthernetInterfaces",
+          "method": "GET",
           "encoding": "json",
           "sd": "static",
           "host": [
@@ -116,12 +111,13 @@
       ]
     },
     {
-      "endpoint": "/v1/ochami/physical/frus",
-      "method": "GET",
-      "output_encoding": "json",
+      "endpoint": "/hsm/v2/Inventory/EthernetInterfaces",
+      "method": "POST",
+      "output_encoding": "negotiate",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/Inventory/HardwareByFRU",
+          "url_pattern": "/hsm/v2/Inventory/EthernetInterfaces",
+          "method": "POST",
           "encoding": "json",
           "sd": "static",
           "host": [
@@ -131,12 +127,77 @@
       ]
     },
     {
-      "endpoint": "/v1/ochami/physical/frus/{id}",
-      "method": "GET",
-      "output_encoding": "json",
+      "endpoint": "/hsm/v2/Inventory/EthernetInterfaces/{id}",
+      "method": "DELETE",
+      "output_encoding": "negotiate",
       "backend": [
         {
-          "url_pattern": "/hsm/v2/Inventory/FRUs/{id}",
+          "url_pattern": "/hsm/v2/Inventory/EthernetInterfaces/{id}",
+          "method": "DELETE",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/State/Components",
+      "method": "GET",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components",
+          "method": "GET",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/State/Components/{id}",
+      "method": "GET",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components/{id}",
+          "method": "GET",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/State/Components/{id}",
+      "method": "DELETE",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components/{id}",
+          "method": "DELETE",
+          "encoding": "json",
+          "sd": "static",
+          "host": [
+            "http://smd:27779"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/hsm/v2/State/Components",
+      "method": "POST",
+      "output_encoding": "negotiate",
+      "backend": [
+        {
+          "url_pattern": "/hsm/v2/State/Components",
+          "method": "POST",
           "encoding": "json",
           "sd": "static",
           "host": [

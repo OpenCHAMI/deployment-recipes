@@ -1,0 +1,41 @@
+version: '3.7'
+
+## Because hardcoding passwords is bad, we use openssl to generate a random password
+## and store it in a .env file.  This file is not checked into git, so it is not
+## shared with anyone else.  This is a temporary solution until we can use docker secrets.
+## The generate-creds.sh script performs the following commands.
+# echo "POSTGRES_PASSWORD=$(openssl rand -base64 32 | openssl dgst | cut -d' ' -f2)" > .env
+# echo "SMD_POSTGRES_PASSWORD=$(openssl rand -base64 32 | openssl dgst | cut -d' ' -f2)" >> .env
+# echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 32 | openssl dgst | cut -d' ' -f2)" >> .env
+# echo "HYDRA_POSTGRES_PASSWORD=$(openssl rand -base64 32 | openssl dgst | cut -d' ' -f2)" >> .env
+
+
+networks:
+  internal:
+  external:
+    external: true
+
+volumes:
+  postgres-data:
+
+services:
+  postgres: # Postgres
+    image: postgres:11.5-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ochami
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Set in .env file for now.
+      POSTGRES_MULTIPLE_DATABASES: hmsds:smd-user:${SMD_POSTGRES_PASSWORD},bssdb:bss-user:${BSS_POSTGRES_PASSWORD},hydradb:hydra-user:${HYDRA_POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./pg-init:/docker-entrypoint-initdb.d
+    networks:
+      - internal
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "--dbname", "ochami", "--username", "ochami"]
+      interval: 10s
+      timeout: 10s
+      retries: 5

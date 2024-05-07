@@ -9,82 +9,48 @@ version: '3.7'
 # echo "BSS_POSTGRES_PASSWORD=$(openssl rand -base64 32 | openssl dgst | cut -d' ' -f2)" >> .env
 # echo "HYDRA_POSTGRES_PASSWORD=$(openssl rand -base64 32 | openssl dgst | cut -d' ' -f2)" >> .env
 
-
-networks:
-  internal:
-  external:
-    external: true
-
-volumes:
-  postgres-data:
-
 services:
-  postgres: # Postgres
-    image: postgres:11.5-alpine
-    container_name: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: ochami
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Set in .env file for now.
-      POSTGRES_MULTIPLE_DATABASES: hmsds:smd-user:${SMD_POSTGRES_PASSWORD},bssdb:bss-user:${BSS_POSTGRES_PASSWORD},hydradb:hydra-user:${HYDRA_POSTGRES_PASSWORD}
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./pg-init:/docker-entrypoint-initdb.d
-    networks:
-      - internal
-    ports:
-      - 5432:5432
-    healthcheck:
-      test: ["CMD", "pg_isready", "--dbname", "ochami", "--username", "ochami"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
 ###
-# SMD Init and Server Containers
+# SMD Init and Server Containers (auth disabled)
 ###
   # sets up postgres for SMD data
-  smd-init:
+  smd-init-noauth:
     image: ghcr.io/openchami/smd:v2.15.0
-    container_name: smd-init
-    hostname: smd-init
+    container_name: smd-init-noauth
+    hostname: smd-init-noauth
     environment:
-      - SMD_DBHOST=postgres
+      - SMD_DBHOST=postgres-noauth
       - SMD_DBPORT=5432
-      - SMD_DBNAME=hmsds
       - SMD_DBUSER=smd-user
       - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
+      - SMD_DBNAME=hmsds
       - SMD_DBOPTS=sslmode=disable
     depends_on:
-      postgres:
+      postgres-noauth:
         condition: service_healthy
     networks:
-      - internal
+      - internal-noauth
     entrypoint:
       - /smd-init
-  # SMD
-  smd:
+  # SMD with auth requirement disabled
+  smd-noauth:
     image: ghcr.io/openchami/smd:v2.15.0
-    container_name: smd
-    hostname: smd
+    container_name: smd-noauth
+    hostname: smd-noauth
     environment:
-      - SMD_DBHOST=postgres
+      - SMD_DBHOST=postgres-noauth
       - SMD_DBPORT=5432
       - SMD_DBNAME=hmsds
       - SMD_DBUSER=smd-user
       - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
       - SMD_DBOPTS=sslmode=disable
-      - SMD_JWKS_URL=http://hydra:4444/.well-known/jwks.json
     depends_on:
-      postgres:
+      postgres-noauth:
         condition: service_healthy
-      smd-init:
-        condition: service_completed_successfully
-      hydra:
-        condition: service_healthy
-      hydra-gen-jwks:
+      smd-init-noauth:
         condition: service_completed_successfully
     ports:
-      - "27779:27779"
+      - "27799:27779"
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:27779/hsm/v2/service/ready"]
       interval: 5s
@@ -92,64 +58,55 @@ services:
       start_period: 20s
       timeout: 10s
     networks:
-      - internal
+      - internal-noauth
 ###
-# BSS Init and Server Containers
+# BSS Init and Server Containers (auth disabled)
 ###
 # sets up postgres for BSS data
-  bss-init:
+  bss-init-noauth:
+    hostname: bss-init-noauth
+    container_name: bss-init-noauth
     image: ghcr.io/openchami/bss:v1.30.2
-    container_name: bss-init
-    hostname: bss-init
     environment:
       - BSS_USESQL=true
       - BSS_INSECURE=true
-      - BSS_DBHOST=postgres
+      - BSS_DBHOST=postgres-noauth
       - BSS_DBPORT=5432
       - BSS_DBNAME=bssdb
       - BSS_DBUSER=bss-user
       - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
     depends_on:
-      postgres:
+      postgres-noauth:
         condition: service_healthy
     networks:
-      - internal
+      - internal-noauth
     entrypoint:
       - /usr/local/bin/bss-init
   # boot-script-service
-  bss:
+  bss-noauth:
+    hostname: bss-noauth
+    container_name: bss-noauth
     image: ghcr.io/openchami/bss:v1.30.2
-    container_name: bss
-    hostname: bss
     environment:
       - BSS_USESQL=true
       - BSS_INSECURE=true
-      - BSS_DEBUG=true
-      - BSS_DBHOST=postgres
+      - BSS_DBHOST=postgres-noauth
       - BSS_DBPORT=5432
       - BSS_DBNAME=bssdb
       - BSS_DBUSER=bss-user
       - BSS_DBPASS=${BSS_POSTGRES_PASSWORD} # Set in .env file
-      - BSS_JWKS_URL=http://opaal:3333/keys
-      - BSS_OAUTH2_ADMIN_BASE_URL=http://opaal:3333
-      - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
+      - HSM_URL=http://smd-noauth:27779
     ports:
-      - '27778:27778'
+      - '27788:27778'
     depends_on:
-      postgres:
+      postgres-noauth:
         condition: service_healthy
-      smd:
+      smd-noauth:
         condition: service_healthy
-      bss-init:
+      bss-init-noauth:
         condition: service_completed_successfully
-      hydra:
-        condition: service_healthy
-      hydra-gen-jwks:
-        condition: service_completed_successfully
-      opaal:
-        condition: service_healthy
     networks:
-      - internal
+      - internal-noauth
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:27778/boot/v1/service/status"]
       interval: 5s
@@ -157,17 +114,17 @@ services:
       retries: 60
   dnsmasq:
     image: ghcr.io/openchami/dnsmasq:dynamic
-    container_name: dnsmasq-dhcp
-    hostname: dnsmasq-dhcp
+    container_name: dnsmasq-dhcp-noauth
+    hostname: dnsmasq-dhcp-noauth
     environment:
       - smd_endpoint=localhost
-      - smd_port=27779
+      - smd_port=27799
       - bss_endpoint=localhost
-      - bss_port=27778
+      - bss_port=27788
     depends_on:
-      bss:
+      bss-noauth:
         condition: service_healthy
-      smd:
+      smd-noauth:
         condition: service_healthy
     network_mode: "host"
     cap_add:
@@ -177,4 +134,3 @@ services:
       interval: 5s
       timeout: 10s
       retries: 60
-

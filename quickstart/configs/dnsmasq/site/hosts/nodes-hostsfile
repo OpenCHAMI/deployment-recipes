@@ -1,0 +1,10 @@
+b4:2e:99:a6:06:47,set:cg01-eth0,tag:IPXEBOOT,172.16.0.1,cg01-eth0
+b4:2e:99:a6:61:ee,set:cg02-eth0,tag:IPXEBOOT,172.16.0.2,cg02-eth0
+b4:2e:99:a9:37:bd,set:cg03-eth0,tag:IPXEBOOT,172.16.0.3,cg03-eth0
+b4:2e:99:a6:63:39,set:cg04-eth0,tag:IPXEBOOT,172.16.0.4,cg04-eth0
+b4:2e:99:a6:63:a1,set:cg05-eth0,tag:IPXEBOOT,172.16.0.5,cg05-eth0
+b4:2e:99:a6:63:a9,set:cg06-eth0,tag:IPXEBOOT,172.16.0.6,cg06-eth0
+b4:2e:99:a6:62:33,set:cg07-eth0,tag:IPXEBOOT,172.16.0.7,cg07-eth0
+b4:2e:99:aa:33:7e,set:cg08-eth0,tag:IPXEBOOT,172.16.0.8,cg08-eth0
+b4:2e:99:a6:61:9d,set:cg09-eth0,tag:IPXEBOOT,172.16.0.9,cg09-eth0
+b4:2e:99:a6:5b:f1,set:cg10-eth0,tag:IPXEBOOT,172.16.0.10,cg10-eth0
