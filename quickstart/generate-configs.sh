@@ -1,4 +1,4 @@
-#!/bin/bash
+fi#!/bin/bash
 
 if [ -f .env ]
 then
@@ -16,6 +16,7 @@ if [[ ! -x $(command -v jq) ]]
 then 
         echo "Command \"jq\" Not Found"
 	exit 1 
+fi
 
 get_eth0_ipv4() {
  local ipv4
