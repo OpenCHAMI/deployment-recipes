@@ -18,7 +18,7 @@ get_ca_cert() {
 
 container_curl() {
     local url=$1
-    docker exec -it --rm "${CURL_CONTAINER}:${CURL_TAG}" -s $url
+    docker run -it --rm "${CURL_CONTAINER}:${CURL_TAG}" -s $url
 }
 
 create_client_credentials() {
