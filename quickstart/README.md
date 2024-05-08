@@ -24,6 +24,7 @@ This quickstart makes a few assumptions about the target operating system and is
     - __Note__ The certificates for the system use the name you provide in this file.  It's not easy to change.
     - __Note__ The script attempts to figure out which ip address is most likely to be your system ip.  If it is unsuccessful, `LOCAL_IP=` will be empty and you'll need to update it manually
     - __Note__ The full url will be https://foobar.openchami.cluster which you should set manually in /etc/hosts and point to the same ip address as `LOCAL_IP` in `.env`.
+    - __Note__ The `generate-configs.sh` script accepts an optional second argument that allows a custom domain to be specified. If not specified, it defaults to "openchami.cluster", which is used throughout these instructions.
    
    ```bash
    # Create the secrets in the .env file.  Do not share them with anyone. 

@@ -22,7 +22,7 @@ services:
     container_name: dnsmasq-loader
     hostname: dnsmasq-loader
     environment:
-      - OCHAMI_BASEURL=https://${SYSTEM_NAME}.openchami.cluster
+      - OCHAMI_BASEURL=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}
       - OCHAMI_ACCESS_TOKEN=${DNSMASQ_ACCESS_TOKEN}
       - CURL_CA_BUNDLE=/root_ca/root_ca.crt
     volumes:
@@ -30,7 +30,7 @@ services:
       - step-root-ca:/root_ca/:ro
       - dnsmasq-hostsfiles:/configs/site/hosts/:rw
     extra_hosts:
-      - "${SYSTEM_NAME}.openchami.cluster:${LOCAL_IP}"
+      - "${SYSTEM_NAME}.${SYSTEM_DOMAIN}:${LOCAL_IP}"
     depends_on:
       haproxy:
         condition: service_healthy
