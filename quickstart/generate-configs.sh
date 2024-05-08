@@ -43,6 +43,8 @@ echo "POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
 echo "BSS_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
 echo "SMD_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
 echo "HYDRA_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
-echo "HYDRA_SYSTEM_SECRET=$(generate_random_alphanumeric 32)" >> .env
+echo "HYDRA_SYSTEM_SECRET=hss$(generate_random_alphanumeric 32)" >> .env
+echo "VERSITY_ROOT_ACCESS_KEY=ac$(generate_random_alphanumeric 32)" >> .env
+echo "VERSITY_ROOT_SECRET_KEY=sk$(generate_random_alphanumeric 32)" >> .env
 echo "LOCAL_IP"=$(get_eth0_ipv4) >> .env
 

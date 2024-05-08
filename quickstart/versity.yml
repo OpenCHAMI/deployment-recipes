@@ -1,0 +1,19 @@
+services:
+   versity:
+      image: ghcr.io/versity/versitygw:v0.22 
+      container_name: versity
+      hostname:  versity
+      restart: always
+      networks:
+        - internal
+      volumes:
+        - ./s3-storage/:/tmp/:rw
+      environment:
+        - ROOT_ACCESS_KEY=${VERSITY_ROOT_ACCESS_KEY} # Set in .env file
+        - ROOT_SECRET_KEY={VERSITY_ROOT_SECRET_KEY} # Set in .env file
+      command: -p :7070 posix /tmp # Uses port 7070 by default
+      healthcheck:
+        test: ["CMD", "pgrep", "versitygw"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
