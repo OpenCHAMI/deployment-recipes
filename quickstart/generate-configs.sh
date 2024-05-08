@@ -46,6 +46,12 @@ then
 	exit 1 
 fi
 
+if [[ ! -x $(command -v sed) ]]
+then
+        echo "Command \"sed\" Not Found"
+	exit 1
+fi
+
 get_eth0_ipv4() {
  local ipv4
  local first_eth=$(ip -j addr | jq -c '.[]' | grep UP |grep -v veth | grep -v LOOPBACK |grep -v br- |grep -v NO-CARRIER | grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -n 1 | jq -rc '.ifname')
