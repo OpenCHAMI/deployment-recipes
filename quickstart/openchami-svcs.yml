@@ -91,7 +91,7 @@ services:
       - BSS_JWKS_URL=http://opaal:3333/keys
       - BSS_OAUTH2_ADMIN_BASE_URL=http://opaal:3333
       - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
-      - BSS_IPXE_SERVER=${SYSTEM_NAME}.openchami.cluster
+      - BSS_IPXE_SERVER=${SYSTEM_NAME}.${SYSTEM_DOMAIN}
       - BSS_CHAIN_PROTO=https
     #ports:
     #  - '27778:27778'

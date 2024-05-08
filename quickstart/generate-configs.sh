@@ -6,10 +6,19 @@ then
 	exit 1
 fi
 
-if [ -z "$1" ]
+SYSNAME="$1"
+if [ -z "$SYSNAME" ]
 then
-	echo "Usage: $0 system-name"
+	echo "Usage: $0 system-name [domain]"
+	echo "Example: $0 foobar openchami.cluster"
+	echo "Example: $0 foobar"
 	exit 1
+fi
+
+SYSDOMAIN="openchami.cluster"
+if [ -n "$2" ]
+then
+	SYSDOMAIN="$2"
 fi
 
 if [[ ! -x $(command -v jq) ]]
@@ -36,8 +45,9 @@ echo "# This file is used by docker compose to set environment variables" > .env
 echo "# For more information about how it is read and how to override items in it, see the docs:" >> .env
 echo "#   https://docs.docker.com/compose/environment-variables/set-environment-variables/" >> .env
 
-# Set the system name which is used for certs
-echo "SYSTEM_NAME=$1" >> .env
+# Set the system name and domain hich are used for certs
+echo "SYSTEM_NAME=$SYSNAME" >> .env
+echo "SYSTEM_DOMAIN=$SYSDOMAIN" >> .env
 # Set DB passwords 
 echo "POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
 echo "BSS_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env

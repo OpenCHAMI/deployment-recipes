@@ -32,7 +32,7 @@ services:
       - ./configs/:/usr/local/etc/haproxy/:ro
       - haproxy-certs:/etc/haproxy/certs/:ro
   acme-register:
-    container_name: ${SYSTEM_NAME}.openchami.cluster
+    container_name: ${SYSTEM_NAME}.${SYSTEM_DOMAIN}
     image: ghcr.io/openchami/acme.sh:v0.2.2
     networks:
       - cert-internal
@@ -42,7 +42,7 @@ services:
     volumes:
       - step-root-ca:/root_ca/:ro
       - acme-certs:/root/.acme.sh
-    entrypoint: ["/usr/bin/acme.sh", "--server", "https://step-ca:9000/acme/acme/directory", "--ca-bundle", "/root_ca/root_ca.crt", "-d", "${SYSTEM_NAME}.openchami.cluster", "--issue", "--standalone", "--force"]
+    entrypoint: ["/usr/bin/acme.sh", "--server", "https://step-ca:9000/acme/acme/directory", "--ca-bundle", "/root_ca/root_ca.crt", "-d", "${SYSTEM_NAME}.${SYSTEM_DOMAIN}", "--issue", "--standalone", "--force"]
   acme-deploy:
     container_name: acme-deploy
     image: ghcr.io/openchami/acme.sh:v0.2.2
@@ -57,4 +57,4 @@ services:
       - haproxy-certs:/root/certs/
     environment:
       - DEPLOY_HAPROXY_PEM_PATH=/root/certs/
-    entrypoint: ["/usr/bin/acme.sh", "--server", "https://step-ca:9000/acme/acme/directory", "--ca-bundle", "/root_ca/root_ca.crt", "--deploy", "--deploy-hook", "haproxy", "--domain", "${SYSTEM_NAME}.openchami.cluster"]
+    entrypoint: ["/usr/bin/acme.sh", "--server", "https://step-ca:9000/acme/acme/directory", "--ca-bundle", "/root_ca/root_ca.crt", "--deploy", "--deploy-hook", "haproxy", "--domain", "${SYSTEM_NAME}.${SYSTEM_DOMAIN}"]

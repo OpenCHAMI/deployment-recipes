@@ -34,7 +34,7 @@ services:
       - internal
       - jwt-internal
     extra_hosts:
-      - "${SYSTEM_NAME}.openchami.cluster:${LOCAL_IP}"
+      - "${SYSTEM_NAME}.${SYSTEM_DOMAIN}:${LOCAL_IP}"
 
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://opaal:3333/keys"]
@@ -64,11 +64,11 @@ services:
       - ./configs/:/etc/config/hydra
     environment:
       - SECRETS_SYSTEM=${HYDRA_SYSTEM_SECRET} # set in .env
-      - URLS_SELF_ISSUER=https://${SYSTEM_NAME}.openchami.cluster/
-      - URLS_SELF_PUBLIC=https://${SYSTEM_NAME}.openchami.cluster/
-      - URLS_LOGIN=https://${SYSTEM_NAME}.openchami.cluster/login
-      - URLS_CONSENT=https://${SYSTEM_NAME}.openchami.cluster/consent
-      - URLS_LOGOUT=https://${SYSTEM_NAME}.openchami.cluster/logout
+      - URLS_SELF_ISSUER=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}/
+      - URLS_SELF_PUBLIC=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}/
+      - URLS_LOGIN=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}/login
+      - URLS_CONSENT=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}/consent
+      - URLS_LOGOUT=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}/logout
       - DSN=postgres://hydra-user:${HYDRA_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
     restart: unless-stopped
     depends_on:
