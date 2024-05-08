@@ -6,6 +6,11 @@ then
 	exit 1
 fi
 
+if [ -f configs/opaal.yaml ]
+then
+	echo "An OPAAL config (configs/opaal.yaml) exists. Delete to generate a new one"
+fi
+
 SYSNAME="$1"
 if [ -z "$SYSNAME" ]
 then
