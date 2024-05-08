@@ -11,12 +11,24 @@ then
 	echo "An OPAAL config (configs/opaal.yaml) exists. Delete to generate a new one"
 fi
 
+usage() {
+	echo "Usage: $0 system-name [system-domain]"
+	echo "Example: $0 foobar openchami.cluster"
+	echo "Example: $0 foobar"
+	echo ""
+	echo "Generate configuration for OpenCHAMI quickstart."
+	echo ""
+	echo "ARGUMENTS:"
+	echo " system-name   Subdomain of system to use in certificate and config"
+	echo "               generation. E.g. <system-name>.openchami.cluster"
+	echo " system-domain (OPTIONAL) Domain of system to use in certificate and"
+	echo "               config generation. Defaults to openchami.cluster"
+}
+
 SYSNAME="$1"
 if [ -z "$SYSNAME" ]
 then
-	echo "Usage: $0 system-name [domain]"
-	echo "Example: $0 foobar openchami.cluster"
-	echo "Example: $0 foobar"
+	usage >&2
 	exit 1
 fi
 
