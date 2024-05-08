@@ -1,6 +1,8 @@
 # Several functions that have been useful to me in developing and testing the quickstart.
 # They aren't necessary.  Just educational.
 
+CURL_CONTAINER=cgr.dev/chainguard/curl
+CURL_TAG=latest
 
 get_eth0_ipv4() {
    local ipv4
@@ -16,7 +18,7 @@ get_ca_cert() {
 
 container_curl() {
     local url=$1
-    docker exec -it --rm quay.io/curl/curl -s $url
+    docker exec -it --rm "${CURL_CONTAINER}:${CURL_TAG}" -s $url
 }
 
 create_client_credentials() {
@@ -35,7 +37,7 @@ retrieve_access_token() {
     local CLIENT_ID=$1
     local CLIENT_SECRET=$2
 
-    docker run --rm --network quickstart_jwt-internal quay.io/curl/curl:latest curl -s -u "$CLIENT_ID:$CLIENT_SECRET" \
+    docker run --rm --network quickstart_jwt-internal "${CURL_CONTAINER}:${CURL_TAG}" curl -s -u "$CLIENT_ID:$CLIENT_SECRET" \
     -d grant_type=client_credentials \
     -d scope=openid+smd.read \
     http://hydra:4444/oauth2/token
