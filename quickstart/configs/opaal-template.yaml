@@ -7,13 +7,13 @@ server:
     host: "opaal-idp"
     port: 3332
     endpoints:
-      authorization: "https://<your-subdomain-here>.openchami.cluster/oauth2/authorize"
+      authorization: "https://<your-subdomain-here>.<your-domain-here>/oauth2/authorize"
     clients:
       - id: openchami
         secret: openchami
         name: openchami
         redirect-uris:
-          - "https://<your-subdomain-here>.openchami.cluster/oidc/callback"
+          - "https://<your-subdomain-here>.<your-domain-here>/oidc/callback"
 
 authentication:
   state: ""
@@ -25,7 +25,7 @@ authentication:
       provider: 
         issuer: "http://opaal-idp:3332"
       redirect-uris:
-        - "https://<your-subdomain-here>.openchami.cluster/oidc/callback"
+        - "https://<your-subdomain-here>.<your-domain-here>/oidc/callback"
     - id: "<gitlab-client-id>"
       secret: "<gitlab-client-secret>"
       name: "gitlab"
@@ -36,7 +36,7 @@ authentication:
         - "profile"
         - "email"
       redirect-uris:
-        - "https://<your-subdomain-here>.openchami.cluster/oidc/callback"
+        - "https://<your-subdomain-here>.<your-domain-here>/oidc/callback"
 
 authorization:
   token:
@@ -46,7 +46,7 @@ authorization:
     scope:
       - smd.read
   audience: 
-    - https://<your-subdomain-here>.openchami.cluster/oauth2/token
+    - https://<your-subdomain-here>.<your-domain-here>/oauth2/token
   key-path: ./keys
   endpoints:
     issuer: http://hydra:4444

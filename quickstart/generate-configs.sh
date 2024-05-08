@@ -39,6 +39,13 @@ generate_random_alphanumeric() {
 	  cat /dev/urandom | tr -dc '[:alnum:]' | fold -w "$num_chars" | head -n 1
 }
 
+# Generate OPAAL config from configs/opaal-template.yaml. This will populate the
+# system name and domain of the config with the values set for SYSTEM_NAME and
+# SYSTEM_DOMAIN in this script.
+# TODO: Populate GitLab information in OPAAL config.
+sed "s/<your-subdomain-here>/${SYSTEM_NAME}/g" configs/opaal-template.yaml > configs/opaal.yaml
+sed "s/<your-domain-here>/${SYSTEM_DOMAIN}/g" configs/opaal-template.yaml > configs/opaal.yaml
+
 
 # Set the system name
 echo "# This file is used by docker compose to set environment variables" > .env
