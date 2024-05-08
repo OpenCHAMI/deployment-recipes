@@ -2,7 +2,7 @@
 
 if [ -f .env ]
 then
-	echo "A config file exists. Delete to generate a new one"
+	echo "A config file (.env) exists. Delete to generate a new one"
 	exit 1
 fi
 
