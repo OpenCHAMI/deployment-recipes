@@ -25,6 +25,7 @@ usage() {
 	echo "               config generation. Defaults to openchami.cluster"
 }
 
+# Parse system name (required arg).
 SYSNAME="$1"
 if [ -z "$SYSNAME" ]
 then
@@ -32,6 +33,7 @@ then
 	exit 1
 fi
 
+# Parse system domain (optional arg).
 SYSDOMAIN="openchami.cluster"
 if [ -n "$2" ]
 then
