@@ -41,14 +41,14 @@ then
 fi
 
 if [[ ! -x $(command -v jq) ]]
-then 
-        echo "Command \"jq\" Not Found"
-	exit 1 
+then
+	echo "Command \"jq\" not found"
+	exit 1
 fi
 
 if [[ ! -x $(command -v sed) ]]
 then
-        echo "Command \"sed\" Not Found"
+	echo "Command \"sed\" not found"
 	exit 1
 fi
 
@@ -80,7 +80,7 @@ echo "#   https://docs.docker.com/compose/environment-variables/set-environment-
 # Set the system name and domain hich are used for certs
 echo "SYSTEM_NAME=$SYSNAME" >> .env
 echo "SYSTEM_DOMAIN=$SYSDOMAIN" >> .env
-# Set DB passwords 
+# Set DB passwords
 echo "POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
 echo "BSS_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
 echo "SMD_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
