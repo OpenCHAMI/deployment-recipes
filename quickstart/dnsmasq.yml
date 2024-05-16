@@ -3,7 +3,7 @@ volumes:
 
 services:
   dnsmasq:
-    image: ghcr.io/openchami/dnsmasq:v0.1.7
+    image: ghcr.io/openchami/dnsmasq:v0.1.10
     container_name: dnsmasq
     hostname: dnsmasq
     network_mode: "host"
@@ -18,7 +18,7 @@ services:
       timeout: 10s
       retries: 60
   dnsmasq-loader:
-    image: ghcr.io/openchami/dnsmasq-loader:v0.1.7
+    image: ghcr.io/openchami/dnsmasq-loader:v0.1.10
     container_name: dnsmasq-loader
     hostname: dnsmasq-loader
     environment:
