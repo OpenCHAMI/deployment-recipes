@@ -1,5 +1,6 @@
 volumes:
   dnsmasq-hostsfiles:
+  dnsmasq-optsfiles:
 
 services:
   dnsmasq:
@@ -12,6 +13,7 @@ services:
     volumes:
       - ./configs/dnsmasq:/etc/dnsmasq:ro
       - dnsmasq-hostsfiles:/etc/dnsmasq/site/hosts/:rw
+      - dnsmasq-optsfiles:/etc/dnsmasq/site/opts/:rw
     healthcheck:
       test: pgrep dnsmasq
       interval: 5s
@@ -29,6 +31,7 @@ services:
       - ./configs/dnsmasq:/configs/:rw
       - step-root-ca:/root_ca/:ro
       - dnsmasq-hostsfiles:/configs/site/hosts/:rw
+      - dnsmasq-optsfiles:/configs/site/opts/:rw
     extra_hosts:
       - "${SYSTEM_NAME}.${SYSTEM_DOMAIN}:${LOCAL_IP}"
     depends_on:
