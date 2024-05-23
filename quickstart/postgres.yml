@@ -19,7 +19,7 @@ services:
     #ports:
     #  - 5432:5432
     healthcheck:
-      test: ["CMD", "pg_isready", "--dbname", "ochami", "--username", "ochami"]
+      test: ["CMD", "pg_isready", "--dbname", "$${POSTGRES_USER}", "--username", "$${POSTGRES_USER}"]
       interval: 10s
       timeout: 10s
       retries: 5
