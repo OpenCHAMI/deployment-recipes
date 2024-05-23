@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/bash -l
+
+set -euo pipefail
 
 if [ -f .env ]
 then
@@ -26,16 +28,16 @@ usage() {
 }
 
 # Parse system name (required arg).
-SYSNAME="$1"
-if [ -z "$SYSNAME" ]
+if [ -z "${1+x}" ]
 then
 	usage >&2
 	exit 1
 fi
+SYSNAME="$1"
 
 # Parse system domain (optional arg).
 SYSDOMAIN="openchami.cluster"
-if [ -n "$2" ]
+if [ -n "${2+x}" ]
 then
 	SYSDOMAIN="$2"
 fi
@@ -68,23 +70,29 @@ generate_random_alphanumeric() {
 # system name and domain of the config with the values set for SYSTEM_NAME and
 # SYSTEM_DOMAIN in this script.
 # TODO: Populate GitLab information in OPAAL config.
-sed "s/<your-subdomain-here>/${SYSTEM_NAME}/g" configs/opaal-template.yaml > configs/opaal.yaml
-sed "s/<your-domain-here>/${SYSTEM_DOMAIN}/g" configs/opaal-template.yaml > configs/opaal.yaml
-
+sed \
+  -e "s/<your-subdomain-here>/${SYSNAME}/g" \
+  -e "s/<your-domain-here>/${SYSDOMAIN}/g" \
+  configs/opaal-template.yaml > configs/opaal.yaml
 
 # Set the system name
-echo "# This file is used by docker compose to set environment variables" > .env
-echo "# For more information about how it is read and how to override items in it, see the docs:" >> .env
-echo "#   https://docs.docker.com/compose/environment-variables/set-environment-variables/" >> .env
+cat > .env <<EOF
+# This file is used by docker compose to set environment variables
+# For more information about how it is read and how to override items in it, see the docs:
+#   https://docs.docker.com/compose/environment-variables/set-environment-variables/
 
-# Set the system name and domain hich are used for certs
-echo "SYSTEM_NAME=$SYSNAME" >> .env
-echo "SYSTEM_DOMAIN=$SYSDOMAIN" >> .env
+# Set the system name and domain which are used for certs
+SYSTEM_NAME=$SYSNAME
+SYSTEM_DOMAIN=$SYSDOMAIN
+
 # Set DB passwords
-echo "POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
-echo "BSS_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
-echo "SMD_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
-echo "HYDRA_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)" >> .env
-echo "HYDRA_SYSTEM_SECRET=$(generate_random_alphanumeric 32)" >> .env
-echo "LOCAL_IP"=$(get_eth0_ipv4) >> .env
+POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
+BSS_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
+SMD_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
+HYDRA_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
+HYDRA_SYSTEM_SECRET=$(generate_random_alphanumeric 32)
+LOCAL_IP=$(get_eth0_ipv4)
+EOF
 
+# ensure permissions are set lax enough that unprivileged container users can read them
+chmod -R a+rX configs pg-init
