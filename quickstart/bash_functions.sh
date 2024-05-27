@@ -12,17 +12,17 @@ get_eth0_ipv4() {
 
 get_ca_cert() {
     local ca_cert
-    docker exec -it step-ca step ca root
+    ${CONTAINER_CMD:-docker} exec -it step-ca step ca root
     echo "${ca_cert}"
 }
 
 container_curl() {
     local url=$1
-    docker run -it --rm "${CURL_CONTAINER}:${CURL_TAG}" -s $url
+    ${CONTAINER_CMD:-docker} run -it --rm "${CURL_CONTAINER}:${CURL_TAG}" -s $url
 }
 
 create_client_credentials() {
-   docker exec hydra hydra create client \
+   ${CONTAINER_CMD:-docker} exec hydra hydra create client \
     --endpoint http://hydra:4445/ \
     --format json \
     --grant-type client_credentials \
@@ -37,7 +37,7 @@ retrieve_access_token() {
     local CLIENT_ID=$1
     local CLIENT_SECRET=$2
 
-    docker run --rm --network quickstart_jwt-internal "${CURL_CONTAINER}:${CURL_TAG}" curl -s -u "$CLIENT_ID:$CLIENT_SECRET" \
+    ${CONTAINER_CMD:-docker} run --rm --network quickstart_jwt-internal "${CURL_CONTAINER}:${CURL_TAG}" curl -s -u "$CLIENT_ID:$CLIENT_SECRET" \
     -d grant_type=client_credentials \
     -d scope=openid+smd.read \
     http://hydra:4444/oauth2/token
