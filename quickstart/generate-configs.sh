@@ -85,6 +85,8 @@ cat > .env <<EOF
 SYSTEM_NAME=$SYSNAME
 SYSTEM_DOMAIN=$SYSDOMAIN
 
+POSTGRES_USER=ochami
+
 # Set DB passwords
 POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
 BSS_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
