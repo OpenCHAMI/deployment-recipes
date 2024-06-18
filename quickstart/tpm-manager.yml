@@ -1,0 +1,20 @@
+services:
+  ###
+  # TPM-manager container, pushes cloud-init tokens into nodes' TPM storage
+  ###
+  tpm-manager:
+    image: ghcr.io/openchami/tpm-manager:v0.1.3
+    container_name: tpm-manager
+    hostname: tpm-manager
+    command: ["-port", "27780", "-batch-size", "100", "-interval", "30s"]
+    environment:
+      - OPAAL_URL=http://opaal:3333
+      - HSM_URL=http://smd:27779
+      - ANSIBLE_HOST_KEY_CHECKING=False
+    depends_on:
+      opaal:
+        condition: service_healthy
+      smd:
+        condition: service_healthy
+    networks:
+      - internal
