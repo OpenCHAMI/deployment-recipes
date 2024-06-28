@@ -56,7 +56,7 @@ services:
 ###
 # sets up postgres for BSS data
   bss-init:
-    image: ghcr.io/openchami/bss:v1.30.5
+    image: ghcr.io/openchami/bss:v1.30.6
     container_name: bss-init
     hostname: bss-init
     environment:
@@ -76,7 +76,7 @@ services:
       - /usr/local/bin/bss-init
   # boot-script-service
   bss:
-    image: ghcr.io/openchami/bss:v1.30.5
+    image: ghcr.io/openchami/bss:v1.30.6
     container_name: bss
     hostname: bss
     environment:
@@ -93,6 +93,7 @@ services:
       - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
       - BSS_IPXE_SERVER=${SYSTEM_NAME}.${SYSTEM_DOMAIN}
       - BSS_CHAIN_PROTO=https
+      - BSS_BOOTSCRIPT_NOTIFY_URL=http://tpm-manager:27780/Node
     #ports:
     #  - '27778:27778'
     depends_on:
