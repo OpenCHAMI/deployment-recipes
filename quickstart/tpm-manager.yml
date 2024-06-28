@@ -3,7 +3,7 @@ services:
   # TPM-manager container, pushes cloud-init tokens into nodes' TPM storage
   ###
   tpm-manager:
-    image: ghcr.io/openchami/tpm-manager:v0.1.3
+    image: ghcr.io/openchami/tpm-manager:v0.2.2
     container_name: tpm-manager
     hostname: tpm-manager
     command: ["-port", "27780", "-batch-size", "100", "-interval", "30s"]

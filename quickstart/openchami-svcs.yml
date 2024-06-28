@@ -93,6 +93,7 @@ services:
       - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
       - BSS_IPXE_SERVER=${SYSTEM_NAME}.${SYSTEM_DOMAIN}
       - BSS_CHAIN_PROTO=https
+      - BSS_BOOTSCRIPT_NOTIFY_URL=http://tpm-manager:27780/Node
     #ports:
     #  - '27778:27778'
     depends_on:
