@@ -1,0 +1,45 @@
+[Unit]
+Description=The postgres container
+
+[Container]
+ContainerName=postgres
+
+HostName=postgres
+
+Image=postgres:11.5-alpine
+
+
+# Volumes
+Volume=postgres-data.volume:/var/lib/postgresql/data
+Volume=/etc/ochami/pg-init:/docker-entrypoint-initdb.d
+
+
+# Environemnt Variables
+Environment=POSTGRES_USER=ochami
+
+# Secrets
+Secret=postgres_password,type=env,target=POSTGRES_PASSWORD
+Secret=bss_postgres_password,type=env,target=BSS_POSTGRES_PASSWORD
+Secret=smd_postgres_password,type=env,target=SMD_POSTGRES_PASSWORD
+Secret=hydra_postgres_password,type=env,target=HYDRA_POSTGRES_PASSWORD
+Secret=postgres_multiple_databases,type=env,target=POSTGRES_MULTIPLE_DATABASES
+
+
+
+
+
+# Networks for the Container to use
+Network=ochami-internal.network
+Network=ochami-jwt-internal.network
+
+
+# Unsupported by generator options
+# Proxy settings
+PodmanArgs=--http-proxy=false
+
+[Service]
+Restart=always
+
+[Install]
+# Start by default on boot
+WantedBy=multi-user.target default.target

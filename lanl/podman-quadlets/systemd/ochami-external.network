@@ -1,0 +1,6 @@
+[Unit]
+Description=ochami-external Network
+
+[Network]
+NetworkName=ochami-external
+Internal=false

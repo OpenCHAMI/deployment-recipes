@@ -1,0 +1,5 @@
+[Unit]
+Description=step-root-ca Volume
+
+[Volume]
+VolumeName=step-root-ca
