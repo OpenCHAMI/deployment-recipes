@@ -1,0 +1,43 @@
+[Unit]
+Description=The acme-deploy container
+
+[Container]
+ContainerName=acme-deploy
+
+HostName=acme-deploy
+
+Image=ghcr.io/openchami/acme.sh:v0.2.2
+
+
+# Volumes
+Volume=/:/root_ca/:ro
+Volume=acme-certs:/root/.acme.sh
+Volume=haproxy-certs:/root/certs/
+
+
+# Environemnt Variables
+Environment=SYSTEM_NAME=badger
+Environment=SYSTEM_DOMAIN=openchami.cluster
+Environment=DEPLOY_HAPROXY_PEM_PATH=/root/certs/
+
+
+
+
+
+
+# Networks for the Container to use
+Network=ochami-cert-internal.network
+
+
+# Unsupported by generator options
+# Proxy settings
+PodmanArgs=--http-proxy=false
+PodmanArgs=--entrypoint='["/bin/sh", "-c", "/usr/bin/acme.sh --server https://step-ca:9000/acme/acme/directory --ca-bundle /root_ca/root_ca.crt --deploy --deploy-hook haproxy --domain badger.openchami.cluster"]'
+
+[Service]
+Restart=on-failure
+Type=oneshot
+
+[Install]
+# Start by default on boot
+WantedBy=multi-user.target default.target

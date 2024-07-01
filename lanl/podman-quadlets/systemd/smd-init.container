@@ -1,0 +1,44 @@
+[Unit]
+Description=The smd-init container
+After=postgres.service
+
+[Container]
+ContainerName=smd-init
+
+HostName=smd-init
+
+Image=ghcr.io/openchami/smd:v2.15.2
+
+
+
+
+# Environemnt Variables
+Environment=SMD_DBHOST=postgres
+Environment=SMD_DBPORT=5432
+Environment=SMD_DBNAME=hmsds
+Environment=SMD_DBUSER=smd-user
+Environment=SMD_DBOPTS=sslmode=disable
+
+# Secrets
+Secret=smd_postgres_password,type=env,target=SMD_DBPASS
+
+
+
+
+
+# Networks for the Container to use
+Network=ochami-internal.network
+
+
+# Unsupported by generator options
+# Proxy settings
+PodmanArgs=--http-proxy=false
+PodmanArgs=--entrypoint='["/bin/sh", "-c", "/smd-init"]'
+
+[Service]
+Restart=on-failure
+Type=oneshot
+
+[Install]
+# Start by default on boot
+WantedBy=multi-user.target default.target

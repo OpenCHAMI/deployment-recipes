@@ -1,0 +1,48 @@
+[Unit]
+Description=The dnsmasq container
+
+[Container]
+ContainerName=dnsmasq
+
+HostName=dnsmasq
+
+Image=ghcr.io/openchami/dnsmasq:v0.1.10
+
+#Capabilities
+AddCapability=NET_ADMIN
+
+# Volumes
+Volume=/etc/ochami/configs/dnsmasq:/etc/dnsmasq/:rw
+Volume=dnsmasq-hostsfiles.volume:/etc/dnsmasq/site/hosts/:rw
+Volume=dnsmasq-optsfiles.volume:/etc/dnsmasq/site/opts/:rw
+
+
+
+
+
+
+
+
+# Networks for the Container to use
+Network=host
+
+# Health Checks
+# Health Check Command
+HealthCmd='["pgrep", "dnsmasq"]'
+# Health Check Interval
+HealthInterval=5s
+# Health Check Retries
+HealthRetries=60
+# Health Check Timeout
+HealthTimeout=10s
+
+# Unsupported by generator options
+# Proxy settings
+PodmanArgs=--http-proxy=false
+
+[Service]
+Restart=always
+
+[Install]
+# Start by default on boot
+WantedBy=multi-user.target default.target

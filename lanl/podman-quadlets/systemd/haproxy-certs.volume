@@ -1,0 +1,5 @@
+[Unit]
+Description=haproxy-certs Volume
+
+[Volume]
+VolumeName=haproxy-certs
