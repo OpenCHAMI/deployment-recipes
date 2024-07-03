@@ -47,7 +47,7 @@ services:
       opaal-idp:
         condition: service_healthy
   hydra:
-    image: oryd/hydra:v2.2.0-rc.3
+    image: docker.io/oryd/hydra:v2.2.0-rc.3
     container_name: hydra
     hostname: hydra
     healthcheck:
@@ -77,7 +77,7 @@ services:
     networks:
       - jwt-internal
   hydra-migrate:
-    image: oryd/hydra:v2.2.0-rc.3
+    image: docker.io/oryd/hydra:v2.2.0-rc.3
     container_name: hydra-migrate
     hostname: hydra-migrate
     environment:
