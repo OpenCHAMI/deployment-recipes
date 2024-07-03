@@ -3,7 +3,7 @@ volumes:
 
 services:
   postgres: # Postgres
-    image: postgres:11.5-alpine
+    image: docker.io/postgres:11.5-alpine
     container_name: postgres
     restart: always
     environment:

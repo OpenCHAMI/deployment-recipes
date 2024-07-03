@@ -2,7 +2,7 @@ services:
   krakend-ce:
     hostname: openchami.bikeshack.dev
     container_name: krakend-ce
-    image: devopsfaith/krakend:2
+    image: docker.io/devopsfaith/krakend:2
     # For this to work correctly, the config file here will need to be created.
     environment:
       - KRAKEND_CONFIG=/etc/krakend/krakend-tls.json
