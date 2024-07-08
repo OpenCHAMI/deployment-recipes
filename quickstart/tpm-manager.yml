@@ -18,3 +18,11 @@ services:
         condition: service_healthy
     networks:
       - internal
+  ###
+  # cloud-init server container, provides secured config access via JWT authorization
+  # NOTE: This merges with the default cloud-init config specified in openchami-svcs.yml
+  ###
+  cloud-init:
+    environment:
+      # This enables the server's secure route
+      - JWKS_URL=http://opaal:3333/keys
