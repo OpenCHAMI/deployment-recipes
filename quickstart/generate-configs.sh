@@ -63,7 +63,7 @@ get_eth0_ipv4() {
 
 generate_random_alphanumeric() {
 	local num_chars=${1:-32}
-	  cat /dev/urandom | tr -dc '[:alnum:]' | fold -w "$num_chars" | head -n 1
+	dd bs=512 if=/dev/urandom count=1 2>/dev/null | tr -dc '[:alnum:]' | fold -w "${num_chars}" | head -n 1
 }
 
 # Generate OPAAL config from configs/opaal-template.yaml. This will populate the
