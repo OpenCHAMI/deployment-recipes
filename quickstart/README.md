@@ -33,8 +33,16 @@ This quickstart makes a few assumptions about the target operating system and is
    grep LOCAL_IP .env
    ```
    If you have problems with this step, check to make sure that the main IP address of your host is in `.env` as `LOCAL_IP`.
+
 1. Update your /etc/hosts to point your system name to your local ip (this is important for valid certs)
-   
+
+1. Use docker-compose to bring up the services.  Docker compose needs to know about all the files to follow dependencies.
+   ```bash
+   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml up -d
+   ```
+   __If this step produces an error like: `Error response from daemon: invalid IP address in add-host: ""` it means you're missing the LOCAL_IP in step 2.__
+   You can fix it by destroying everything, editing `.env` manually and starting over.  The command to destroy is the same as the command to create, just replace `up -d` with `down --volumes`
+
 1. Use the running system to download your certs and create your access token(s)
    ```bash
    # Assuming you're using bash as your shell, you can use the included functions to simplify interactions with your new OpenCHAMI system.
@@ -44,18 +52,17 @@ This quickstart makes a few assumptions about the target operating system and is
    # Create a jwt access token for use with the apis.
    ACCESS_TOKEN=$(gen_access_token)
    # If you're curious about that token, you can safely copy and paste it into https://jwt.io to learn more.
-   # Use curl to confirm that everything is working
-   curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" https://foobar.openchami.cluster/hsm/v2/State/Components
+
+1. Confirm services are up and running   
+   Check you can access SMD. Component endpoint is unprotected
+   ```bash
+   curl --cacert cacert.pem https://foobar.openchami.cluster:8443/hsm/v2/State/Components
    # This should respond with an empty set of Components: {"Components":[]}
    ```
-
-1. Use docker-compose to bring up the services.  Docker compose needs to know about all the files to follow dependencies.
+   Check if you can read Redfish endpoints. This endpoint is protected
    ```bash
-   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml up -d
+   curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" https://foobar.openchami.cluster:8443/hsm/v2/Inventory/RedfishEndpoints
    ```
-   __If this step produces an error like: `Error response from daemon: invalid IP address in add-host: ""` it means you're missing the LOCAL_IP in step 2.__
-   You can fix it by destroying everything, editing `.env` manually and starting over.  The command to destroy is the same as the command to create, just replace `up -d` with `down --volumes`
-
 
 
 ## What's next?
