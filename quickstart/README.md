@@ -34,12 +34,6 @@ This quickstart makes a few assumptions about the target operating system and is
    ```
    If you have problems with this step, check to make sure that the main IP address of your host is in `.env` as `LOCAL_IP`.
 1. Update your /etc/hosts to point your system name to your local ip (this is important for valid certs)
-1. Start the main services
-   ```bash 
-   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f  openchami-svcs.yml -f autocert.yml up -d
-   ```
-   __If this step produces an error like: `Error response from daemon: invalid IP address in add-host: ""` it means you're missing the LOCAL_IP in step 2.__
-   You can fix it by destroying everything, editing `.env` manually and starting over.  The command to destroy is the same as the command to create, just replace `up -d` with `down --volumes`
    
 1. Use the running system to download your certs and create your access token(s)
    ```bash
@@ -54,15 +48,13 @@ This quickstart makes a few assumptions about the target operating system and is
    curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" https://foobar.openchami.cluster/hsm/v2/State/Components
    # This should respond with an empty set of Components: {"Components":[]}
    ```
-1. Create a token that can be used by the dnsmasq-loader which reads from smd.  This activates our automatic dns/dhcp system.  The command automatically adds it to .env
-   ```bash
-    echo "DNSMASQ_ACCESS_TOKEN=$(gen_access_token)" >> .env
-    ```
-1. Use docker-compose to bring up your dnsmasq contianers.  The only difference between this command and the one above is the addition of the `dnsmasq.yml` file.  Docker compose needs to know about all the files to follow dependencies.
+
+1. Use docker-compose to bring up the services.  Docker compose needs to know about all the files to follow dependencies.
    ```bash
    docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml up -d
    ```
-
+   __If this step produces an error like: `Error response from daemon: invalid IP address in add-host: ""` it means you're missing the LOCAL_IP in step 2.__
+   You can fix it by destroying everything, editing `.env` manually and starting over.  The command to destroy is the same as the command to create, just replace `up -d` with `down --volumes`
 
 
 
