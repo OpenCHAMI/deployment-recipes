@@ -1,6 +1,0 @@
-[Unit]
-Description=ochami-cert-internal Network
-
-[Network]
-NetworkName=ochami-cert-internal
-Internal=false

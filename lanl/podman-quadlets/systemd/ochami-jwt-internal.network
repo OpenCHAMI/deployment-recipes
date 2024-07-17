@@ -1,6 +1,0 @@
-[Unit]
-Description=ochami-jwt-internal Network
-
-[Network]
-NetworkName=ochami-jwt-internal
-Internal=false

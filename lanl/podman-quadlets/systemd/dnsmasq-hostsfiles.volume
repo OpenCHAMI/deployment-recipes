@@ -1,5 +1,0 @@
-[Unit]
-Description=dnsmasq-hostsfiles Volume
-
-[Volume]
-VolumeName=dnsmasq-hostsfiles
