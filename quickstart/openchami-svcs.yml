@@ -56,7 +56,7 @@ services:
 ###
 # sets up postgres for BSS data
   bss-init:
-    image: ghcr.io/openchami/bss:v1.30.5
+    image: ghcr.io/openchami/bss:v1.30.7
     container_name: bss-init
     hostname: bss-init
     environment:
@@ -76,7 +76,7 @@ services:
       - /usr/local/bin/bss-init
   # boot-script-service
   bss:
-    image: ghcr.io/openchami/bss:v1.30.5
+    image: ghcr.io/openchami/bss:v1.30.7
     container_name: bss
     hostname: bss
     environment:
