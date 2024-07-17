@@ -1,0 +1,6 @@
+cluster_name: "demo"
+cluster_domain: "openchami.cluster"
+cluster_boot_ip: 192.168.1.254
+ochami_base_url: "https://{{ cluster_name }}.{{ cluster_domain }}:8443"
+ochami_smd_url: "{{ ochami_base_url }}/hsm/v2"
+ochami_bss_url: "{{ ochami_base_url }}/boot/v1"
