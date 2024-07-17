@@ -11,6 +11,10 @@ services:
       - OPAAL_URL=http://opaal:3333
       - HSM_URL=http://smd:27779
       - ANSIBLE_HOST_KEY_CHECKING=False
+    volumes:
+      - type: bind
+        source: /root/.ssh
+        target: /root/.ssh
     depends_on:
       opaal:
         condition: service_healthy
