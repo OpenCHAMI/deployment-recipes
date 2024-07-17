@@ -1,0 +1,12 @@
+---
+- name: get ochami certificate
+  ansible.builtin.shell: '/bin/bash -l -c "get_ca_cert > /tmp/ochami.pem"'
+  notify: delete ochami certificate
+
+- name: trust ochami certificate
+  ansible.builtin.shell: 'trust anchor --store /tmp/ochami.pem && update-ca-trust'
+  notify: distrust ochami certificate
+
+- name: obtain access token to write to smd
+  ansible.builtin.command: '/bin/bash -l -c " gen_access_token"'
+  register: access_token
