@@ -1,0 +1,8 @@
+- import_tasks: dnsmasq.yaml
+- import_tasks: haproxy.yaml
+- import_tasks: hydra.yaml
+- import_tasks: opaal.yaml
+- import_tasks: pg-init.yaml
+- import_tasks: podman.yaml
+- import_tasks: profile.yaml
+- import_tasks: ochami.yaml

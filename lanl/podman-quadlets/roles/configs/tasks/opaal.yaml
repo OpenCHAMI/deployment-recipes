@@ -1,0 +1,7 @@
+- name: Drop opaal config file
+  ansible.builtin.template:
+    src: opaal/opaal.yaml.j2
+    dest: '/etc/ochami/configs/opaal.yaml'
+    owner: root
+    group: root
+    mode: '0644'

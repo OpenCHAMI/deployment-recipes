@@ -1,0 +1,7 @@
+- name: Drop haproxy config file
+  ansible.builtin.template:
+    src: haproxy/haproxy.cfg.j2
+    dest: '/etc/ochami/configs/haproxy.cfg'
+    owner: root
+    group: root
+    mode: '0644'

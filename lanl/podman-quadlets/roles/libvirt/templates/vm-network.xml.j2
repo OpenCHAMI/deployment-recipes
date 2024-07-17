@@ -1,0 +1,19 @@
+<network xmlns:dnsmasq='http://libvirt.org/schemas/network/dnsmasq/1.0' connections='2'>
+  <name>{{ item.name }}</name>
+  <forward mode='{{ item.forward_mode }}'/>
+  <bridge name='{{ item.bridge_name }}' stp='on' delay='0'/>
+  <mac address='{{ item.mac_addr }}'/>
+  <ip address='{{ item.ipaddr }}' netmask='{{ item.netmask }}'>
+    <dhcp>
+      <range start='{{ item.ip_start }}' end='{{ item.ip_end }}'/>
+      {% for host in item.hosts %}
+      <host mac='{{ host.mac }}' name='{{ host.name }}' ip='{{ host.ipaddr }}'/>
+      {% endfor %}
+    </dhcp>
+  </ip>
+  <dnsmasq:options>
+    <dnsmasq:option value='dhcp-vendorclass=set:efi-http,HTTPClient:Arch:00016'/>
+    <dnsmasq:option value='dhcp-option-force=tag:efi-http,60,HTTPClient'/>
+    <dnsmasq:option value='dhcp-boot=tag:efi-http,&quot;{{ item.booturl }}&quot;'/>
+  </dnsmasq:options>
+</network>

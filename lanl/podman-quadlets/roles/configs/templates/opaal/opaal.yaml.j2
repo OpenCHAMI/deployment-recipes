@@ -1,0 +1,68 @@
+version: "0.0.1"
+server:
+  host: "0.0.0.0"
+  port: 3333
+  callback: "/oidc/callback"
+  issuer: # Opaal-idp only uses this section of the config
+    host: "opaal-idp"
+    port: 3332
+    endpoints:
+      authorization: "https://{{ cluster_name }}.{{ cluster_domain }}/oauth2/authorize"
+    clients:
+      - id: openchami
+        secret: openchami
+        name: openchami
+        redirect-uris:
+          - "https://{{ cluster_name }}.{{ cluster_domain }}/oidc/callback"
+
+authentication:
+  state: ""
+  test-all: false
+  clients:
+    - id: "openchami"
+      secret: "openchami"
+      name: "openchami"
+      provider: 
+        issuer: "http://opaal-idp:3332"
+      redirect-uris:
+        - "https://{{ cluster_name }}.{{ cluster_domain }}/oidc/callback"
+    - id: "<gitlab-client-id>"
+      secret: "<gitlab-client-secret>"
+      name: "gitlab"
+      provider:
+        issuer: "<gitlab-instance-url>"
+      scope:
+        - "openid"
+        - "profile"
+        - "email"
+      redirect-uris:
+        - "https://{{ cluster_name }}.{{ cluster_domain }}/oidc/callback"
+
+authorization:
+  token:
+    forwarding: false
+    refresh: false
+    duration: 16h
+    scope:
+      - smd.read
+  audience: 
+    - https://{{ cluster_name }}.{{ cluster_domain }}/oauth2/token
+  key-path: ./keys
+  endpoints:
+    issuer: http://hydra:4444
+    config: http://hydra:4444/.well-known/openid-configuration
+    jwks: http://hydra:4444/.well-known/jwks.json
+    trusted-issuers: http://hydra:4445/admin/trust/grants/jwt-bearer/issuers
+    login: http://hydra:4433/self-service/login/api
+    clients: http://hydra:4445/admin/clients
+    authorize: http://hydra:4444/oauth2/auth
+    register: http://hydra:4444/oauth2/register
+    token: http://hydra:4444/oauth2/token
+
+
+options:
+  run-once: true
+  open-browser: false
+  flow: authorization_code
+  cache-only: false
+  verbose: true

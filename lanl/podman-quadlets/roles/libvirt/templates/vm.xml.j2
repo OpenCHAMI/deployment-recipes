@@ -1,0 +1,43 @@
+<domain type="kvm">
+  <name>{{ item.name }}</name>
+  <memory>{{ item.memory }}</memory>
+  <vcpu>{{ item.cpus }}</vcpu>
+  <os>
+    <type arch="{{ item.arch }}" machine="q35">hvm</type>
+    <loader readonly="yes" type="pflash" secure="yes">/usr/share/OVMF/OVMF_CODE.secboot.fd</loader>
+    <boot dev="network"/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <smm state="on"/>
+  </features>
+  <cpu mode="host-model"/>
+  <clock offset="utc">
+    <timer name="rtc" tickpolicy="catchup"/>
+    <timer name="pit" tickpolicy="delay"/>
+    <timer name="hpet" present="no"/>
+  </clock>
+  <pm>
+    <suspend-to-mem enabled="no"/>
+    <suspend-to-disk enabled="no"/>
+  </pm>
+  <devices>
+    <emulator>/usr/libexec/qemu-kvm</emulator>
+    {% for interface in item.interfaces %}
+    <interface type="{{ interface.type }}">
+      {% if interface.network is defined %}
+      <source network="{{ interface.network }}"/>
+      {% endif %}
+      {% if interface.mac is defined %}
+      <mac address="{{ interface.mac }}"/>
+      {% endif %}
+      {% if interface.bridge is defined %}
+      <source bridge="{{ interface.bridge }}"/>
+      {% endif %}
+      <model type="{{ interface.model_type }}"/>
+    </interface>
+    {% endfor %}
+    <console type="pty"/>
+  </devices>
+</domain>

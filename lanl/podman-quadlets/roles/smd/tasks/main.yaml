@@ -1,0 +1,15 @@
+# Using this monstrosity until we can figure out a way to speed up an ansible way of populating SMD
+- name: Populate SMD with ochami-cli
+  ansible.builtin.command:
+    argv:
+      - /opt/ochami/bin/ochami-cli
+      - --access-token
+      - "{{ access_token.stdout }}"
+      - --ca-cert
+      - /tmp/ochami.pem
+      - --smd-url
+      - "{{ ochami_smd_url }}"
+      - smd
+      - --fake-discovery
+      - --config
+      - "/etc/ochami/nodes.yaml"
