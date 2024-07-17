@@ -1,0 +1,6 @@
+ochami_dnsmasq_bootloader: 'ipxe.efi'
+ochami_dnsmasq_ntp_server: '192.168.1.254'
+ochami_dnsmasq_dns_server: '192.168.1.254'
+ochami_dnsmasq_router: '192.168.1.254'
+ochami_dnsmasq_dhcp_range: '192.168.1.1,192.168.1.254'
+ochami_dnsmasq_mtu: 1500
