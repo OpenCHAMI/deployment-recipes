@@ -12,13 +12,13 @@ get_eth0_ipv4() {
 
 get_ca_cert() {
     local ca_cert
-    ${CONTAINER_CMD:-docker} exec -it step-ca step ca root
+    ${CONTAINER_CMD:-docker} exec step-ca step ca root
     echo "${ca_cert}"
 }
 
 container_curl() {
     local url=$1
-    ${CONTAINER_CMD:-docker} run -it --rm "${CURL_CONTAINER}:${CURL_TAG}" -s $url
+    ${CONTAINER_CMD:-docker} run --rm "${CURL_CONTAINER}:${CURL_TAG}" -s $url
 }
 
 create_client_credentials() {
