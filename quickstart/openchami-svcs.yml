@@ -117,7 +117,7 @@ services:
 ###
   # cloud-init server, with the secure route disabled for now
   cloud-init:
-    image: ghcr.io/openchami/cloud-init:v0.1.0
+    image: ghcr.io/openchami/cloud-init:v0.1.1
     container_name: cloud-init
     hostname: cloud-init
     environment:
