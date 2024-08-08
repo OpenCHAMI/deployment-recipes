@@ -93,6 +93,7 @@ services:
       - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
       - BSS_IPXE_SERVER=${SYSTEM_NAME}.${SYSTEM_DOMAIN}
       - BSS_CHAIN_PROTO=https
+      - BSS_BOOTSCRIPT_NOTIFY_URL=http://tpm-manager:27780/Node
     #ports:
     #  - '27778:27778'
     depends_on:
@@ -111,5 +112,24 @@ services:
       interval: 5s
       timeout: 10s
       retries: 60
-
-
+###
+# cloud-init Server Container
+###
+  # cloud-init server, with the secure route disabled for now
+  cloud-init:
+    image: ghcr.io/openchami/cloud-init:v0.1.1
+    container_name: cloud-init
+    hostname: cloud-init
+    environment:
+      - LISTEN_ADDR=:27777
+      - SMD_URL=http://smd:27779
+      - OPAAL_URL=http://opaal:3333
+    ports:
+      - '27777:27777'
+    depends_on:
+      smd:
+        condition: service_healthy
+      opaal:
+        condition: service_healthy
+    networks:
+      - internal
