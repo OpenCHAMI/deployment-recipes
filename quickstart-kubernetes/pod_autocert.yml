@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: ochami
+  name: autocert
+  labels:
+    app.kubernetes.io/name: step-ca
+spec:
+  containers:
+
+    - name: step-ca
+      image: ghcr.io/openchami/local-ca:v0.2.2
+      volumeMounts:
+        - name: step-ca-home
+          mountPath: /home/step
+        - name: step-ca-db
+          mountPath: /home/step/db
+        - name: step-root-ca
+          mountPath: /root_ca
+      env:
+        - name: STEPPATH
+          value: /home/step
+        - name: DOCKER_STEPCA_INIT_NAME
+          value: OpenCHAMI
+        - name: DOCKER_STEPCA_INIT_DNS_NAMES
+          value: localhost,step-ca
+        - name: DOCKER_STEPCA_INIT_ACME
+          value: "true"
+      livenessProbe:
+        exec:
+          command: ["step", "ca", "health"]
+        periodSeconds: 10
+        timeoutSeconds: 10
+        failureThreshold: 5
+
+
+  volumes:
+    - name: step-ca-home
+      persistentVolumeClaim:
+        claimName: step-ca-home
+    # Keeping the database in a volume apparently improves performance?
+    - name: step-ca-db
+      persistentVolumeClaim:
+        claimName: step-ca-db
+    # Keeping the root CA in a volume allows us to back it up and restore it.
+    - name: step-root-ca
+      persistentVolumeClaim:
+        claimName: step-root-ca

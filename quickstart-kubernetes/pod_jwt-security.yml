@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: ochami
+  name: jwt-security
+  labels:
+    app.kubernetes.io/name: opaal
+spec:
+  #hostAliases:
+  #  - ip: "204.121.71.82"
+  #    hostnames: ["razorback.openchami.cluster"]
+  initContainers:
+
+    - name: hydra-migrate
+      image: docker.io/oryd/hydra:v2.2.0-rc.3
+      env:
+        - name: SECRETS_SYSTEM
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: HYDRA_SYSTEM_SECRET
+        - name: HYDRA_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: HYDRA_POSTGRES_PASSWORD
+        - name: DSN
+          value: "postgres://hydra-user:$(HYDRA_POSTGRES_PASSWORD)@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4"
+      args: ["migrate", "-c", "/etc/config/hydra/hydra.yml", "sql", "-e", "--yes"]
+      volumeMounts:
+        - name: jwt-configs
+          mountPath: /etc/config/hydra/
+
+  containers:
+
+    - name: opaal-idp
+      image: ghcr.io/openchami/opaal:v0.3.8
+      args:
+        - '/opaal/opaal'
+        - 'serve'
+        - '--config'
+        - '/opaal/config/opaal.yaml'
+      volumeMounts:
+        - name: jwt-configs
+          mountPath: /opaal/config/
+      livenessProbe:
+        exec:
+          command: ["curl", "--fail", "--silent", "http://localhost:3332/.well-known/jwks.json"]
+        periodSeconds: 5
+        timeoutSeconds: 10
+        failureThreshold: 60
+
+    - name: opaal
+      image: ghcr.io/openchami/opaal:v0.3.8
+      args:
+        - '/opaal/opaal'
+        - 'login'
+        - '--config'
+        - '/opaal/config/opaal.yaml'
+      ports:
+        - containerPort: 3333
+          name: opaal-external
+      volumeMounts:
+        - name: jwt-configs
+          mountPath: /opaal/config/
+      livenessProbe:
+        exec:
+          command: ["curl", "--fail", "--silent", "http://opaal:3333/keys"]
+        periodSeconds: 5
+        timeoutSeconds: 10
+        failureThreshold: 60
+
+    - name: hydra
+      image: docker.io/oryd/hydra:v2.2.0-rc.3
+      args: ["serve", "-c", "/etc/config/hydra/hydra.yml", "all", "--sqa-opt-out"]
+      env:
+        - name: SECRETS_SYSTEM
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: HYDRA_SYSTEM_SECRET
+        - name: HYDRA_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: HYDRA_POSTGRES_PASSWORD
+        - name: SYSTEM_NAME
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SYSTEM_NAME
+        - name: SYSTEM_DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SYSTEM_DOMAIN
+        - name: URLS_SELF_ISSUER
+          value: https://$(SYSTEM_NAME).$(SYSTEM_DOMAIN)/
+        - name: URLS_SELF_PUBLIC
+          value: https://$(SYSTEM_NAME).$(SYSTEM_DOMAIN)/
+        - name: URLS_LOGIN
+          value: https://$(SYSTEM_NAME).$(SYSTEM_DOMAIN)/login
+        - name: URLS_CONSENT
+          value: https://$(SYSTEM_NAME).$(SYSTEM_DOMAIN)/consent
+        - name: URLS_LOGOUT
+          value: https://$(SYSTEM_NAME).$(SYSTEM_DOMAIN)/logout
+        - name: DSN
+          value: "postgres://hydra-user:$(HYDRA_POSTGRES_PASSWORD)@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4"
+      volumeMounts:
+        - name: jwt-configs
+          mountPath: /etc/config/hydra/
+      livenessProbe:
+        exec:
+          command: ["wget", "--spider", "-q", "http://localhost:4444/health/alive"]
+        periodSeconds: 10
+        timeoutSeconds: 10
+        failureThreshold: 10
+
+  volumes:
+    - name: jwt-configs
+      persistentVolumeClaim:
+        claimName: jwt-configs

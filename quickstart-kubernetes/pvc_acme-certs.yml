@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: ochami
+  name: acme-certs
+spec:
+  storageClassName: ceph-cephfs-external
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi

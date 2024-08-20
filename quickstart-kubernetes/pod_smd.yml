@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: smd
+  namespace: ochami
+  labels:
+    app.kubernetes.io/name: smd
+spec:
+  initContainers:
+
+    # sets up postgres for SMD data
+    - name: smd-init
+      image: ghcr.io/openchami/smd:v2.16.0
+      command: ["/smd-init"]
+      env:
+        - name: SMD_DBHOST
+          value: postgres
+        - name: SMD_DBPORT
+          value: '5432'
+        - name: SMD_DBNAME
+          value: hmsds
+        - name: SMD_DBUSER
+          value: smd-user
+        - name: SMD_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SMD_POSTGRES_PASSWORD
+        - name: SMD_DBOPTS
+          value: sslmode=disable
+
+  containers:
+
+    # SMD
+    - name: smd
+      image: ghcr.io/openchami/smd:v2.16.0
+      env:
+        - name: SMD_DBHOST
+          value: postgres
+        - name: SMD_DBPORT
+          value: '5432'
+        - name: SMD_DBNAME
+          value: hmsds
+        - name: SMD_DBUSER
+          value: smd-user
+        - name: SMD_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SMD_POSTGRES_PASSWORD
+        - name: SMD_DBOPTS
+          value: sslmode=disable
+        - name: SMD_JWKS_URL
+          value: http://opaal:3333/keys
+      livenessProbe:
+        exec:
+          command: ["curl", "--fail", "--silent", "http://localhost:27779/hsm/v2/service/ready"]
+        initialDelaySeconds: 20
+        periodSeconds: 5
+        timeoutSeconds: 10
+        failureThreshold: 60

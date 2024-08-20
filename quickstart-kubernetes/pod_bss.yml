@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bss
+  namespace: ochami
+  labels:
+    app.kubernetes.io/name: bss
+spec:
+  initContainers:
+
+    # sets up postgres for BSS data
+    - name: bss-init
+      image: ghcr.io/openchami/bss:v1.31.2
+      command: ["/usr/local/bin/bss-init"]
+      env:
+        - name: BSS_USESQL
+          value: 'true'
+        - name: BSS_INSECURE
+          value: 'true'
+        - name: BSS_DBHOST
+          value: postgres
+        - name: BSS_DBPORT
+          value: '5432'
+        - name: BSS_DBNAME
+          value: bssdb
+        - name: BSS_DBUSER
+          value: bss-user
+        - name: BSS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: BSS_POSTGRES_PASSWORD
+
+  containers:
+
+    # boot-script-service
+    - name: bss
+      image: ghcr.io/openchami/bss:v1.31.2
+      env:
+        - name: SYSTEM_NAME
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SYSTEM_NAME
+        - name: SYSTEM_DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SYSTEM_DOMAIN
+        - name: BSS_USESQL
+          value: 'true'
+        - name: BSS_INSECURE
+          value: 'true'
+        - name: BSS_DEBUG
+          value: 'true'
+        - name: BSS_DBHOST
+          value: postgres
+        - name: BSS_DBPORT
+          value: '5432'
+        - name: BSS_DBNAME
+          value: bssdb
+        - name: BSS_DBUSER
+          value: bss-user
+        - name: BSS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: BSS_POSTGRES_PASSWORD
+        - name: BSS_JWKS_URL
+          value: http://opaal:3333/keys
+        - name: BSS_OAUTH2_ADMIN_BASE_URL
+          value: http://opaal:3333
+        - name: BSS_OAUTH2_PUBLIC_BASE_URL
+          value: http://opaal:3333
+        - name: BSS_IPXE_SERVER
+          value: $(SYSTEM_NAME).$(SYSTEM_DOMAIN)
+        - name: BSS_CHAIN_PROTO
+          value: http
+        - name: BSS_ADVERTISE_ADDRESS
+          value: http://$(SYSTEM_NAME).$(SYSTEM_DOMAIN)/cloud-init
+        #- name: BSS_BOOTSCRIPT_NOTIFY_URL
+        #  value: http://tpm-manager:27780/Node
+        - name: HSM_URL
+          value: http://smd:27779
+      livenessProbe:
+        exec:
+          command: ["curl", "--fail", "--silent", "http://localhost:27778/boot/v1/service/status"]
+        periodSeconds: 5
+        timeoutSeconds: 10
+        failureThreshold: 60

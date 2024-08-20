@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: ochami
+  name: haproxy-api-gateway
+  labels:
+    app.kubernetes.io/name: haproxy-gateway
+spec:
+  initContainers:
+
+    - name: acme
+      image: ghcr.io/openchami/acme.sh:v0.2.2
+      volumeMounts:
+        - name: step-root-ca
+          mountPath: /root_ca/
+          readOnly: true
+        - name: acme-certs
+          mountPath: /root/.acme.sh
+        - name: haproxy-certs
+          mountPath: /root/certs
+      env:
+        - name: SYSTEM_NAME
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SYSTEM_NAME
+        - name: SYSTEM_DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SYSTEM_DOMAIN
+        - name: DEPLOY_HAPROXY_PEM_PATH
+          value: /root/certs/
+      command: ["sh", "-c", "/usr/bin/acme.sh --server https://step-ca:9000/acme/acme/directory --ca-bundle /root_ca/root_ca.crt -d $(SYSTEM_NAME).$(SYSTEM_DOMAIN) --issue --standalone --force && /usr/bin/acme.sh --server https://step-ca:9000/acme/acme/directory --ca-bundle /root_ca/root_ca.crt --deploy --deploy-hook haproxy -d $(SYSTEM_NAME).$(SYSTEM_DOMAIN)"]
+
+  containers:
+
+    - name: haproxy
+      image: cgr.dev/chainguard/haproxy
+      ports:
+        - containerPort: 80
+        - containerPort: 443
+      volumeMounts:
+        - name: configs
+          mountPath: /usr/local/etc/haproxy
+          readOnly: true
+        - name: haproxy-certs
+          mountPath: /etc/haproxy/certs
+          readOnly: true
+      livenessProbe:
+        exec:
+          command: ["haproxy", "-c", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
+        periodSeconds: 10
+        timeoutSeconds: 10
+        failureThreshold: 5
+
+  volumes:
+    - name: configs
+      persistentVolumeClaim:
+        claimName: jwt-configs
+    - name: haproxy-certs
+      persistentVolumeClaim:
+        claimName: haproxy-certs
+    - name: acme-certs
+      persistentVolumeClaim:
+        claimName: acme-certs
+    - name: step-root-ca
+      persistentVolumeClaim:
+        claimName: step-root-ca

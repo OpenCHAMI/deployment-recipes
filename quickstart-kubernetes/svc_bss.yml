@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ochami
+  name: bss
+spec:
+  selector:
+    app.kubernetes.io/name: bss
+  ports:
+    - port: 27778
+  type: ClusterIP

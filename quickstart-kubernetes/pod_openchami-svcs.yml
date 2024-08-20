@@ -1,0 +1,147 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: openchami-svcs
+  namespace: ochami
+spec:
+  initContainers:
+
+    # sets up postgres for SMD data
+    - name: smd-init
+      image: ghcr.io/openchami/smd:v2.15.2
+      command: ["/smd-init"]
+      env:
+        - name: SMD_DBHOST
+          value: postgres
+        - name: SMD_DBPORT
+          value: '5432'
+        - name: SMD_DBNAME
+          value: hmsds
+        - name: SMD_DBUSER
+          value: smd-user
+        - name: SMD_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SMD_POSTGRES_PASSWORD
+        - name: SMD_DBOPTS
+          value: sslmode=disable
+
+    # sets up postgres for BSS data
+    - name: bss-init
+      image: ghcr.io/openchami/bss:v1.31.2
+      command: ["/usr/local/bin/bss-init"]
+      env:
+        - name: BSS_USESQL
+          value: 'true'
+        - name: BSS_INSECURE
+          value: 'true'
+        - name: BSS_DBHOST
+          value: postgres
+        - name: BSS_DBPORT
+          value: '5432'
+        - name: BSS_DBNAME
+          value: bssdb
+        - name: BSS_DBUSER
+          value: bss-user
+        - name: BSS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: BSS_POSTGRES_PASSWORD
+
+  containers:
+
+    # SMD
+    - name: smd
+      image: ghcr.io/openchami/smd:v2.15.2
+      env:
+        - name: SMD_DBHOST
+          value: postgres
+        - name: SMD_DBPORT
+          value: '5432'
+        - name: SMD_DBNAME
+          value: hmsds
+        - name: SMD_DBUSER
+          value: smd-user
+        - name: SMD_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SMD_POSTGRES_PASSWORD
+        - name: SMD_DBOPTS
+          value: sslmode=disable
+        - name: SMD_JWKS_URL
+          value: http://opaal:3333/keys
+      livenessProbe:
+        exec:
+          command: ["curl", "--fail", "--silent", "http://localhost:27779/hsm/v2/service/ready"]
+        initialDelaySeconds: 20
+        periodSeconds: 5
+        timeoutSeconds: 10
+        failureThreshold: 60
+
+    # boot-script-service
+    - name: bss
+      image: ghcr.io/openchami/bss:v1.31.2
+      env:
+        - name: SYSTEM_NAME
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SYSTEM_NAME
+        - name: SYSTEM_DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SYSTEM_DOMAIN
+        - name: BSS_USESQL
+          value: 'true'
+        - name: BSS_INSECURE
+          value: 'true'
+        - name: BSS_DEBUG
+          value: 'true'
+        - name: BSS_DBHOST
+          value: postgres
+        - name: BSS_DBPORT
+          value: '5432'
+        - name: BSS_DBNAME
+          value: bssdb
+        - name: BSS_DBUSER
+          value: bss-user
+        - name: BSS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: BSS_POSTGRES_PASSWORD
+        - name: BSS_JWKS_URL
+          value: http://opaal:3333/keys
+        - name: BSS_OAUTH2_ADMIN_BASE_URL
+          value: http://opaal:3333
+        - name: BSS_OAUTH2_PUBLIC_BASE_URL
+          value: http://opaal:3333
+        - name: BSS_IPXE_SERVER
+          value: $(SYSTEM_NAME).$(SYSTEM_DOMAIN)
+        - name: BSS_CHAIN_PROTO
+          value: https
+        - name: BSS_BOOTSCRIPT_NOTIFY_URL
+          value: http://tpm-manager:27780/Node
+        - name: HSM_URL
+          value: http://localhost:27779  # This is SMD, but we're in the same pod
+      livenessProbe:
+        exec:
+          command: ["curl", "--fail", "--silent", "http://localhost:27778/boot/v1/service/status"]
+        periodSeconds: 5
+        timeoutSeconds: 10
+        failureThreshold: 60
+
+    # cloud-init server, with the secure route disabled for now
+    - name: cloud-init
+      image: ghcr.io/openchami/cloud-init:v0.1.1
+      env:
+        - name: LISTEN_ADDR
+          value: :27777
+        - name: SMD_URL
+          value: http://localhost:27779 # This is SMD, but we're in the same pod
+        - name: OPAAL_URL
+          value: http://opaal:3333

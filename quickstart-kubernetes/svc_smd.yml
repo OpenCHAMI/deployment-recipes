@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ochami
+  name: smd
+spec:
+  selector:
+    app.kubernetes.io/name: smd
+  ports:
+    - port: 27779
+  type: ClusterIP

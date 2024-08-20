@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cloud-init
+  namespace: ochami
+  labels:
+    app.kubernetes.io/name: cloud-init
+spec:
+  containers:
+
+    # cloud-init server, with the secure route disabled for now
+    - name: cloud-init
+      image: ghcr.io/openchami/cloud-init:v0.1.1
+      env:
+        - name: LISTEN_ADDR
+          value: :27777
+        - name: SMD_URL
+          value: http://smd:27779
+        - name: OPAAL_URL
+          value: http://opaal:3333

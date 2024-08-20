@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: ochami
+  name: dnsmasq
+  labels:
+    app.kubernetes.io/name: dnsmasq
+spec:
+  hostNetwork: true
+  containers:
+
+    - name: dnsmasq
+      image: ghcr.io/openchami/dnsmasq:v0.1.10
+      securityContext:
+        capabilities:
+          add: ["NET_ADMIN"]
+      volumeMounts:
+        - name: configs
+          subPath: dnsmasq
+          mountPath: /etc/dnsmasq
+          readOnly: true
+        - name: dnsmasq-hostsfiles
+          mountPath: /etc/dnsmasq/site/hosts
+        - name: dnsmasq-optsfiles
+          mountPath: /etc/dnsmasq/site/opts
+      livenessProbe:
+        exec:
+          command: ["pgrep", "dnsmasq"]
+        periodSeconds: 5
+        timeoutSeconds: 10
+        failureThreshold: 60
+      ports:
+        - containerPort: 67
+          protocol: UDP
+    - name: dnsmasq-loader
+      image: ghcr.io/openchami/dnsmasq-loader:v0.1.10
+      volumeMounts:
+        - name: configs
+          subPath: dnsmasq
+          mountPath: /configs
+        - name: step-root-ca
+          mountPath: /root_ca
+          readOnly: true
+        - name: dnsmasq-hostsfiles
+          mountPath: /configs/site/hosts
+        - name: dnsmasq-optsfiles
+          mountPath: /configs/site/opts
+      env:
+        - name: SYSTEM_NAME
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SYSTEM_NAME
+        - name: SYSTEM_DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: env-secrets
+              key: SYSTEM_DOMAIN
+        - name: OCHAMI_BASEURL
+          value: https://$(SYSTEM_NAME).$(SYSTEM_DOMAIN)
+        - name: OCHAMI_BOOTSCRIPT_BASEURL
+          value: http://A.S.D.F
+        - name: CURL_CA_BUNDLE
+          value: /root_ca/root_ca.crt
+
+  volumes:
+    - name: configs
+      persistentVolumeClaim:
+        claimName: jwt-configs
+    - name: dnsmasq-hostsfiles
+      persistentVolumeClaim:
+        claimName: dnsmasq-hostsfiles
+    - name: dnsmasq-optsfiles
+      persistentVolumeClaim:
+        claimName: dnsmasq-optsfiles
+    - name: step-root-ca
+      persistentVolumeClaim:
+        claimName: step-root-ca
