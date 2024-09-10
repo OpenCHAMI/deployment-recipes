@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: ochami
+  name: debug
+spec:
+  restartPolicy: OnFailure
+  containers:
+
+    - name: local-ca
+      image: ghcr.io/openchami/local-ca:v0.2.2
+      args: ["sh", "-c", "while [ ! -f /tmp/done ]; do sleep 10; done"]
+      volumeMounts:
+        - name: configs
+          mountPath: /config
+
+  volumes:
+    - name: configs
+      persistentVolumeClaim:
+        claimName: jwt-configs
