@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: ochami
+  name: webserver
+  labels:
+    app.kubernetes.io/name: webserver
+spec:
+  containers:
+    - name: dnsmasq-loader
+      image: ghcr.io/openchami/dnsmasq-loader:v0.1.10
+      volumeMounts:
+        - name: configs
+          subPath: webserver
+          mountPath: /webserver
+      command: ['python3', '-m', 'http.server']
+      workingDir: /webserver
+  volumes:
+    - name: configs
+      persistentVolumeClaim:
+        claimName: jwt-configs
