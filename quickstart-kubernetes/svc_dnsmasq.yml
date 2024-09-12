@@ -7,7 +7,7 @@ spec:
   selector:
     app.kubernetes.io/name: dnsmasq
   type: LoadBalancer
-  loadBalancerIP: 192.168.0.0
+  loadBalancerIP: 192.168.0.0 #FIXME: External ip for DHCP on the node network
   ports:
     - name: dnsmasq-dns
       port: 53
@@ -30,7 +30,7 @@ spec:
   selector:
     app.kubernetes.io/name: dnsmasq
   type: LoadBalancer
-  loadBalancerIP: 192.168.0.0
+  loadBalancerIP: 192.168.0.0 #FIXME: External ip for DHCP on the BMC network
   ports:
     - name: dnsmasq-dns
       port: 53

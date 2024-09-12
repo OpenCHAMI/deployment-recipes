@@ -7,7 +7,7 @@ spec:
   selector:
     app.kubernetes.io/name: haproxy-gateway
   type: LoadBalancer
-  loadBalancerIP: 192.168.0.0
+  loadBalancerIP: 192.168.0.0 #FIXME: External IP for cluster services; map to your cluster's DNS name
   externalTrafficPolicy: Local
   ports:
     - name: http

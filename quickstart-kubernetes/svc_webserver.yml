@@ -7,7 +7,7 @@ spec:
   selector:
     app.kubernetes.io/name: webserver
   type: LoadBalancer
-  loadBalancerIP: 192.168.0.0
+  loadBalancerIP: 192.168.0.0 #FIXME: External IP from which to download boot artifacts
   ports:
     - name: http
       port: 80
