@@ -1,4 +1,5 @@
 ---
+# Original in-house Postgres configuration.
 postgres:
   deployment:
     replicaCount: 1
@@ -17,16 +18,45 @@ postgres:
   dbmount: /var/lib/postgresql/data
   dbname: ochami
 
-postgresql:
+# Third-party Postgres subcharts
+# Per https://github.com/bitnami/charts/issues/2876 Bitnami likely won't support
+# multiple databases and users in the chart directly. You can use a single Postgres
+# instance for multiple clients and databases if you specify a custom initdb string,
+# which is essentially "roll your own SQL for initialization", thus losing any
+# integration with the values.yaml-exposed user and database setup. You can create
+# multiple subchart instances of the same subchart using the "alias" key in the
+# dependency definition to use separate single-DB instances for each. Maybe this is
+# desirable for isolation anyway? It's simpler to set up, if nothing else.
+postgresql-hydra:
+  enabled: true
+  auth:
+    username: hydra-user
+    database: hydradb
+  image:
+    tag: 16.4.0
+  service:
+    ports:
+      postgresql: "5432"
+
+postgresql-bss:
   enabled: true
   auth:
     username: ochami
-    # https://github.com/OpenCHAMI/deployment-recipes/blob/main/quickstart/pg-init/multi-psql-db.sh does kinda suggest
-    # that the project will want multiple databases, which the Bitnami chart seemingly doesn't support (at least given
-    # the single value auth.database key. Dunno if there's even a way to have multiple subchart instances of the same
-    # chart if we want to just use separate instances to deal with that. However, for now, the original chart config
-    # only suggests the one database, so vOv.
     database: ochami
+  image:
+    tag: 16.4.0
+  service:
+    ports:
+      postgresql: "5432"
+
+postgresql-smd:
+  enabled: true
+  auth:
+    username: ochami
+    # currently this is copy-pasta from another value, which is not great.
+    # don't think there's any (good) way to share it between the two,
+    # but using a static value instead is probably fine.
+    database: hmsds
   image:
     tag: 16.4.0
   service:
