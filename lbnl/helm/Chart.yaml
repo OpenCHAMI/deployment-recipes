@@ -25,4 +25,15 @@ dependencies:
   - name: postgresql
     version: 15.5.29
     repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
+    alias: postgresql-hydra
+    condition: postgresql-hydra.enabled
+  - name: postgresql
+    version: 15.5.29
+    repository: https://charts.bitnami.com/bitnami
+    alias: postgresql-bss
+    condition: postgresql-bss.enabled
+  - name: postgresql
+    version: 15.5.29
+    repository: https://charts.bitnami.com/bitnami
+    alias: postgresql-smd
+    condition: postgresql-smd.enabled
