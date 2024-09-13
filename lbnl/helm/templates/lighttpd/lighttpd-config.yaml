@@ -58,4 +58,4 @@ data:
 kind: ConfigMap
 metadata:
   name: lighttpd-config
-  namespace: ochami
+  namespace: {{ .Release.Namespace }}

@@ -39,4 +39,4 @@ data:
 kind: ConfigMap
 metadata:
   name: hydra-config
-  namespace: ochami
+  namespace: {{ .Release.Namespace }}
