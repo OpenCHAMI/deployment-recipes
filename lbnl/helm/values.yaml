@@ -30,7 +30,9 @@ postgres:
 postgresql-hydra:
   enabled: true
   auth:
+    # matches a static value in the deployment template
     username: hydra-user
+    # this is already a static value
     database: hydradb
   image:
     tag: 16.4.0
@@ -41,8 +43,12 @@ postgresql-hydra:
 postgresql-bss:
   enabled: true
   auth:
-    username: ochami
-    database: ochami
+    # matches a static value in the deployment template
+    username: bss-user
+    # currently this is copy-pasta from another value, which is not great.
+    # don't think there's any (good) way to share it between the two,
+    # but using a static value instead is probably fine.
+    database: bssdb
   image:
     tag: 16.4.0
   service:
@@ -52,7 +58,8 @@ postgresql-bss:
 postgresql-smd:
   enabled: true
   auth:
-    username: ochami
+    # matches a static value in the deployment template
+    username: smd-user
     # currently this is copy-pasta from another value, which is not great.
     # don't think there's any (good) way to share it between the two,
     # but using a static value instead is probably fine.
