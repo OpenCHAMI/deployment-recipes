@@ -127,7 +127,7 @@ hydra:
   deployment:
     replicaCount: 1
     image:
-      repository: hub.docker.io
+      repository: docker.io/oryd
       name: hydra
       pullPolicy: IfNotPresent
       tag: "v2.2.0"
@@ -147,7 +147,7 @@ hydra:
 hydra_consent:
   deployment:
     image:
-      repository: hub.docker.io
+      repository: docker.io/oryd
       name: hydra-login-consent-node
       pullPolicy: IfNotPresent
       tag: "v2.2.0"
