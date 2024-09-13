@@ -40,10 +40,10 @@ spec:
         - name: HYDRA_POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: postgres-creds
-              key: hydra_postgres_password
+              name: {{ .Release.Name }}-postgresql-hydra
+              key: password
         - name: DSN
-          value: postgres://hydra-user:$(HYDRA_POSTGRES_PASSWORD)@postgres.{{ .Release.Namespace }}.svc.cluster.local:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
+          value: postgres://hydra-user:$(HYDRA_POSTGRES_PASSWORD)@{{ .Release.Name }}-postgresql-hydra.{{ .Release.Namespace }}.svc.cluster.local:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
       volumes:
       - name: hydra-config
         configMap:
