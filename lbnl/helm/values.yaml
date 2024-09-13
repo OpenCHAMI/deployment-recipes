@@ -17,6 +17,22 @@ postgres:
   dbmount: /var/lib/postgresql/data
   dbname: ochami
 
+postgresql:
+  enabled: true
+  auth:
+    username: ochami
+    # https://github.com/OpenCHAMI/deployment-recipes/blob/main/quickstart/pg-init/multi-psql-db.sh does kinda suggest
+    # that the project will want multiple databases, which the Bitnami chart seemingly doesn't support (at least given
+    # the single value auth.database key. Dunno if there's even a way to have multiple subchart instances of the same
+    # chart if we want to just use separate instances to deal with that. However, for now, the original chart config
+    # only suggests the one database, so vOv.
+    database: ochami
+  image:
+    tag: 16.4.0
+  service:
+    ports:
+      postgresql: "5432"
+
 smd:
   deployment:
     replicaCount: 1
