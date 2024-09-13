@@ -1,0 +1,109 @@
+{{/*
+# Postgres credential initialization
+#
+# Per https://github.com/bitnami/charts/issues/2876 Bitnami likely won't ever support
+# multiple databases and users in the chart directly.
+#
+# To use a single instance for our databases, we need to provision our own users and databases
+# with a custom init script. We also lose out on automatic user credential secret generation.
+#
+# The following generates several persistent Secrets (see https://github.com/helm/helm-www/issues/1259#issuecomment-641558251)
+# and then uses the same set of variables to build an init script.
+*/}}
+
+{{- $smdDatabase := "hmsds" }}
+{{- $bssDatabase := "bssdb" }}
+{{- $hydraDatabase := "hydradb" }}
+
+{{- $smdUsername := "smd-user" }}
+{{- $bssUsername := "bss-user" }}
+{{- $hydraUsername := "hydra-user" }}
+
+{{- $smdPassword := (randAlphaNum 24) | b64enc | quote }}
+{{- $bssPassword := (randAlphaNum 24) | b64enc | quote }}
+{{- $hydraPassword := (randAlphaNum 24) | b64enc | quote }}
+
+{{- $smdSecret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-pg-smd" .Release.Name)) }}
+{{- if $smdSecret }}
+  {{- $smdPassword = index $smdSecret.data "password" | b64dec }}
+{{- end -}}
+
+{{- $bssSecret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-pg-bss" .Release.Name)) }}
+{{- if $bssSecret }}
+  {{- $bssPassword = index $bssSecret.data "password" | b64dec }}
+{{- end -}}
+
+{{- $hydraSecret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-pg-hydra" .Release.Name)) }}
+{{- if $hydraSecret }}
+  {{- $hydraPassword = index $hydraSecret.data "password" | b64dec }}
+{{- end -}}
+
+---
+apiVersion: v1
+stringData:
+  username: {{ $smdUsername }}
+  password: {{ $smdPassword }}
+  database: {{ $smdDatabase }}
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-pg-smd
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+stringData:
+  username: {{ $bssUsername }}
+  password: {{ $bssPassword }}
+  database: {{ $bssDatabase }}
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-pg-bss
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+stringData:
+  username: {{ $hydraUsername }}
+  password: {{ $hydraPassword }}
+  database: {{ $hydraDatabase }}
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-pg-hydra
+  namespace: {{ .Release.Namespace }}
+
+{{/*
+# === init script
+# It may be possible to gate this with .Release.IsInstall (we don't need it after), but I'm not sure
+# if that will cause issues with "helm template"-based CD solutions.
+*/}}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.postgresql.primary.initdb.scriptsSecret }}
+  namespace: {{ .Release.Namespace }}
+stringData:
+  multi-psql-db.sh: |
+    #!/bin/bash
+    #
+    # Adapted from:
+    # https://github.com/mrts/docker-postgresql-multiple-databases/blob/master/create-multiple-postgresql-databases.sh
+
+    set -e
+    set -u
+
+    function create_user_and_database() {
+        local database=$1
+        local username=$2
+        local password=$3
+        echo "  Creating user '$username' and database '$database'"
+        PGPASSWORD=$POSTGRES_PASSWORD psql -v ON_ERROR_STOP=1 --username postgres <<-EOSQL
+            CREATE USER "$username" WITH PASSWORD '$password';
+            CREATE DATABASE "$database";
+            ALTER DATABASE "$database" OWNER TO "$username";
+            GRANT ALL PRIVILEGES ON DATABASE "$database" TO "$username";
+    EOSQL
+    }
+
+    # There's probably some way to do this with loops over dicts instead but lazy copy-pasta prevails for now.
+    create_user_and_database {{ $smdDatabase }} {{ $smdUsername }} {{ $smdPassword }}
+    create_user_and_database {{ $bssDatabase }} {{ $bssUsername }} {{ $bssPassword }}
+    create_user_and_database {{ $hydraDatabase }} {{ $hydraUsername }} {{ $hydraPassword }}

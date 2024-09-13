@@ -30,20 +30,23 @@ spec:
               port: {{ .Values.smd.deployment.containerPort }}
           env:
             - name: SMD_DBHOST
-              value: postgres.{{ .Release.Namespace }}.svc.cluster.local
+              value: {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
             - name: SMD_DBPORT
-              value: "{{ .Values.postgres.deployment.containerPort }}"
+              value: "{{ .Values.postgresql.service.ports.postgresql }}"
+            - name: SMD_DBOPTS
+              value: sslmode=disable
             - name: SMD_DBUSER
               valueFrom:
                 secretKeyRef:
-                  name: postgres-creds
-                  key: smd_postgres_username
+                  name: {{ .Release.Name }}-pg-smd
+                  key: username
             - name: SMD_DBPASS
               valueFrom:
                 secretKeyRef:
-                  name: postgres-creds
-                  key: smd_postgres_password
+                  name: {{ .Release.Name }}-pg-smd
+                  key: password
             - name: SMD_DBNAME
-              value: {{ .Values.smd.dbname }}
-            - name: SMD_DBOPTS
-              value: sslmode=disable
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-pg-smd
+                  key: database

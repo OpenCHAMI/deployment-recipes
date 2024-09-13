@@ -1,16 +1,4 @@
 ---
-# Most of these deployments rely on PostgreSQL credentials to be stored in a
-# Secret called `postgres-creds`, which is not included in this repo and must
-# be created separately. The Secret must include the following keys:
-#
-#   - bss_postgres_password
-#   - bss_postgres_username
-#   - hydra_postgres_password
-#   - postgres_password
-#   - postgres_username
-#   - smd_postgres_password
-#   - smd_postgres_username
-
 apiVersion: v2
 name: ochami-services
 description: A Helm chart for OpenCHAMI
@@ -20,3 +8,9 @@ type: application
 version: "0.0.1"
 
 appVersion: "0.0.1"
+
+dependencies:
+  - name: postgresql
+    version: 15.5.29
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
