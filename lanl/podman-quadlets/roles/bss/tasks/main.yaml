@@ -2,10 +2,29 @@
 - name: populate bss with node boot config
   ansible.builtin.uri:
     url: '{{ ochami_bss_url }}/bootparameters'
+    method: "DELETE"
+    status_code:
+      - 200
+      - 201
+      - 400
+    headers:
+      Authorization: 'Bearer {{ access_token.stdout }}'
+    body_format: json
+    body:
+      macs: '{{ bss_macs }}'
+      initrd: '{{ bss_initrd_url }}'
+      kernel: '{{ bss_kernel_url }}'
+      params: '{{ bss_params }}'
+  register: add_bootparams
+
+- name: populate bss with node boot config
+  ansible.builtin.uri:
+    url: '{{ ochami_bss_url }}/bootparameters'
     method: "POST"
     status_code:
       - 200
       - 201
+      - 400
     headers:
       Authorization: 'Bearer {{ access_token.stdout }}'
     body_format: json

@@ -1,0 +1,26 @@
+---
+- name: debug cloud-init
+  debug:
+    msg: '{{ cluster_cloud_init }}'
+
+- name: debug cloud-init
+  debug:
+    msg: '{{ item }}'
+  with_items:
+    - '{{ cluster_cloud_init }}'
+
+- name: Populate cloud-init
+  ansible.builtin.uri:
+    url: '{{ ochami_cloud_init_url }}'
+    method: "POST"
+    status_code:
+      - 200
+      - 201
+    headers:
+      Authorization: 'Bearer {{ access_token.stdout }}'
+    body_format: json
+    body:
+      name: '{{ item.name }}'
+      cloud-init: '{{ item.cloud_init }}'
+  with_items:
+    - '{{ cluster_cloud_init }}'

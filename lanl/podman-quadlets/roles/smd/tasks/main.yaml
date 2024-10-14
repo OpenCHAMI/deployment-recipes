@@ -11,5 +11,5 @@
       - "{{ ochami_smd_url }}"
       - smd
       - --fake-discovery
-      - --config
+      - --payload
       - "/etc/ochami/nodes.yaml"

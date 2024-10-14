@@ -18,9 +18,9 @@ podman_quadlet_volumes:
   - name: acme-certs
   - name: postgres-data
 
-podman_quadlet_containers: '{{ _ochami_init_quadlets + _postgres_quadlets + _step_ca_quadlets + _acme_quadlets + _hydra_quadlets + _opaal_quadlets + _ochami_quadlets + _haproxy_quadlets + _dnsmasq_quadlets }}'
+podman_quadlet_containers: '{{ _ochami_init_quadlets + _postgres_quadlets + _step_ca_quadlets + _acme_quadlets + _hydra_quadlets + _opaal_quadlets + _ochami_quadlets + _haproxy_quadlets + _dnsmasq_quadlets + _image_server_quadlets }}'
 
-podman_quadlet_start: ['ochami-init', 'dnsmasq-loader']
+podman_quadlet_start: ['ochami-init', 'dnsmasq-loader', 'image-server']
 
 _ochami_init_quadlets:
   - name: ochami-init
@@ -193,7 +193,7 @@ _opaal_quadlets:
 
 _ochami_quadlets:
   - name: smd-init
-    image: ghcr.io/openchami/smd:v2.15.2
+    image: ghcr.io/openchami/smd:v2.16.1
     secrets:
       - smd_postgres_password,type=env,target=SMD_DBPASS
     envs:
@@ -210,7 +210,7 @@ _ochami_quadlets:
     restart: 'on-failure'
     type: 'oneshot'
   - name: smd
-    image: ghcr.io/openchami/smd:v2.15.2
+    image: ghcr.io/openchami/smd:v2.16.1
     secrets:
       - smd_postgres_password,type=env,target=SMD_DBPASS
     envs:
@@ -226,7 +226,7 @@ _ochami_quadlets:
     networks:
       - ochami-internal.network
   - name: bss-init
-    image: ghcr.io/openchami/bss:v1.30.7
+    image: ghcr.io/openchami/bss:v1.31.3
     secrets:
       - bss_postgres_password,type=env,target=BSS_DBPASS
     envs:
@@ -244,7 +244,7 @@ _ochami_quadlets:
     restart: 'on-failure'
     type: 'oneshot'
   - name: bss
-    image: ghcr.io/openchami/bss:v1.30.7
+    image: ghcr.io/openchami/bss:v1.31.3
     secrets:
       - bss_postgres_password,type=env,target=BSS_DBPASS
     envs:
@@ -266,7 +266,7 @@ _ochami_quadlets:
     networks:
       - ochami-internal.network
   - name: cloud-init-server
-    image: ghcr.io/openchami/cloud-init:v0.1.0
+    image: ghcr.io/openchami/cloud-init:v0.1.1
     envs:
       - LISTEN_ADDR=:27777
       - SMD_URL=http://smd:27779
@@ -309,12 +309,12 @@ _haproxy_quadlets:
       - opaal.service
       - bss.service
       - acme-deploy.service
-      - cloud-init.service
+      - cloud-init-server.service
       - tpm-manager.service
 
 _dnsmasq_quadlets:
   - name: dnsmasq
-    image: ghcr.io/openchami/dnsmasq:v0.1.10
+    image: ghcr.io/openchami/dnsmasq:v0.1.11
     capabilities:
       - NET_ADMIN
     volumes:
@@ -329,7 +329,7 @@ _dnsmasq_quadlets:
       - haproxy.service
 
   - name: dnsmasq-loader
-    image: ghcr.io/openchami/dnsmasq-loader:v0.1.10
+    image: ghcr.io/openchami/dnsmasq-loader:v0.1.11
     command: --opts-file /etc/dnsmasq/site/opts/optsfile --hosts-file /etc/dnsmasq/site/hosts/hostsfile
     volumes:
       - /etc/ochami/configs/dnsmasq:/configs/:rw
@@ -343,3 +343,14 @@ _dnsmasq_quadlets:
       - 'node_prefix={{ cluster_shortname }}'
     after:
       - dnsmasq.service
+
+_image_server_quadlets:
+  - name: image-server
+    image: docker.io/library/nginx:latest
+    volumes:
+      - /data/domain-images:/usr/share/nginx/html:ro
+    ports:
+      - 172.16.0.254:8080:80
+    pre_start:
+      - mkdir -p /data/domain-images
+

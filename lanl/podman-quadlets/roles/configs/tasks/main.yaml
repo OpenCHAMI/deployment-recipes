@@ -1,3 +1,4 @@
+- import_tasks: packages.yaml
 - import_tasks: dnsmasq.yaml
 - import_tasks: haproxy.yaml
 - import_tasks: hydra.yaml

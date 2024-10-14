@@ -1,0 +1,9 @@
+- name: 'ochami VM Nodes'
+  hosts: ochami
+  roles:
+    - { role: podman_secrets, tags: ['secrets'] }
+    - { role: configs, tags: ['configs'] }
+    - { role: quadlet, tags: ['quadlet'] }
+    - { role: smd, tags: ['smd'] }
+    - { role: bss, tags: ['bss'] }
+    - { role: cloud_init, tags: ['cloud_init'] }

@@ -1,0 +1,4 @@
+- name: Install ochami dependent packages
+  dnf:
+    name: '{{ ochami_package_dependencies }}'
+    state: present

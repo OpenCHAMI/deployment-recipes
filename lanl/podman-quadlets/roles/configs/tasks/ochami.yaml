@@ -9,5 +9,3 @@
     dest: /opt/ochami/bin/
     update: no
     version: main
-  environment:
-    https_proxy: http://proxyout.lanl.gov:8080
