@@ -48,7 +48,7 @@ This quickstart makes a few assumptions about the target operating system and is
 1. Update your /etc/hosts to point your system name to your local ip (this is important for valid certs)
 1. Start the main services
    ```bash 
-   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f  openchami-svcs.yml -f autocert.yml up -d
+   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f  openchami-svcs.yml -f autocert.yml -f tftp.yml up -d
    ```
    __If this step produces an error like: `Error response from daemon: invalid IP address in add-host: ""` it means you're missing the LOCAL_IP in step 2.__
    You can fix it by destroying everything, editing `.env` manually and starting over.  The command to destroy is the same as the command to create, just replace `up -d` with `down --volumes`
@@ -66,13 +66,16 @@ This quickstart makes a few assumptions about the target operating system and is
    curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" https://foobar.openchami.cluster/hsm/v2/State/Components
    # This should respond with an empty set of Components: {"Components":[]}
    ```
-1. Create a token that can be used by the dnsmasq-loader which reads from smd.  This activates our automatic dns/dhcp system.  The command automatically adds it to .env
+1. Create a token that can be used by the CoreSMD CoreDHCP plugin which reads from SMD. This activates our automatic dns/dhcp system. The command adds the token to the CoreDHCP config file.
    ```bash
-    echo "DNSMASQ_ACCESS_TOKEN=$(gen_access_token)" >> .env
+    echo "DHCP_ACCESS_TOKEN=$(gen_access_token)"
+    sed -i "s/<token>/${DHCP_ACCESS_TOKEN}/" configs/coredhcp.yaml
     ```
-1. Use docker-compose to bring up your dnsmasq contianers.  The only difference between this command and the one above is the addition of the `dnsmasq.yml` file.  Docker compose needs to know about all the files to follow dependencies.
+
+    **WARNING:** The token will expire after an hour so it will need to be replaced in this file at or before then.
+1. Use docker-compose to bring up the CoreDHCP container.  The only difference between this command and the one above is the addition of the `coredhcp.yml` file.  Docker compose needs to know about all the files to follow dependencies.
    ```bash
-   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml up -d
+   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f tftp.yml -f coredhcp.yml up -d
    ```
 
 
