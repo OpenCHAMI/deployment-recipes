@@ -33,6 +33,18 @@ This quickstart makes a few assumptions about the target operating system and is
    grep LOCAL_IP .env
    ```
    If you have problems with this step, check to make sure that the main IP address of your host is in `.env` as `LOCAL_IP`.
+
+   **DHCP NOTE:** The `generate-configs.sh` script supports customization of CoreDHCP, including:
+
+    - Lease time
+    - Server IP
+    - Gateway IP
+    - Subnet mask
+    - DNS servers
+    - Alternative base URL for fetching boot scripts (e.g. without TLS)
+    - Cache update interval (for updating from SMD)
+
+   If any of these are needed, use the `-h` option of the script to set them.
 1. Update your /etc/hosts to point your system name to your local ip (this is important for valid certs)
 1. Start the main services
    ```bash 
