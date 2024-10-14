@@ -1,0 +1,8 @@
+server4:
+  plugins:
+    - lease_time: <LEASE_TIME>
+    - server_id: <SERVER_IP>
+    - dns: <DNS_SERVERS>
+    - router: <GATEWAY_IP>
+    - netmask: <DHCP_NETMASK>
+    - coresmd: <BASE_URL> <SCRIPT_URL> /root_ca/root_ca.crt <CACHE_VALIDITY> <token>

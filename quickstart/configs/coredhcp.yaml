@@ -1,8 +1,0 @@
-server4:
-  plugins:
-    - lease_time: 3600s
-    - server_id: 172.16.0.253
-    - dns: 10.15.3.42 10.0.69.16 10.0.69.17
-    - router: 172.16.0.254
-    - netmask: 255.255.255.0
-    - coresmd: https://instructors.si.usrc http://172.16.0.253:8081 /root_ca/root_ca.crt 30s <token>
