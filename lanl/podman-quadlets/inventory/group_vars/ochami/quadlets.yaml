@@ -273,7 +273,7 @@ _ochami_quadlets:
       - OPAAL_URL=http://opaal:3333
       - JWKS_URL=http://opaal:3333/keys
     ports:
-      - '27777:27777'
+      - '{{cluster_boot_ip }}:27777:27777'
     after:
       - smd.service
       - opaal.service
@@ -296,8 +296,8 @@ _haproxy_quadlets:
   - name: haproxy
     image: cgr.dev/chainguard/haproxy
     ports:
-      - "8081:80"
-      - "8443:443"
+      - "{{ cluster_boot_ip }}:8081:80"
+      - "{{ cluster_boot_ip }}:8443:443"
     networks:
       - ochami-external.network
       - ochami-internal.network
@@ -350,7 +350,7 @@ _image_server_quadlets:
     volumes:
       - /data/domain-images:/usr/share/nginx/html:ro
     ports:
-      - 172.16.0.254:8080:80
+      - '{{ cluster_boot_ip }}:8080:80'
     pre_start:
       - mkdir -p /data/domain-images
 
