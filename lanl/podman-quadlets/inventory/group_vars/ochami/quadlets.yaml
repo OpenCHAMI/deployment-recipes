@@ -160,6 +160,16 @@ _hydra_quadlets:
       - ochami-jenga.service
     networks:
       - ochami-jwt-internal.network
+  # Fix for hydra race condition
+  - name: hydra-gen-jwks
+    image: cgr.dev/chainguard/curl:latest
+    type: 'oneshot'
+    command: '--retry 10 --retry-delay 5 --retry-all-errors --verbose http://hydra:4444/.well-known/jwks.json'
+    networks:
+      - ochami-jwt-internal.network
+    restart: 'on-failure'
+    after:
+      - hydra.service
 
 _opaal_quadlets:
   - name: opaal-idp
@@ -170,7 +180,7 @@ _opaal_quadlets:
     networks:
       - ochami-jwt-internal
     after:
-      - hydra.service
+      - hydra-gen-jwks.service
   - name: opaal
     image: ghcr.io/openchami/opaal:v0.3.10
     command: '/opaal/opaal login --config /opaal/config/opaal.yaml'
