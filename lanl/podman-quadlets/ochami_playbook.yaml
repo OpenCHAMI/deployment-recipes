@@ -1,8 +1,8 @@
 - name: 'ochami VM Nodes'
   hosts: ochami
   roles:
-    - { role: podman_secrets, tags: ['secrets'] }
     - { role: configs, tags: ['configs'] }
+    - { role: podman_secrets, tags: ['secrets'] }
     - { role: quadlet, tags: ['quadlet'] }
     - { role: smd, tags: ['smd'] }
     - { role: bss, tags: ['bss'] }
