@@ -6,6 +6,7 @@
     status_code:
       - 200
       - 201
+      - 405
     headers:
       Authorization: 'Bearer {{ access_token.stdout }}'
     body_format: json

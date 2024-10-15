@@ -7,3 +7,4 @@
 - import_tasks: podman.yaml
 - import_tasks: profile.yaml
 - import_tasks: ochami.yaml
+- import_tasks: hosts.yaml
