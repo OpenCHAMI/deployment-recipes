@@ -1,7 +1,7 @@
 ---
 - name: Populate cloud-init
   ansible.builtin.uri:
-    url: '{{ ochami_cloud_init_url }}'
+    url: '{{ ochami_cloud_init_url }}/{{ item.name }}'
     method: "DELETE"
     status_code:
       - 200
@@ -9,10 +9,6 @@
       - 405
     headers:
       Authorization: 'Bearer {{ access_token.stdout }}'
-    body_format: json
-    body:
-      name: '{{ item.name }}'
-      cloud-init: '{{ item.cloud_init }}'
   with_items:
     - '{{ cluster_cloud_init }}'
 
