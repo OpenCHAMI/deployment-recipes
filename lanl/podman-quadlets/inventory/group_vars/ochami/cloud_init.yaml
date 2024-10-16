@@ -4,7 +4,7 @@ cluster_cloud_init:
       userdata:
         write_files:
           - path: /root/.ssh/authorized_keys
-            content: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDZW66jaQXHDLgm9kfguy8J0rw/sz0XDuzZcAFyrQ4nE7QvM20vsC2L8NCv28LNozKOP2hzlDyP4aL0Uy8bVew07ApRUmXmselU2ReYxtjDtX2HEQPdyOg8+64sCjU2O3yxvufzI5jRNk+tV8+5T0yi1ZlIUBqM4I0tM0/16OwHEpnGusv58rZBcb+E1ipEnf0gEb4J0cz1NlhmvklF8Mb8NMOpEhjPp9Ilam6em5oulkx7IliQ+tmF+kKYi4jXZsZ4v31cmksQhniznb7YjAYxSN6DiPi2b/Nuxs6FeqTFhSAU9HxG5/7kZG5MrWsGWKPFp11DI7gL2D9zWplTT6577kLfz5IIKSS5qN1eJEaSZ60+ADPvgFMazt4J0nwCbZ+r9FYspV16Da/qPCURUe9D7Mg5qK1B8XaFvvaEPKavq1rT5GflfgI9ehXDNaVUPcqmpi4ALoblYzGQaRxP9LuRs7MOgLwqV2h3CVS8H2GkNeNipG5NRw11zK0w5AjIJlc= root@st-head.si.usrc
+            content: '{{ cluster_boot_ssh_pub_key }}'
         runcmd:
           - setenforce 0
           - systemctl disable firewalld

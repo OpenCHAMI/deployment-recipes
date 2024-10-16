@@ -1,4 +1,4 @@
-ochami_dnsmasq_bootloader: 'ipxe.efi'
+ochami_dnsmasq_bootloader: 'ipxe-x86_64.efi'
 ochami_dnsmasq_ntp_server: '{{ cluster_boot_ip }}'
 ochami_dnsmasq_dns_server: '{{ cluster_boot_ip }}'
 ochami_dnsmasq_router: '{{ cluster_boot_ip }}'
