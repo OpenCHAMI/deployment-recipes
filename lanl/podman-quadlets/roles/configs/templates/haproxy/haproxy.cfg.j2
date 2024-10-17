@@ -1,0 +1,65 @@
+global
+  stats socket /var/run/api.sock user haproxy group haproxy mode 660 level admin expose-fd listeners
+  log stdout format raw local0 info
+  fd-hard-limit 50000
+  ssl-default-bind-options ssl-min-ver TLSv1.3 no-tls-tickets
+
+defaults
+  mode http
+  timeout client 10s
+  timeout connect 5s
+  timeout server 10s
+  timeout http-request 10s
+  log global
+
+frontend stats
+  bind *:8404
+  stats enable
+  stats uri /
+  stats refresh 10s
+
+frontend openchami
+  bind :80
+  bind :443 ssl crt /etc/haproxy/certs/ strict-sni
+  option forwardfor
+
+  acl PATH_smd path_beg -i /hsm/v2
+
+  acl PATH_bss path_beg -i /boot/v1
+  acl PATH_bss path_beg -i /apis/bss/
+
+  acl PATH_opaal path_beg -i /token
+  acl PATH_opaal path_beg -i /login
+  acl PATH_opaal path_beg -i /oidc/callback
+
+  acl PATH_opaal-idp path_beg -i /.well-known/openid-configuration
+  acl PATH_opaal-idp path_beg -i /.well-known/jwks.json
+  acl PATH_opaal-idp path_beg -i /browser/login
+  acl PATH_opaal-idp path_beg -i /api/login
+  acl PATH_opaal-idp path_beg -i /oauth2/authorize
+  acl PATH_opaal-idp path_beg -i /oauth2/token
+
+  acl PATH_cloud-init path_beg -i /cloud-init
+  acl PATH_cloud-init path_beg -i /cloud-init-secure
+
+  use_backend opaal if PATH_opaal
+  use_backend opaal-idp if PATH_opaal-idp
+  use_backend smd if PATH_smd
+  use_backend bss if PATH_bss
+  use_backend cloud-init if PATH_cloud-init
+
+backend opaal
+  server opaal opaal:3333
+
+backend opaal-idp
+  server opaal-idp opaal-idp:3332
+
+backend smd
+  server smd smd:27779
+
+backend bss
+  server bss bss:27778
+  http-request replace-path ^/apis/bss/(.*) /\1
+
+backend cloud-init
+  server cloud-init-server cloud-init-server:27777

@@ -1,0 +1,49 @@
+- name: Drop Network Quadlet files
+  ansible.builtin.template:
+    src: network.j2
+    dest: '/etc/containers/systemd/{{ item.name }}.network'
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - '{{ podman_quadlet_networks }}'
+  notify: Reload systemd
+
+- name: Drop Volume Quadlet files
+  ansible.builtin.template:
+    src: volume.j2
+    dest: '/etc/containers/systemd/{{ item.name }}.volume'
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - '{{ podman_quadlet_volumes }}'
+  notify: Reload systemd
+
+- name: Drop Container quadlet files
+  ansible.builtin.template:
+    src: container.j2
+    dest: '/etc/containers/systemd/{{ item.name }}.container'
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - '{{ podman_quadlet_containers }}'
+  notify: Reload systemd
+
+  #- name: Start and Enable quadlets
+  #  ansible.builtin.systemd:
+  #    name: '{{ item.name }}.service'
+  #    state: started
+  #    enabled: true
+  #    daemon_reload: true
+  #    no_block: true
+  #  with_items:
+  #    - '{{ podman_quadlet_containers }}'
+- name: Start quadlet services
+  ansible.builtin.systemd:
+    name: '{{ item }}.service'
+    state: started
+    daemon_reload: true
+  with_items:
+    - '{{ podman_quadlet_start }}'

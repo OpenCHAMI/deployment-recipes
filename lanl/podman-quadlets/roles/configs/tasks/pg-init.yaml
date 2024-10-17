@@ -1,0 +1,13 @@
+- name: Create pg-init directory
+  ansible.builtin.file:
+    path: '/etc/ochami/pg-init'
+    state: directory
+    mode: '0755'
+
+- name: Drop pg-init script
+  ansible.builtin.template:
+    src: pg-init/multi-psql-db.sh.j2
+    dest: '/etc/ochami/pg-init/multi-psql-db.sh'
+    owner: root
+    group: root
+    mode: '0755'

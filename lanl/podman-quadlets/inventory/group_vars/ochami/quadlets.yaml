@@ -1,0 +1,366 @@
+podman_quadlet_networks:
+  - name: ochami-internal
+    internal: true
+  - name: ochami-jwt-internal
+    internal: true
+  - name: ochami-cert-internal
+    internal: true
+  - name: ochami-external
+
+podman_quadlet_volumes:
+  - name: step-ca-db
+  - name: step-ca-home
+  - name: step-root-ca
+  - name: local-certs
+  - name: dnsmasq-hostsfiles
+  - name: dnsmasq-optsfiles
+  - name: haproxy-certs
+  - name: acme-certs
+  - name: postgres-data
+
+podman_quadlet_containers: '{{ _ochami_init_quadlets + _postgres_quadlets + _step_ca_quadlets + _acme_quadlets + _hydra_quadlets + _opaal_quadlets + _ochami_quadlets + _haproxy_quadlets + _dnsmasq_quadlets + _image_server_quadlets }}'
+
+podman_quadlet_start: ['ochami-init', 'dnsmasq-loader', 'image-server']
+
+_ochami_init_quadlets:
+  - name: ochami-init
+    image: alpine:latest
+    entrypoint:
+      - /bin/sh
+      - -c 
+      - sleep 1
+    type: 'oneshot'
+    restart: 'on-failure'
+    after:
+      - dnsmasq.service
+
+  - name: ochami-jenga
+    image: alpine:latest
+    entrypoint:
+      - /bin/sh
+      - -c
+      - sleep 1
+    type: oneshot
+    restart: 'on-failure'
+
+_step_ca_quadlets:
+  - name: step-ca
+    image: ghcr.io/openchami/local-ca:v0.2.2
+    volumes:
+      - step-ca-home.volume:/home/step
+      - step-ca-db.volume:/home/step/db
+      - step-root-ca.volume:/root_ca/
+    envs:
+      - STEPPATH=/home/step
+      - DOCKER_STEPCA_INIT_NAME=OpenCHAMI
+      - DOCKER_STEPCA_INIT_DNS_NAMES=localhost,step-ca
+      - DOCKER_STEPCA_INIT_ACME=true
+    networks:
+      - ochami-cert-internal.network
+    no_hosts: true
+    after: 
+      - ochami-jenga.service
+
+_postgres_quadlets:
+  - name: postgres
+    image: postgres:11.5-alpine
+    secrets:
+      - postgres_password,type=env,target=POSTGRES_PASSWORD
+      - bss_postgres_password,type=env,target=BSS_POSTGRES_PASSWORD
+      - smd_postgres_password,type=env,target=SMD_POSTGRES_PASSWORD
+      - hydra_postgres_password,type=env,target=HYDRA_POSTGRES_PASSWORD
+      - postgres_multiple_databases,type=env,target=POSTGRES_MULTIPLE_DATABASES
+    envs:
+      - POSTGRES_USER=ochami
+    volumes:
+      - postgres-data.volume:/var/lib/postgresql/data
+      - /etc/ochami/pg-init:/docker-entrypoint-initdb.d
+    networks:
+      - ochami-internal.network
+      - ochami-jwt-internal.network
+    after:
+      - ochami-jenga.service
+
+_acme_quadlets:
+  - name: acme-register
+    container_name: '{{ cluster_name }}.{{ cluster_domain }}'
+    hostname: '{{ cluster_name }}.{{ cluster_domain }}'
+    image: ghcr.io/openchami/acme.sh:v0.2.2
+    envs:
+      - 'SYSTEM_NAME={{ cluster_name }}'
+      - 'SYSTEM_DOMAIN={{ cluster_domain }}'
+    networks:
+      - ochami-cert-internal.network
+    volumes:
+      - step-root-ca.volume:/root_ca/:ro
+      - acme-certs.volume:/root/.acme.sh
+    entrypoint: 
+      - "/bin/sh"
+      - "-c"
+      - "/usr/bin/acme.sh --server https://step-ca:9000/acme/acme/directory --ca-bundle /root_ca/root_ca.crt -d {{ cluster_name }}.{{ cluster_domain }} --issue --standalone --force"
+    after:
+      - step-ca.service
+    restart: 'on-failure'
+    type: 'oneshot'
+  - name: acme-deploy
+    image: ghcr.io/openchami/acme.sh:v0.2.2
+    envs:
+      - 'SYSTEM_NAME={{ cluster_name }}'
+      - 'SYSTEM_DOMAIN={{ cluster_domain }}'
+      - 'DEPLOY_HAPROXY_PEM_PATH=/root/certs/'
+    networks:
+      - ochami-cert-internal.network
+    volumes:
+      - /:/root_ca/:ro
+      - acme-certs:/root/.acme.sh
+      - haproxy-certs:/root/certs/
+    entrypoint: 
+      - /bin/sh
+      - -c 
+      - "/usr/bin/acme.sh --server https://step-ca:9000/acme/acme/directory --ca-bundle /root_ca/root_ca.crt --deploy --deploy-hook haproxy --domain {{cluster_name}}.{{ cluster_domain }}"
+    restart: 'on-failure'
+    type: 'oneshot'
+    after:
+      - acme-register.service
+
+_hydra_quadlets:
+  - name: hydra-migrate
+    image: oryd/hydra:v2.2.0-rc.3
+    secrets:
+      - hydra_system_secret,type=env,target=SECRETS_SYSTEM
+      - hydra_postgres_password,type=env,target=HYDRA_POSTGRES_PASSWORD
+      - hydra_dsn,type=env,target=DSN
+    command: 'migrate -c /etc/config/hydra/hydra.yml sql -e --yes'
+    volumes:
+      - /etc/ochami/configs/:/etc/config/hydra
+    networks:
+      - ochami-internal.network
+    restart: 'on-failure'
+    type: 'oneshot'
+    after:
+      - postgres.service
+  - name: hydra
+    image: oryd/hydra:v2.2.0-rc.3
+    command: 'serve -c /etc/config/hydra/hydra.yml all --sqa-opt-out'
+    volumes:
+      - /etc/ochami/configs/:/etc/config/hydra
+    secrets:
+      - hydra_system_secret,type=env,target=SECRETS_SYSTEM
+      - hydra_dsn,type=env,target=DSN
+    envs:
+      - 'SYSTEM_NAME={{ cluster_name }}'
+      - 'SYSTEM_DOMAIN={{ cluster_domain }}'
+      - 'URLS_SELF_ISSUER=https://{{ cluster_name }}.{{ cluster_domain }}/'
+      - 'URLS_SELF_PUBLIC=https://{{ cluster_name }}.{{ cluster_domain }}/'
+      - 'URLS_LOGIN=https://{{ cluster_name }}.{{ cluster_domain }}/login'
+      - 'URLS_CONSENT=https://{{ cluster_name }}.{{ cluster_domain }}/consent'
+      - 'URLS_LOGOUT=https://{{ cluster_name }}.{{ cluster_domain }}/logout'
+    after:
+      - hydra-migrate.service
+      - ochami-jenga.service
+    networks:
+      - ochami-jwt-internal.network
+  # Fix for hydra race condition
+  - name: hydra-gen-jwks
+    image: cgr.dev/chainguard/curl:latest
+    type: 'oneshot'
+    command: '--retry 10 --retry-delay 5 --retry-all-errors --verbose http://hydra:4444/.well-known/jwks.json'
+    networks:
+      - ochami-jwt-internal.network
+    restart: 'on-failure'
+    after:
+      - hydra.service
+
+_opaal_quadlets:
+  - name: opaal-idp
+    image: ghcr.io/openchami/opaal:v0.3.10
+    command: /opaal/opaal serve --config /opaal/config/opaal.yaml
+    volumes:
+      - /etc/ochami/configs:/opaal/config/
+    networks:
+      - ochami-jwt-internal
+    after:
+      - hydra-gen-jwks.service
+  - name: opaal
+    image: ghcr.io/openchami/opaal:v0.3.10
+    command: '/opaal/opaal login --config /opaal/config/opaal.yaml'
+    volumes:
+      - /etc/ochami/configs:/opaal/config/
+    networks:
+      - ochami-internal.network
+      - ochami-jwt-internal.network
+    extra_hosts:
+      - "{{ cluster_name }}.{{ cluster_domain }}:{{ cluster_boot_ip }}"
+    post_start:
+      - sleep 10s
+        #    health:
+        #      cmd: 'curl --fail --silent http://opaal:3333/keys'
+        #      interval: 5s
+        #      timeout: 10s
+        #      retries: 60
+    after:
+      - opaal-idp.service
+
+_ochami_quadlets:
+  - name: smd-init
+    image: ghcr.io/openchami/smd:v2.16.1
+    secrets:
+      - smd_postgres_password,type=env,target=SMD_DBPASS
+    envs:
+      - SMD_DBHOST=postgres
+      - SMD_DBPORT=5432
+      - SMD_DBNAME=hmsds
+      - SMD_DBUSER=smd-user
+      - SMD_DBOPTS=sslmode=disable
+    after:
+      - postgres.service
+    networks:
+      - ochami-internal.network
+    entrypoint: ["/bin/sh", "-c", "/smd-init"]
+    restart: 'on-failure'
+    type: 'oneshot'
+  - name: smd
+    image: ghcr.io/openchami/smd:v2.16.1
+    secrets:
+      - smd_postgres_password,type=env,target=SMD_DBPASS
+    envs:
+      - SMD_DBHOST=postgres
+      - SMD_DBPORT=5432
+      - SMD_DBNAME=hmsds
+      - SMD_DBUSER=smd-user
+      - SMD_DBOPTS=sslmode=disable
+      - SMD_JWKS_URL=http://opaal:3333/keys
+    after:
+      - smd-init.service
+      - opaal.service
+    networks:
+      - ochami-internal.network
+  - name: bss-init
+    image: ghcr.io/openchami/bss:v1.31.3
+    secrets:
+      - bss_postgres_password,type=env,target=BSS_DBPASS
+    envs:
+      - BSS_USESQL=true
+      - BSS_INSECURE=true
+      - BSS_DBHOST=postgres
+      - BSS_DBPORT=5432
+      - BSS_DBNAME=bssdb
+      - BSS_DBUSER=bss-user
+    after:
+      - smd.service
+    networks:
+      - ochami-internal.network
+    entrypoint: ["/bin/sh", "-c", "/usr/local/bin/bss-init"]
+    restart: 'on-failure'
+    type: 'oneshot'
+  - name: bss
+    image: ghcr.io/openchami/bss:v1.31.3
+    secrets:
+      - bss_postgres_password,type=env,target=BSS_DBPASS
+    envs:
+      - BSS_USESQL=true
+      - BSS_INSECURE=true
+      - BSS_DEBUG=true
+      - BSS_DBHOST=postgres
+      - BSS_DBPORT=5432
+      - BSS_DBNAME=bssdb
+      - BSS_DBUSER=bss-user
+      - BSS_JWKS_URL=http://opaal:3333/keys
+      - BSS_OAUTH2_ADMIN_BASE_URL=http://opaal:3333
+      - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
+      - 'BSS_IPXE_SERVER={{ cluster_name }}.{{ cluster_domain }}'
+      - BSS_CHAIN_PROTO=https
+    after:
+      - bss-init.service
+      - opaal.service
+    networks:
+      - ochami-internal.network
+  - name: cloud-init-server
+    image: ghcr.io/openchami/cloud-init:v0.1.1
+    envs:
+      - LISTEN_ADDR=:27777
+      - SMD_URL=http://smd:27779
+      - OPAAL_URL=http://opaal:3333
+      - JWKS_URL=http://opaal:3333/keys
+    ports:
+      - '{{cluster_boot_ip }}:27777:27777'
+    after:
+      - smd.service
+      - opaal.service
+    networks:
+      - ochami-internal.network
+  - name: tpm-manager
+    image: ghcr.io/openchami/tpm-manager:v0.2.2
+    command: "-port 27780 -batch-size 100 -interval 30s"
+    envs:
+      - OPAAL_URL=http://opaal:3333
+      - HSM_URL=http://smd:27779
+      - ANSIBLE_HOST_KEY_CHECKING=False
+    after:
+      - smd.service
+      - opaal.service
+    networks:
+      - ochami-internal.network
+
+_haproxy_quadlets:
+  - name: haproxy
+    image: cgr.dev/chainguard/haproxy
+    ports:
+      - "{{ cluster_boot_ip }}:8081:80"
+      - "{{ cluster_boot_ip }}:8443:443"
+    networks:
+      - ochami-external.network
+      - ochami-internal.network
+      - ochami-jwt-internal.network
+    volumes:
+      - /etc/ochami/configs/:/usr/local/etc/haproxy/:ro
+      - haproxy-certs.volume:/etc/haproxy/certs/:ro
+    after:
+      - opaal.service
+      - bss.service
+      - acme-deploy.service
+      - cloud-init-server.service
+      - tpm-manager.service
+
+_dnsmasq_quadlets:
+  - name: dnsmasq
+    image: ghcr.io/openchami/dnsmasq:v0.1.11
+    capabilities:
+      - NET_ADMIN
+    volumes:
+      - /etc/ochami/configs/dnsmasq:/etc/dnsmasq/:rw
+      - dnsmasq-hostsfiles.volume:/etc/dnsmasq/site/hosts/:rw
+      - dnsmasq-optsfiles.volume:/etc/dnsmasq/site/opts/:rw
+    networks:
+      - host
+    extra_hosts:
+      - "{{ cluster_name }}.{{ cluster_domain }}:{{ cluster_boot_ip }}"
+    after:
+      - haproxy.service
+
+  - name: dnsmasq-loader
+    image: ghcr.io/openchami/dnsmasq-loader:v0.1.11
+    command: --opts-file /etc/dnsmasq/site/opts/optsfile --hosts-file /etc/dnsmasq/site/hosts/hostsfile
+    volumes:
+      - /etc/ochami/configs/dnsmasq:/configs/:rw
+      - dnsmasq-hostsfiles.volume:/etc/dnsmasq/site/hosts/:rw
+      - dnsmasq-optsfiles.volume:/etc/dnsmasq/site/opts/:rw
+      - step-root-ca.volume:/root_ca/:ro
+    envs:
+      - 'OCHAMI_BASEURL=https://{{ cluster_name }}.{{ cluster_domain }}:8443'
+      - CURL_CA_BUNDLE=/root_ca/root_ca.crt
+      - 'OCHAMI_BOOTSCRIPT_BASEURL=http://{{ cluster_boot_ip }}:8081'
+      - 'node_prefix={{ cluster_shortname }}'
+    after:
+      - dnsmasq.service
+
+_image_server_quadlets:
+  - name: image-server
+    image: docker.io/library/nginx:latest
+    volumes:
+      - /data/domain-images:/usr/share/nginx/html:ro
+    ports:
+      - '{{ cluster_boot_ip }}:8080:80'
+    pre_start:
+      - mkdir -p /data/domain-images
+

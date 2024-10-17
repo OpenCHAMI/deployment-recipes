@@ -1,0 +1,10 @@
+ochami_package_dependencies:
+  - ansible
+  - buildah
+  - clustershell
+  - jq
+  - netavark
+  - podman
+  - python3-requests
+  - python3-yaml
+  - python3-jwt

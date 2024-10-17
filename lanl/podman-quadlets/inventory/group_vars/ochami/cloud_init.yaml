@@ -1,0 +1,12 @@
+cluster_cloud_init:
+  - name: compute
+    cloud_init:
+      userdata:
+        write_files:
+          - path: /root/.ssh/authorized_keys
+            content: '{{ cluster_boot_ssh_pub_key }}'
+        runcmd:
+          - setenforce 0
+          - systemctl disable firewalld
+      metadata:
+        instance-id: test
