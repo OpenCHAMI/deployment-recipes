@@ -1,7 +1,7 @@
 ---
 - name: distrust ochami certificate
   become: true
-  ansible.builtin.shell: 'trust anchor --store /tmp/ochami.pem; update-ca-trust'
+  ansible.builtin.shell: 'trust anchor --remove /tmp/ochami.pem; update-ca-trust'
 
 - name: delete ochami certificate
   become: true
