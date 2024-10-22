@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  configurator:
+    image: ghcr.io/openchami/configurator:latest
+    container_name: configurator
+    hostname: configurator
+    command:
+      - '/configurator/configurator'
+      - 'server'
+      - '--config'
+      - '/configurator/config.yaml'
+    volumes:
+      - ./configs/configurator.yaml:/configurator/config.yaml
+    networks:
+      - internal
+    ports:
+      - 3334:3334
+    # NOTE: configurator does not have a /status endpoint yet
+    # healthcheck:
+    #   test: ["CMD", "curl", "--fail", "--silent", "http://localhost:3334/status"]
+    #   interval: 5s
+    #   timeout: 10s
+    #   retries: 60

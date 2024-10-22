@@ -1,0 +1,44 @@
+server:         # Server-related parameters when using as service
+  host: 127.0.0.1
+  port: 3334
+  jwks:         # Set the JWKS uri to protect /generate route
+    uri: ""
+    retries: 5
+smd:          # SMD-related parameters
+  host: http://127.0.0.1
+  port: 27779
+plugins:        # path to plugin directories
+  - "lib/"
+targets:        # targets to call with --target flag with CLI or "target" query param
+  dnsmasq:
+    templates:
+      - templates/dnsmasq.jinja
+  coredhcp: 
+    templates: 
+      - templates/coredhcp.jinja
+  syslog: 
+    templates: 
+      - templates/syslog.jinja
+  ansible: 
+    templates: 
+      - templates/ansible.jinja
+  powerman: 
+    templates: 
+      - templates/powerman.jinja
+  conman: 
+    templates: 
+      - templates/conman.jinja
+  warewulf:
+    templates:  # files using Jinja templating
+      - templates/warewulf/vnfs/dhcpd-template.jinja
+      - templates/warewulf/vnfs/dnsmasq-template.jinja
+    files:      # files to be copied without templating
+      - templates/warewulf/defaults/provision.jinja
+      - templates/warewulf/defaults/node.jinja
+      - templates/warewulf/filesystem/examples/*
+      - templates/warewulf/vnfs/*
+      - templates/warewulf/bootstrap.jinja
+      - templates/warewulf/database.jinja
+    targets:    # additional targets to run 
+      - dnsmasq
+      - conman
