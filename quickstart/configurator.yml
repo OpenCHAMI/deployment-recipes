@@ -4,7 +4,7 @@ services:
   configurator:
     image: ghcr.io/openchami/configurator:latest
     container_name: configurator
-    hostname: opaal
+    hostname: configurator
     command:
       - '/configurator/configurator'
       - 'server'
