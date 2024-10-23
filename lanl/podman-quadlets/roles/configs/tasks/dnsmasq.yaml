@@ -1,0 +1,38 @@
+- name: Create dnsmasq directories
+  ansible.builtin.file:
+    path: '/etc/ochami/configs/dnsmasq/site/'
+    state: directory
+    mode: '0755'
+
+- name: Drop dnsmasq config file
+  ansible.builtin.template:
+    src: dnsmasq/dnsmasq.conf.j2
+    dest: '/etc/ochami/configs/dnsmasq/dnsmasq.conf'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Drop tftp config file
+  ansible.builtin.template:
+    src: dnsmasq/tftp-ipxe.conf.j2
+    dest: '/etc/ochami/configs/dnsmasq/site/tftp-ipxe.conf'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Drop dhcp config file
+  ansible.builtin.template:
+    src: dnsmasq/dhcp.conf.j2
+    dest: '/etc/ochami/configs/dnsmasq/site/dhcp.conf'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create hosts and opts directories
+  ansible.builtin.file:
+    path: '/etc/ochami/configs/dnsmasq/site/{{ item }}'
+    state: directory
+    mode: '0755'
+  with_items:
+    - 'opts'
+    - 'hosts'

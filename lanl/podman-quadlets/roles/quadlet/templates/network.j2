@@ -1,0 +1,17 @@
+[Unit]
+Description={{ item.name }} Network
+
+[Network]
+NetworkName={{ item.name }}
+{% if item.internal is defined %}
+Internal={{ item.internal }}
+{% else %}
+Internal=false
+{% endif %}
+{% if item.driver is defined %}
+Driver={{ item.driver }}
+{% if item.driver == 'macvlan' %}
+Subnet={{ item.subnet }}
+Options={{ item.opts }}
+{% endif %}
+{% endif %}

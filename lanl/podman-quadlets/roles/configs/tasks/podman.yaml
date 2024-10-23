@@ -1,0 +1,7 @@
+- name: Drop containers.conf config file
+  ansible.builtin.template:
+    src: podman/containers.conf.j2
+    dest: '/etc/containers/containers.conf'
+    owner: root
+    group: root
+    mode: '0644'

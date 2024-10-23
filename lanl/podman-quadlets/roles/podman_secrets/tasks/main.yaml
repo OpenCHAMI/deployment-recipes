@@ -1,0 +1,9 @@
+- name: Create secrets
+  containers.podman.podman_secret:
+    state: present
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    force: true
+  with_items:
+    - '{{ podman_secrets }}'
+  no_log: true

@@ -1,0 +1,7 @@
+- name: Drop hydra config file
+  ansible.builtin.template:
+    src: hydra/hydra.yml.j2
+    dest: '/etc/ochami/configs/hydra.yml'
+    owner: root
+    group: root
+    mode: '0644'

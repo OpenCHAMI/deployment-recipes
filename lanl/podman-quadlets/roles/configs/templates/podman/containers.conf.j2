@@ -1,0 +1,10 @@
+[engine]
+{% if cluster_proxy is defined %}
+env = [ 
+   "http_proxy={{ cluster_proxy }}",
+   "https_proxy={{ cluster_proxy }}" 
+]
+{% endif %}
+
+[network]
+network_backend="netavark"

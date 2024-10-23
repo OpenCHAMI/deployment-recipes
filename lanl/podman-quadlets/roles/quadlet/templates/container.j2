@@ -1,0 +1,146 @@
+[Unit]
+Description=The {{ item.name }} container
+{% if item.after is defined %}
+Requires={{ item.after | join(' ') }}
+After={{ item.after | join(' ') }}
+{% endif %}
+
+[Container]
+{% if item.container_name is defined %}
+ContainerName={{ item.container_name }}
+{% else %}
+ContainerName={{ item.name }}
+{% endif %}
+
+{% if item.hostname is defined %}
+HostName={{ item.hostname }}
+{% else %}
+HostName={{ item.name }}
+{% endif %}
+
+Image={{ item.image }}
+
+{% if item.capabilities is defined %}
+#Capabilities
+{% for caps in item.capabilities %}
+AddCapability={{ caps }}
+{% endfor %}
+{% endif %}
+
+{% if item.volumes is defined %}
+# Volumes
+{% for volume in item.volumes %}
+Volume={{ volume }}
+{% endfor %}
+{% endif %}
+
+{% if item.ports is defined %}
+# Ports
+{% for port in item.ports %}
+PublishPort={{ port }}
+{% endfor %}
+{% endif %}
+
+{% if item.envs is defined %}
+# Environemnt Variables
+{% for env in item.envs %}
+Environment={{ env }}
+{% endfor %}
+{% endif %}
+
+{% if item.secrets is defined %}
+# Secrets
+{% for secret in item.secrets %}
+Secret={{ secret }}
+{% endfor %}
+{% endif %}
+
+{% if item.device is defined %}
+# Device
+AddDevice={{ item.device }}
+{% endif %}
+
+{% if item.init is defined and item.init | bool %}
+# Run --init
+RunInit=true
+{% endif %}
+
+{% if item.work_dir is defined %}
+# Device
+WorkingDir={{ item.work_dir }}
+{% endif %}
+
+{% if item.command is defined %}
+# Command to run in container
+Exec={{ item.command }}
+{% endif %}
+
+{% if item.networks is defined %}
+# Networks for the Container to use
+{% for network in item.networks %}
+Network={{ network  }}
+{% endfor %}
+{% endif %}
+
+{% if item.health is defined %}
+# Health Checks
+# Health Check Command
+HealthCmd=CMD-SHELL '{{ item.health.cmd }}'
+# Health Check Interval
+{% if item.health.interval is defined %}
+HealthInterval={{ item.health.interval }}
+{% endif %}
+# Health Check Retries
+{% if item.health.retries is defined %}
+HealthRetries={{ item.health.retries }}
+{% endif %}
+# Health Check Timeout
+{% if item.health.timeout is defined %}
+HealthTimeout={{ item.health.timeout }}
+{% endif %}
+{% endif %}
+
+# Unsupported by generator options
+{% if item.extra_hosts is defined %}
+# Extra hosts
+{% for host in item.extra_hosts %}
+PodmanArgs=--add-host='{{ host }}'
+{% endfor %}
+{% endif %}
+# Proxy settings
+{% if item.proxy is defined %}
+PodmanArgs=--http-proxy='{{ item.proxy }}'
+{% else %}
+PodmanArgs=--http-proxy=false
+{% endif %}
+{% if item.entrypoint is defined %}
+PodmanArgs=--entrypoint='["{{ item.entrypoint|join('","') }} "]'
+{% endif %}
+{% if item.no_hosts is defined %}
+PodmanArgs=--no-hosts
+{% endif %}
+
+[Service]
+{% if item.restart is defined %}
+Restart={{ item.restart }}
+{% else %}
+Restart=always
+{% endif %}
+{% if item.type is defined %}
+Type={{ item.type }}
+{% if item.type == "oneshot" %}
+RemainAfterExit=yes
+{% endif %}
+{% endif %}
+{% if item.pre_start is defined %}
+# Run commands before container starts
+{% for ps in item.pre_start %}
+ExecStartPre={{ ps }}
+{% endfor %}
+{% endif %}
+{% if item.post_start is defined %}
+# Run commands after container starts
+{% for ps in item.post_start %}
+ExecStartPost={{ ps }}
+{% endfor %}
+{% endif %}
