@@ -43,7 +43,7 @@ The BMCs are named `p<shortname>`.
 172.16.0.108    pst08
 172.16.0.109    pst09
 ```
-The `stratus.openchami.cluster` entry is particularly important as OpenCHAMI will use this as the API gateway and when creating CA certs. 
+The `stratus.openchami.cluster` entry is particularly important as OpenCHAMI will use this as the API gateway and when creating CA certs. The IP should be set for an interface on the head/master/mangement/whatever node you are running this on. 
 
 ### powerman + conman
 We are assuming powerman and conman for power control and console access. OpenCHAMI doesn't care about these features (yet) so use whatever you have. If you are not going to be booting actual nodes then you can skip the power and console setup
@@ -184,9 +184,7 @@ buildah umount $CNAME
 buildah rm $CNAME
 ```
 
-## Deploying OpenCHAMI
-We have a set of [Deployment Recipes](https://github.com/OpenCHAMI/deployment-recipes.git) available on the [OpenCHAMI GitHub](https://github.com/OpenCHAMI). 
-We are going to use a specific one, the LANL [podman-quadlets](https://github.com/OpenCHAMI/deployment-recipes/tree/trcotton/podman-quadlets/lanl/podman-quadlets) recipe. We will have to modify some of the configs to match our cluster, but we'll get to that.  
+## Deploying OpenCHAMI  
 First pull down the deployment-recipes repo from the OpenCHAMI GitHub.
 ```bash
 git clone https://github.com/OpenCHAMI/deployment-recipes.git
