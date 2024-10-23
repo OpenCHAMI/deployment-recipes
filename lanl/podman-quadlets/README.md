@@ -17,7 +17,7 @@ The following steps are needed before deploying the OpenCHAMI services.
 
 ### Package installs
 ```bash
-sudo dnf install -y ansible git podman
+dnf install -y ansible git podman
 ```
 ### Setup hosts
 Each cluster has a name and a shortname. This cluster is `Stratus` and the shortname is `st`.
