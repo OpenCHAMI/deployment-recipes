@@ -7,7 +7,7 @@ This recipe uses [podman quadlets](https://docs.podman.io/en/latest/markdown/pod
 This has be tested RHEL-like systems(Rocky, Almalinux, etc). 
 
 ### Cluster Images
-OpenCHAMI doesn't provide an image build system. It relies on external images being available.  There is an example build in Extras you can use to test things with. If you don't care about actually booting images and only want to deploy the services you don't have to care about this. 
+OpenCHAMI doesn't provide an image build system. It relies on external images being available.  There is an example build below you can use to test things with. If you don't care about actually booting images and only want to deploy the services you don't have to care about this. 
 
 ### Cluster data
 The data included here for things like MACs, cluster name, node names, etc come from a test system at LANL. 
