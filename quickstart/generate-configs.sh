@@ -77,6 +77,7 @@ while getopts "c:d:fg:hi:j:k:l:m:s:u:" opt; do
 			;;
 		h)
 			usage
+			exit
 			;;
 		i)
 			IP_POOL_START="${OPTARG}"
@@ -101,6 +102,7 @@ while getopts "c:d:fg:hi:j:k:l:m:s:u:" opt; do
 			;;
 		*)
 			usage >&2
+			exit
 			;;
 	esac
 done
