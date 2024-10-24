@@ -8,9 +8,12 @@ usage() {
 	echo "Example: $0 foobar"
 	echo "Example: $0 \\"
 	echo "  -c 30s \\"
-	echo "  -d 10.15.3.42,10.0.69.16,10.0.69.17 \\"
+	echo "  -d 1.1.1.1,8.8.8.8 \\"
 	echo "  -g 172.16.0.254 \\"
-	echo "  -l 3600s \\"
+	echo "  -i 172.16.0.1 \\"
+	echo "  -j 172.16.0.252 \\"
+	echo "  -l 1h \\"
+	echo "  -m 5m \\"
 	echo "  -m 255.255.255.0 \\"
 	echo "  -s 172.16.0.253 \\"
 	echo "  -u http://172.16.0.253:8081 \\"
@@ -27,7 +30,8 @@ usage() {
 	echo " -g  DHCP gateway IP. Defaults of value of LOCAL_IP in generated"
 	echo "     .env file."
 	echo " -h  Print this usage message to stdout."
-	echo " -l  DHCP lease time. 3600s (1 hour) by default."
+	echo " -k  DHCP long lease time. 1 hour by default."
+	echo " -l  DHCP short lease time. 5 minutes by default."
 	echo " -m  DHCP netmask. Defaults to 255.255.255.0."
 	echo " -s  DHCP server IP. Defaults to value of LOCAL_IP in generated"
 	echo "     .env file."
@@ -49,12 +53,15 @@ get_eth0_ipv4() {
 }
 
 CACHE_VALIDITY=30s
-LEASE_TIME=3600s
+LONG_LEASE_TIME=1h
+SHORT_LEASE_TIME=5m
 GATEWAY_IP=$(get_eth0_ipv4)
+IP_POOL_START=172.16.0.1
+IP_POOL_END=172.16.0.252
 DNS_SERVERS=8.8.8.8
 DHCP_NETMASK=255.255.255.0
 DHCP_SERVER_IP=$(get_eth0_ipv4)
-while getopts "c:d:fg:hl:m:s:u:" opt; do
+while getopts "c:d:fg:hi:j:k:l:m:s:u:" opt; do
 	case "${opt}" in
 		c)
 			CACHE_VALIDITY="${OPTARG}"
@@ -71,8 +78,17 @@ while getopts "c:d:fg:hl:m:s:u:" opt; do
 		h)
 			usage
 			;;
+		i)
+			IP_POOL_START="${OPTARG}"
+			;;
+		j)
+			IP_POOL_END="${OPTARG}"
+			;;
+		k)
+			LONG_LEASE_TIME="${OPTARG}"
+			;;
 		l)
-			LEASE_TIME="${OPTARG}"
+			SHORT_LEASE_TIME="${OPTARG}"
 			;;
 		m)
 			DHCP_NETMASK="${OPTARG}"
@@ -163,7 +179,10 @@ DNS_SERVERS="${DNS_SERVERS//,/ }"
 # Generate CoreDHCP configuration from configs/coredhcp-template.yaml.
 sed \
   -e "s/<CACHE_VALIDITY>/${CACHE_VALIDITY}/g" \
-  -e "s/<LEASE_TIME>/${LEASE_TIME}/g" \
+  -e "s/<IP_POOL_START>/${IP_POOL_START}/g" \
+  -e "s/<IP_POOL_END>/${IP_POOL_END}/g" \
+  -e "s/<LONG_LEASE_TIME>/${LONG_LEASE_TIME}/g" \
+  -e "s/<SHORT_LEASE_TIME>/${SHORT_LEASE_TIME}/g" \
   -e "s|<SCRIPT_URL>|${SCRIPT_URL}|g" \
   -e "s|<BASE_URL>|https://${SYSNAME}.${SYSDOMAIN}|g" \
   -e "s/<DNS_SERVERS>/${DNS_SERVERS}/g" \

@@ -1,8 +1,12 @@
 server4:
   plugins:
-    - lease_time: <LEASE_TIME>
     - server_id: <SERVER_IP>
     - dns: <DNS_SERVERS>
     - router: <GATEWAY_IP>
     - netmask: <DHCP_NETMASK>
-    - coresmd: <BASE_URL> <SCRIPT_URL> /root_ca/root_ca.crt <CACHE_VALIDITY> <token>
+    - coresmd: <BASE_URL> <SCRIPT_URL> /root_ca/root_ca.crt <CACHE_VALIDITY> <LONG_LEASE_TIME>
+    # Optionally include the file plugin here if it matters which IPs get assigned to which
+    # MACs. Otherwise, unknown MACs get passed to the bootloop "catch-all" plugin below.
+    #
+    #- file /etc/coredhcp/hostsfile
+    - bootloop: /tmp/coredhcp.db <SHORT_LEASE_TIME> <IP_POOL_START> <IP_POOL_END>
