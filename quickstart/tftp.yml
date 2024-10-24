@@ -1,0 +1,26 @@
+services:
+  tftp:
+    image: docker.io/aguslr/atftpd:latest
+    container_name: tftp
+    hostname: tftp
+    network_mode: host
+    volumes:
+      - ./ipxe:/data
+    cap_add:
+      - NET_ADMIN
+    command:
+      - "--daemon"
+      - "--no-fork"
+      - "--user"
+      - "nobody.nogroup"
+      - "--logfile"
+      - "-"
+      - "--port"
+      - "69"
+      - "--verbose"
+      - "/data"
+    healthcheck:
+      test: pgrep tftp
+      interval: 5s
+      timeout: 10s
+      retries: 60
