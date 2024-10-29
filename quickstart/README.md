@@ -20,7 +20,7 @@ This quickstart makes a few assumptions about the target operating system and is
    git clone https://github.com/OpenCHAMI/deployment-recipes.git
    cd deployment-recipes/quickstart/
    ```
-1. Create the secrets file and choose a name for your system.  We use `foobar` in our example.
+1. Create the secrets file and choose a **system name**.  We use `foobar` in our example.
     - __Note__ The certificates for the system use the name you provide in this file.  It's not easy to change.
     - __Note__ The script attempts to figure out which ip address is most likely to be your system ip.  If it is unsuccessful, `LOCAL_IP=` will be empty and you'll need to update it manually
     - __Note__ The full url will be https://foobar.openchami.cluster which you should set manually in /etc/hosts and point to the same ip address as `LOCAL_IP` in `.env`.
@@ -33,7 +33,7 @@ This quickstart makes a few assumptions about the target operating system and is
    grep LOCAL_IP .env
    ```
    If you have problems with this step, check to make sure that the main IP address of your host is in `.env` as `LOCAL_IP`.
-1. Update your /etc/hosts to point your system name to your local ip (this is important for valid certs)
+1. Update your /etc/hosts to point your **system name** to your local ip (this is important for valid certs). The **system name** can be seen in the `.env` file created in the previous step.
 1. Start the main services
    ```bash 
    docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f  openchami-svcs.yml -f autocert.yml up -d
