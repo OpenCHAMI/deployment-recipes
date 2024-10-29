@@ -1,10 +1,9 @@
 ---
 - name: get ochami certificate
-  ansible.builtin.shell: '/bin/bash -l -c "get_ca_cert > /tmp/ochami.pem"'
-  notify: delete ochami certificate
+  ansible.builtin.shell: '/bin/bash -l -c "get_ca_cert > /etc/pki/ca-trust/source/anchors/ochami_tmp.pem"'
 
 - name: trust ochami certificate
-  ansible.builtin.shell: 'trust anchor --store /tmp/ochami.pem && update-ca-trust'
+  ansible.builtin.shell: 'update-ca-trust'
   notify: distrust ochami certificate
 
 - name: obtain access token to write to smd
