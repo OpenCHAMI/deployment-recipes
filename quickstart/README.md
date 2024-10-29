@@ -62,6 +62,10 @@ This quickstart makes a few assumptions about the target operating system and is
    ```bash
    docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml up -d
    ```
+1. Test.
+   ```bash
+   curl -k https://foobar.openchami.cluster:8443/hsm/v2/service/ready
+   ```
 
 
 ## cloud-init Server Setup
