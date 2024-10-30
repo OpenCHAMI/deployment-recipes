@@ -270,6 +270,7 @@ _ochami_quadlets:
       - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
       - 'BSS_IPXE_SERVER={{ cluster_name }}.{{ cluster_domain }}'
       - BSS_CHAIN_PROTO=https
+      - BSS_BOOTSCRIPT_NOTIFY_URL=http://tpm-manager:27780/Node
     after:
       - bss-init.service
       - opaal.service
@@ -282,8 +283,6 @@ _ochami_quadlets:
       - SMD_URL=http://smd:27779
       - OPAAL_URL=http://opaal:3333
       - JWKS_URL=http://opaal:3333/keys
-    ports:
-      - '{{cluster_boot_ip }}:27777:27777'
     after:
       - smd.service
       - opaal.service
@@ -301,6 +300,9 @@ _ochami_quadlets:
       - opaal.service
     networks:
       - ochami-internal.network
+      - ochami-external.network
+    volumes:
+      - /root/.ssh:/root/.ssh:ro
 
 _haproxy_quadlets:
   - name: haproxy
