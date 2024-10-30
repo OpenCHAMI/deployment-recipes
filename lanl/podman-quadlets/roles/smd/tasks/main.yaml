@@ -5,8 +5,6 @@
       - /opt/ochami/bin/ochami-cli
       - --access-token
       - "{{ access_token.stdout }}"
-      - --ca-cert
-      - /tmp/ochami.pem
       - --smd-url
       - "{{ ochami_smd_url }}"
       - smd
