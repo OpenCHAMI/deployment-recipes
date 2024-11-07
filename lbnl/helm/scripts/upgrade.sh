@@ -11,7 +11,6 @@ helm upgrade \
   --set smd.deployment.image.repository="${repo}" \
   --set postgres.deployment.image.repository="${repo}" \
   --set krakend.deployment.image.repository="${repo}" \
-  --set dnsmasq.deployment.image.repository="${repo}" \
   --set hydra.deployment.image.repository="${repo}" \
   --set hydra_consent.deployment.image.repository="${repo}" \
   --set swiss_army_knife.deployment.image.repository="${repo}" \
