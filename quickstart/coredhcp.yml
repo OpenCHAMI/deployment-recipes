@@ -1,6 +1,6 @@
 services:
   coredhcp:
-    image: ghcr.io/openchami/coresmd:v0.0.3
+    image: ghcr.io/openchami/coresmd:v0.0.4
     container_name: coredhcp
     hostname: coredhcp
     network_mode: host
