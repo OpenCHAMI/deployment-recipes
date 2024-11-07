@@ -1,3 +1,4 @@
 .env
 .DS_Store
 lanl/docker-compose/configs/step-ca/*
+lbnl/helm/charts/

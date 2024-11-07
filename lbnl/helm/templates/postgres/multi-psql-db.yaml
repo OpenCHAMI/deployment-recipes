@@ -37,4 +37,4 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: multi-psql-db
-  namespace: ochami
+  namespace: {{ .Release.Namespace }}
