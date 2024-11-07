@@ -5,4 +5,4 @@ server4:
     - router: {{ coredhcp_router }}
     - netmask: {{ coredhcp_netmask }}
     - coresmd: https://{{ cluster_name }}.{{ cluster_domain }}:8443 http://{{ cluster_boot_ip }}:8081 /root_ca/root_ca.crt {{ coredhcp_cache_validity }} {{ coredhcp_lease_duration }}
-    - bootloop: /tmp/coredhcp.db {{ coredhcp_tmp_lease_time }} {{ coredhcp_dhcp_pool }}
+    - bootloop: /tmp/coredhcp.db {{ coredhcp_tmp_lease_duration }} {{ coredhcp_dhcp_pool }}
