@@ -134,10 +134,10 @@ tftpd:
   deployment:
     replicaCount: 1
     image:
-      repository: ghcr.io/openchami
-      name: tftpd
+      repository: docker.io/aguslr
+      name: atftpd
       pullPolicy: IfNotPresent
-      tag: "0.1"
+      tag: "20241017"
     containerPort: 69
 
   service:
