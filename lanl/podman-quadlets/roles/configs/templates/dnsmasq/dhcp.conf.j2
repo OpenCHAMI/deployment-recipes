@@ -1,8 +1,0 @@
-domain=.local
-dhcp-option=option:domain-search,.local
-dhcp-option=option:mtu,{{ ochami_dnsmasq_mtu }}
-dhcp-option=option:ntp-server,{{ ochami_dnsmasq_ntp_server }}
-dhcp-option=option:router,{{ ochami_dnsmasq_router }}
-dhcp-option=option:dns-server,{{ ochami_dnsmasq_dns_server }}
-dhcp-range={{ ochami_dnsmasq_dhcp_range }}
-dhcp-optsdir=/etc/dnsmasq/site/opts
