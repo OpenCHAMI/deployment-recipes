@@ -1,0 +1,25 @@
+server4:
+  plugins:
+    #
+    # Base CoreDHCP config
+    #
+
+    - server_id: 192.168.0.254
+    - dns: 1.1.1.1 8.8.8.8
+    - router: 172.16.0.254
+    - netmask: 255.255.255.0
+
+    #
+    # CoreSMD config
+    #
+
+    # Args: ochami_base_url boot_script_base_url ca_cert_path cache_update_interval long_lease_time
+    - coresmd: <BASE_URL> http://192.168.0.254:8081 /root_ca/root_ca.crt 30s 1h
+
+    # Optionally include the file plugin here if it matters which IPs get assigned to which
+    # MACs. Otherwise, unknown MACs get passed to the bootloop "catch-all" plugin below.
+    #
+    #- file /etc/coredhcp/hostsfile
+
+    # Args: storage_path short_lease_time ip_pool_start ip_pool_end 
+    - bootloop: /tmp/coredhcp.db 5m 192.168.0.150 192.168.0.253

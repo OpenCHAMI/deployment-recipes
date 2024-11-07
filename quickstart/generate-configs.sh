@@ -2,64 +2,68 @@
 
 set -euo pipefail
 
-if [ -f .env ]
-then
-	echo "A config file (.env) exists. Delete to generate a new one"
-	exit 1
-fi
-
-if [ -f configs/opaal.yaml ]
-then
-	echo "An OPAAL config (configs/opaal.yaml) exists. Delete to generate a new one"
-fi
-
 usage() {
-	echo "Usage: $0 system-name [system-domain]"
-	echo "Example: $0 foobar openchami.cluster"
-	echo "Example: $0 foobar"
+	echo "Usage: [options] $0"
 	echo ""
-	echo "Generate configuration for OpenCHAMI quickstart."
+	echo "Generate configuration for OpenCHAMI quickstart using example"
+	echo "parameters."
 	echo ""
-	echo "ARGUMENTS:"
-	echo " system-name   Subdomain of system to use in certificate and config"
-	echo "               generation. E.g. <system-name>.openchami.cluster"
-	echo " system-domain (OPTIONAL) Domain of system to use in certificate and"
-	echo "               config generation. Defaults to openchami.cluster"
+	echo "OPTIONS:"
+	echo " -h  Print this usage message to stdout."
+	echo " -f  Force overwriting config files."
 }
 
-# Parse system name (required arg).
-if [ -z "${1+x}" ]
-then
-	usage >&2
-	exit 1
-fi
-SYSNAME="$1"
+while getopts "fh" opt; do
+	case "${opt}" in
+		f)
+			FORCE_OVERWRITE=true
+			;;
+		h)
+			usage
+			exit
+			;;
+		*)
+			usage >&2
+			exit
+			;;
+	esac
+done
+shift $((OPTIND-1))
 
-# Parse system domain (optional arg).
+if [ -f .env ] && [ -z "${FORCE_OVERWRITE+x}" ]
+then
+	echo "A config file (.env) exists. Delete to generate a new one or -f to overwrite."
+	file_exists=true
+fi
+
+if [ -f configs/opaal.yaml ] && [ -z "${FORCE_OVERWRITE+x}" ]
+then
+	echo "An OPAAL config (configs/opaal.yaml) exists. Delete to generate a new one or -f to overwrite."
+	file_exists=true
+fi
+
+if [ -f configs/coredhcp.yaml ] && [ -z "${FORCE_OVERWRITE+x}" ]
+then
+	echo "A CoreDHCP config (configs/coredhcp.yaml) exists. Delete to generate a new one or -f to overwrite."
+	file_exists=true
+fi
+
+if [ -n "${file_exists+x}" ]; then exit 1; fi
+
+SYSNAME=foobar
 SYSDOMAIN="openchami.cluster"
-if [ -n "${2+x}" ]
-then
-	SYSDOMAIN="$2"
-fi
 
+# Check for required commands
 if [[ ! -x $(command -v jq) ]]
 then
 	echo "Command \"jq\" not found"
 	exit 1
 fi
-
 if [[ ! -x $(command -v sed) ]]
 then
 	echo "Command \"sed\" not found"
 	exit 1
 fi
-
-get_eth0_ipv4() {
- local ipv4
- local first_eth=$(ip -j addr | jq -c '.[]' | grep UP |grep -v veth | grep -v LOOPBACK |grep -v br- |grep -v NO-CARRIER | grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -n 1 | jq -rc '.ifname')
- ipv4=$(ip -o -4 addr show $first_eth | awk '{print $4}')
- echo "${ipv4%/*}"
-}
 
 generate_random_alphanumeric() {
 	local num_chars=${1:-32}
@@ -73,7 +77,12 @@ generate_random_alphanumeric() {
 sed \
   -e "s/<your-subdomain-here>/${SYSNAME}/g" \
   -e "s/<your-domain-here>/${SYSDOMAIN}/g" \
-  configs/opaal-template.yaml > configs/opaal.yaml
+configs/opaal-template.yaml > configs/opaal.yaml
+
+# Generate CoreDHCP configuration from configs/coredhcp-template.yaml.
+sed \
+  -e "s|<BASE_URL>|https://${SYSNAME}.${SYSDOMAIN}:8443|g" \
+  configs/coredhcp-template.yaml > configs/coredhcp.yaml
 
 # Set the system name
 cat > .env <<EOF
@@ -93,7 +102,7 @@ BSS_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
 SMD_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
 HYDRA_POSTGRES_PASSWORD=$(generate_random_alphanumeric 32)
 HYDRA_SYSTEM_SECRET=$(generate_random_alphanumeric 32)
-LOCAL_IP=$(get_eth0_ipv4)
+LOCAL_IP=192.168.0.254
 EOF
 
 # ensure permissions are set lax enough that unprivileged container users can read them

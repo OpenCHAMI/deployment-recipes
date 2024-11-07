@@ -12,6 +12,17 @@ This quickstart makes a few assumptions about the target operating system and is
 * x86_64 - Some of the containers involved are built and tested for alternative operating systems and architectures, but the solution as a whole is only tested with x86 containers
 * Dedicated System - The docker compose setup assumes that it can take control of several TCP ports and interact with the host network for DHCP and TFTP.  It is tested on a dedicated virtual machine
 * Local Name Registration - The quickstart bootstraps a Certificate Authority and issues an SSL certificate with a predictable name.  For access, you will need to add that name/IP to /etc/hosts on all clients or make it resolvable through your site DNS
+* DHCP Network Configuration:
+  * Server/Gateway IP Address: __192.168.0.254__
+  * Range of IPs for Unknown MAC Addresses: __192.168.150__ to __192.168.0.253__ (inclusive)
+    * These IPs are given to MAC addresses unknown to SMD with a short least time.
+  * Network Mask: __255.255.255.0__
+  * DNS Servers: __1.1.1.1, 8.8.8.8__
+  * Duration to renew information from SMD: __30 seconds__
+  * "Long" lease time: __1 hour__
+    * This duration is used in leases for devices known by SMD.
+  * "Short" lease time: __5 minutes__
+    * This duration is used in leases for devices unknown by SMD.
 
 ## Start Here
 
@@ -22,25 +33,20 @@ This quickstart makes a few assumptions about the target operating system and is
    ```
 1. Create the secrets file and choose a name for your system.  We use `foobar` in our example.
     - __Note__ The certificates for the system use the name you provide in this file.  It's not easy to change.
-    - __Note__ The script attempts to figure out which ip address is most likely to be your system ip.  If it is unsuccessful, `LOCAL_IP=` will be empty and you'll need to update it manually
-    - __Note__ The full url will be https://foobar.openchami.cluster which you should set manually in /etc/hosts and point to the same ip address as `LOCAL_IP` in `.env`.
-    - __Note__ The `generate-configs.sh` script accepts an optional second argument that allows a custom domain to be specified. If not specified, it defaults to "openchami.cluster", which is used throughout these instructions.
+    - __Note__ The full url will be https://foobar.openchami.cluster which you should set manually in /etc/hosts and point to the same ip address as `LOCAL_IP` in `.env`, which should be 192.168.0.254.
    
    ```bash
    # Create the secrets in the .env file.  Do not share them with anyone. 
-   ./generate-configs.sh foobar
-   # Confirm that LOCAL_IP has a value and matches what you want the interface to OpenCHAMI to be. We do our best to guess what your primary interface is.
-   grep LOCAL_IP .env
+   ./generate-configs.sh
    ```
    If you have problems with this step, check to make sure that the main IP address of your host is in `.env` as `LOCAL_IP`.
-1. Update your /etc/hosts to point your system name to your local ip (this is important for valid certs)
+1. Update your /etc/hosts to point `foobar.openchami.cluster` to 192.168.0.254 (this is important for valid certs).
 1. Start the main services
    ```bash 
-   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f  openchami-svcs.yml -f autocert.yml up -d
+   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f  openchami-svcs.yml -f autocert.yml -f tftp.yml -f coredhcp.yml up -d
    ```
    __If this step produces an error like: `Error response from daemon: invalid IP address in add-host: ""` it means you're missing the LOCAL_IP in step 2.__
    You can fix it by destroying everything, editing `.env` manually and starting over.  The command to destroy is the same as the command to create, just replace `up -d` with `down --volumes`
-   
 1. Use the running system to download your certs and create your access token(s)
    ```bash
    # Assuming you're using bash as your shell, you can use the included functions to simplify interactions with your new OpenCHAMI system.
@@ -53,14 +59,6 @@ This quickstart makes a few assumptions about the target operating system and is
    # Use curl to confirm that everything is working
    curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" https://foobar.openchami.cluster/hsm/v2/State/Components
    # This should respond with an empty set of Components: {"Components":[]}
-   ```
-1. Create a token that can be used by the dnsmasq-loader which reads from smd.  This activates our automatic dns/dhcp system.  The command automatically adds it to .env
-   ```bash
-    echo "DNSMASQ_ACCESS_TOKEN=$(gen_access_token)" >> .env
-    ```
-1. Use docker-compose to bring up your dnsmasq contianers.  The only difference between this command and the one above is the addition of the `dnsmasq.yml` file.  Docker compose needs to know about all the files to follow dependencies.
-   ```bash
-   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f openchami-svcs.yml -f autocert.yml -f dnsmasq.yml up -d
    ```
 
 
