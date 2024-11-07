@@ -1,0 +1,47 @@
+## This content is effectively static, but we don't have a great way to get it into the container
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: {{ .Release.Name }}-tftp
+#  namespace: {{ .Release.Namespace }}
+#  annotations:
+#    "helm.sh/hook": pre-install
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 1Gi
+#  storageClassName: standard-rwo
+#---
+#apiVersion: batch/v1
+#kind: Job
+#metadata:
+#  name: {{ .Release.Name }}-tftp-init
+#  namespace: {{ .Release.Namespace }}
+#  annotations:
+#    "helm.sh/hook": pre-install
+#spec:
+#  template:
+#    spec:
+#      containers:
+#        - name: tftp-init
+#          image: busybox:latest
+#          imagePullPolicy: IfNotPresent
+#          command:
+#            - /bin/sh
+#            - -c
+#            - wget -P data https://github.com/OpenCHAMI/deployment-recipes/raw/9987a377d52b28b3247575e9889cf98e2ad65da1/quickstart/ipxe/undionly.kpxe
+#            - wget -P data https://github.com/OpenCHAMI/deployment-recipes/raw/9987a377d52b28b3247575e9889cf98e2ad65da1/quickstart/ipxe/reboot.ipxe
+#            - wget -P data https://github.com/OpenCHAMI/deployment-recipes/raw/9987a377d52b28b3247575e9889cf98e2ad65da1/quickstart/ipxe/ipxe.efi
+#          env: {}
+#          volumeMounts:
+#            - mountPath: /data
+#              name: storage
+#      restartPolicy: OnFailure
+#      volumes:
+#        - name: storage
+#          persistentVolumeClaim:
+#            claimName: {{ .Release.Name }}-tftp
+#  backoffLimit: 4
