@@ -1,0 +1,80 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coredhcp
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: coredhcp
+spec:
+  replicas: {{ .Values.coredhcp.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: coredhcp
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: coredhcp
+    spec:
+      containers:
+        - name: coredhcp
+          image: {{ .Values.coredhcp.deployment.image.repository }}/{{ .Values.coredhcp.deployment.image.name }}:{{ .Values.coredhcp.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.coredhcp.deployment.image.pullPolicy }}
+          args:
+            - "/coredhcp"
+            - "-L"
+            - "debug"
+          ports:
+            - name: dhcp
+              # TODO we're an IRC server now! probably just have the LB dispatch to a high port
+              # I don't think this will actually need net admin/the real DHCP port if we're forwarding
+              containerPort: 6667
+              protocol: UDP
+          volumeMounts:
+            - mountPath: /leases
+              name: leases
+            - mountPath: /etc/coredhcp/
+              name: config
+      volumes:
+        - name: leases
+          emptyDir:
+            sizeLimit: 512M
+        - name: config
+          configMap:
+            name: coredhcp
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredhcp
+  namespace: {{ .Release.Namespace }}
+data:
+  # TODO this would probably be better as a helper, probably with a constructed dict that
+  # we toYaml. templating raw yaml strings feels like an icky recipe for failure
+  config.yaml: |
+    server4:
+      listen:
+        - 0.0.0.0:6667
+      plugins:
+        # Base CoreDHCP config
+        - server_id: {{ .Values.coredhcp.config.server_id }}
+        - dns: {{ .Values.coredhcp.config.dns | join " " }}
+        - router: {{ .Values.coredhcp.config.router }}
+        - netmask: {{ .Values.coredhcp.config.netmask }}
+        - range: /leases/leases.txt {{ .Values.coredhcp.config.range.start }} {{ .Values.coredhcp.config.range.end }} {{ .Values.coredhcp.config.range.duration }}
+        #
+        # CoreSMD config
+        # Args: ochami_base_url boot_script_base_url ca_cert_path cache_update_interval long_lease_time
+        # TODO SMD cert is a mystery here. we have no config for it and there's no indication in the deployment that we load one from anywhere
+        # we apparently only provide an HTTP listen, so until we provide TLS the cert does nothing
+        - coresmd: http://smd:{{ .Values.smd.service.port }} http://bss:{{ .Values.bss.service.port }} /fakeroot.pem 30s 1h
+        #
+        # Optionally include the file plugin here if it matters which IPs get assigned to which
+        # MACs. Otherwise, unknown MACs get passed to the bootloop "catch-all" plugin below.
+        #
+        # TODO this presumably comes from a bring your own configmap
+        #- file /etc/coredhcp/hostsfile
+        # Args: storage_path short_lease_time ip_pool_start ip_pool_end 
+        - bootloop: /leases/coredhcp.db {{ .Values.coredhcp.config.unrecognized_range.duration }} {{ .Values.coredhcp.config.unrecognized_range.start }} {{ .Values.coredhcp.config.unrecognized_range.end }}
