@@ -10,6 +10,7 @@ services:
       - ./configs/coredhcp.yaml:/etc/coredhcp/config.yaml:ro
       - step-root-ca:/root_ca/:ro
     command:
+      - "/coredhcp"
       - "-L"
       - "debug"
     healthcheck:
