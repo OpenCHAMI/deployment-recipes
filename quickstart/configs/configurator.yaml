@@ -7,8 +7,6 @@ server:         # Server-related parameters when using as service
 smd:          # SMD-related parameters
   host: http://smd
   port: 27779
-plugins:        # path to plugin directories
-  - "lib/"
 targets:        # targets to call with --target flag with CLI or "target" query param
   dnsmasq:
     templates:
