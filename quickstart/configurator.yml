@@ -7,7 +7,7 @@ services:
     hostname: configurator
     command:
       - '/configurator/configurator'
-      - 'server'
+      - 'serve'
       - '--config'
       - '/configurator/config.yaml'
     volumes:
