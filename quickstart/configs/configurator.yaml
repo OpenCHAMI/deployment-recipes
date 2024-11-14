@@ -5,7 +5,7 @@ server:         # Server-related parameters when using as service
     uri: ""
     retries: 5
 smd:          # SMD-related parameters
-  host: http://127.0.0.1
+  host: http://smd
   port: 27779
 plugins:        # path to plugin directories
   - "lib/"
