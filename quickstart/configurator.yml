@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   configurator:
     image: ghcr.io/openchami/configurator:latest
@@ -7,7 +5,7 @@ services:
     hostname: configurator
     command:
       - '/configurator/configurator'
-      - 'server'
+      - 'serve'
       - '--config'
       - '/configurator/config.yaml'
     volumes:

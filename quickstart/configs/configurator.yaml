@@ -1,14 +1,12 @@
 server:         # Server-related parameters when using as service
-  host: 127.0.0.1
+  host: 0.0.0.0
   port: 3334
   jwks:         # Set the JWKS uri to protect /generate route
     uri: ""
     retries: 5
 smd:          # SMD-related parameters
-  host: http://127.0.0.1
+  host: http://smd
   port: 27779
-plugins:        # path to plugin directories
-  - "lib/"
 targets:        # targets to call with --target flag with CLI or "target" query param
   dnsmasq:
     templates:
