@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   configurator:
     image: ghcr.io/openchami/configurator:latest
