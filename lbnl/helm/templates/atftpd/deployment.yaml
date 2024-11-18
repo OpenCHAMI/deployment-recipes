@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tftpd
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: tftpd
+spec:
+  replicas: {{ .Values.tftpd.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: tftpd
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: tftpd
+    spec:
+      initContainers:
+        # This is a bad way to populate the binary blobs served by TFTPD without somehow initializing them out of band.
+        # https://kubernetes.io/docs/tasks/configure-pod-container/image-volumes/ would be a good candidate, but it's only alpha as of 1.31, the
+        # latest release. PVC probably isn't much better than initContainer emptyDir, since it requires similar setup hacks with pre-install hooks.
+        - name: tftp-init
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - wget -P data https://github.com/OpenCHAMI/deployment-recipes/raw/9987a377d52b28b3247575e9889cf98e2ad65da1/quickstart/ipxe/undionly.kpxe
+            - wget -P data https://github.com/OpenCHAMI/deployment-recipes/raw/9987a377d52b28b3247575e9889cf98e2ad65da1/quickstart/ipxe/reboot.ipxe
+            - wget -P data https://github.com/OpenCHAMI/deployment-recipes/raw/9987a377d52b28b3247575e9889cf98e2ad65da1/quickstart/ipxe/ipxe.efi
+          volumeMounts:
+            - mountPath: /data
+              name: storage
+      containers:
+        - name: tftpd
+          image: {{ .Values.tftpd.deployment.image.repository }}/{{ .Values.tftpd.deployment.image.name }}:{{ .Values.tftpd.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.tftpd.deployment.image.pullPolicy }}
+          args:
+            - "--daemon"
+            - "--no-fork"
+            - "--logfile"
+            - "-"
+            - "--port"
+            - "69"
+            - "--verbose"
+            - "/data"
+          ports:
+            - name: tftp
+              containerPort: 69
+              protocol: UDP
+          volumeMounts:
+            - mountPath: /data
+              name: storage
+      volumes:
+        - name: storage
+          emptyDir:
+            sizeLimit: 512M

@@ -1,4 +1,5 @@
 ---
+# Original in-house Postgres configuration.
 postgres:
   deployment:
     replicaCount: 1
@@ -16,6 +17,58 @@ postgres:
   pvc_name: postgres-data
   dbmount: /var/lib/postgresql/data
   dbname: ochami
+
+# Third-party Postgres subcharts
+# Per https://github.com/bitnami/charts/issues/2876 Bitnami likely won't support
+# multiple databases and users in the chart directly. You can use a single Postgres
+# instance for multiple clients and databases if you specify a custom initdb string,
+# which is essentially "roll your own SQL for initialization", thus losing any
+# integration with the values.yaml-exposed user and database setup. You can create
+# multiple subchart instances of the same subchart using the "alias" key in the
+# dependency definition to use separate single-DB instances for each. Maybe this is
+# desirable for isolation anyway? It's simpler to set up, if nothing else.
+postgresql-hydra:
+  enabled: true
+  auth:
+    # matches a static value in the deployment template
+    username: hydra-user
+    # this is already a static value
+    database: hydradb
+  image:
+    tag: 16.4.0
+  service:
+    ports:
+      postgresql: "5432"
+
+postgresql-bss:
+  enabled: true
+  auth:
+    # matches a static value in the deployment template
+    username: bss-user
+    # currently this is copy-pasta from another value, which is not great.
+    # don't think there's any (good) way to share it between the two,
+    # but using a static value instead is probably fine.
+    database: bssdb
+  image:
+    tag: 16.4.0
+  service:
+    ports:
+      postgresql: "5432"
+
+postgresql-smd:
+  enabled: true
+  auth:
+    # matches a static value in the deployment template
+    username: smd-user
+    # currently this is copy-pasta from another value, which is not great.
+    # don't think there's any (good) way to share it between the two,
+    # but using a static value instead is probably fine.
+    database: hmsds
+  image:
+    tag: 16.4.0
+  service:
+    ports:
+      postgresql: "5432"
 
 smd:
   deployment:
@@ -77,34 +130,15 @@ gke:
     port: 80
   securityPolicy: lbnl-nersc
 
-tftpd:
+coredhcp:
   deployment:
     replicaCount: 1
     image:
-      repository: ghcr.io/openchami
-      name: tftpd
+      repository: rainest
+      #repository: ghcr.io/openchami
+      name: coresmd
       pullPolicy: IfNotPresent
-      tag: "0.1"
-    containerPort: 69
-
-  service:
-    type: LoadBalancer
-    port: 69
-    # Since GKE external network LoadBalancers are not proxied, it might be a
-    # good idea to add an annotation like loadBalancerSourceRanges to limit who
-    # can access the Service.
-    annotations:
-
-dnsmasq:
-  deployment:
-    replicaCount: 1
-    image:
-      repository: ghcr.io/openchami
-      name: dnsmasq
-      pullPolicy: IfNotPresent
-      tag: dynamic
-    dhcp_port: 67
-    tftp_port: 69
+      tag: v0.0.5
 
   service:
     dhcp:
@@ -115,13 +149,52 @@ dnsmasq:
       # can access the Service.
       annotations:
 
-    tftp:
-      type: LoadBalancer
-      port: 69
-      # Since GKE external network LoadBalancers are not proxied, it might be a
-      # good idea to add an annotation like loadBalancerSourceRanges to limit who
-      # can access the Service.
-      annotations:
+  # TODO there are a couple options for handling config. we could be very prescriptive
+  # and build a configuration file from specific enumerated values only (the current approach), or
+  # just treat the contents under coredhcp.config as a complete config and toYaml them to produce
+  # a ConfigMap. We could offer a bring your own ConfigMap alternative with either approach. IDK
+  # if we'd expect users to often need settings outside the chosen exposed settings with the
+  # prescriptive approach.
+  config:
+    # with the exception of dns, you _must_ set values appropriate to your network
+    # in this section. the default values are only examples.
+    #
+    # server_id is the address external nodes will use to talk to your DHCP server.
+    # this value will also be used to set the service's LoadBalancer IP.
+    server_id: 192.168.0.254
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    # router is the default gateway for your node network.
+    router: 172.16.0.254
+    # netmask defines the range of addresses the DHCP server will allocate.
+    netmask: 255.255.255.0
+    range:
+      start: 172.16.0.10
+      end: 172.16.0.200
+      duration: 60s
+    unrecognized_range:
+      start: 172.16.0.201
+      end: 172.16.0.220
+      duration: 60s
+
+tftpd:
+  deployment:
+    replicaCount: 1
+    image:
+      repository: docker.io/aguslr
+      name: atftpd
+      pullPolicy: IfNotPresent
+      tag: "20241017"
+    containerPort: 69
+
+  service:
+    type: LoadBalancer
+    port: 69
+    # Since GKE external network LoadBalancers are not proxied, it might be a
+    # good idea to add an annotation like loadBalancerSourceRanges to limit who
+    # can access the Service.
+    annotations:
 
 hydra:
   deployment:
