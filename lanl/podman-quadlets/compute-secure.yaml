@@ -1,0 +1,30 @@
+name: compute
+cloud-init:
+  userdata:
+    ssh_deletekeys: false
+    write_files:
+      - content: |
+          tFSCSmVf/vmaolgNczNS1Y837uS4Nj86KEoyUv8gctEAizp6gvSCfJVP245OkKd2Fm1NjOwe0vl3
+          nj7HSGfiB7DYGWPvX/tSQj4X3y7lz9/xqsrbEQvsQIPpH1gIndoMEQ/bSAonb7RBlRItmRCjfBjr
+          1cMxK4TjdALRKqg712ucqOZ5nsKmxaU1955EcGd0oKca9cgJ+/fx9PVyK7N3NxMUR/uRucXRFJyp
+          89KKyi5CRKJr7fPa9LVB2ePwZXD+0Igs2zrInZREdQ9R0XEz6qEC80CVDXgxetZp2U1QKwaaMP6N
+          GPfHbweLcaHU0oC5PL6Ki9lT4btGEMWrUOq1YDGetj4cgD/FCFORG2YZmyrvqtLTA4qKlzDCAZdj
+          Ph8Y5tt9LC9hW6vtf9mqjHrgZw77IIjKqxZZ+k84bkyxZGVcEQuP7+VPa7vdRu8zGqlMSslRz+Cw
+          JUIm7VimII/J8P8KgjTo8Dt/HQcJHmHjrrAAMImZr0Jw8rPsBk3cPF3k3RU9L6i8sxxRkO5nZebH
+          DSMQTK/phSqW+JVXfK/BnSRHB3T+d2MWsG58IOVJto/4e5xCy7hkgxkq0n75XNyfm0VDAkKS7K7F
+          ij1BFprYBST+BPh7W1T7iIHESpsGTNKFmqVntutScJJpPBBa4vR+sUyv3h5FXIz6f3PIiqzWpzgf
+          31c+NeQuvt3ilcZLGcD6Bqwt6lBoIzkPnI27jdd9/ex4+JNfO9JGlhKzmeMBiCenDr/DtvrBggWW
+          MSM/k6p7qeYqlQ+V8N2q2MZLLDzHUYCQuWqeK4fvFozdytQDmkWp8Ce2eLbvzL9MdjbjUN0bw34c
+          Ic3OUdzBNp5PRaPMVQCsWeK0rBJ7bMVG58KtIRqHVH/lunKNtwEehm7TqflFjLsajbyviRUytPFh
+          q++Yh4Py3+hUBG1pOarNFztlbn4ydY9iSGKHd4/VW9ZiILnfdA7ca6VHVLfAp0W/To7/w5c60+6w
+          EAZrQQoKpg01fHAN+SUe5p1VyYhA307YagP/ASBNHx/PA5Ln8NVXfN0we3p+Ktp2OC6IYG/TMbMH
+          Hkt43qlXdhSTKxrOGARmsMJ4E/wc8TTiNWvA8c+CLqVHqwZHfJtgy79ZUvp03ya/jNeow+qYzLEp
+          /SFq8qaqLeOwbQ0VsLPpDjKAq6sjpddY9R3UKZLkOS36hZx36MSg0bhfCyzFlGRk25LGgX3/zd4s
+          EGS+SndMSy5yNTnhNF2/z/7cGBnmIDgmDDU7e6USPuAr95vh65MHKSB0y1p1lPKGM8tVS71dkE/A
+          dkXvF9YMGtGrTI2dy73k7CO//zW/Zx+vGSqfbE0PccaXZA8WGZeyQy8EQdegmEGOJxF1AO0aeQ==
+        path: /etc/munge/munge.key
+        permissions: '0400'
+        owner: 'munge:munge'
+        encoding: base64
+  metadata:
+    instance-id: ochami-compute-secure

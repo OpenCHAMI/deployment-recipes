@@ -5,6 +5,18 @@ cluster_cloud_init:
         write_files:
           - path: /root/.ssh/authorized_keys
             content: '{{ cluster_boot_ssh_pub_key }}'
+          - path: /etc/sysconfig/slurmd
+            content: |
+              SLURM_OPTS=--conf-server '{{ cluster_boot_ip }}':6817
+          - path: /etc/chrony.conf
+            content: |
+              server '{{ cluster_boot_ip }}' iburst
+              driftfile /var/lib/chrony/drift
+              makestep 1.0 3
+              rtcsync
+              keyfile /etc/chrony.keys
+              leapsectz right/UTC
+              logdir /var/log/chrony
         runcmd:
           - setenforce 0
           - systemctl disable firewalld
