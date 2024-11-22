@@ -1,3 +1,9 @@
+- name: Create /etc/ochami/configs
+  ansible.builtin.file:
+    path: /etc/ochami/configs
+    state: directory
+    mode: '0755'
+
 - name: Drop coredhcp config file
   ansible.builtin.template:
     src: coredhcp/coredhcp.yaml.j2
@@ -5,3 +11,10 @@
     owner: root
     group: root
     mode: '0644'
+
+
+- name: Create ipxe softlink
+  ansible.builtin.file:
+    src: '/usr/share/ipxe/{{ coredhcp_ipxe_binary }}'
+    dest: '/usr/share/ipxe/ipxe.efi'
+    state: link
