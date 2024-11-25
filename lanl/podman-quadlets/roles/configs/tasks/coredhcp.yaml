@@ -12,9 +12,14 @@
     group: root
     mode: '0644'
 
-
 - name: Create ipxe softlink
   ansible.builtin.file:
     src: '/usr/share/ipxe/{{ coredhcp_ipxe_binary }}'
     dest: '/usr/share/ipxe/ipxe.efi'
     state: link
+
+- name: Drop reboot.ipxe
+  ansible.builtin.template:
+    src: coredhcp/reboot.ipxe.j2
+    dest: /usr/share/ipxe/reboot.ipxe
+    mode: '0444'

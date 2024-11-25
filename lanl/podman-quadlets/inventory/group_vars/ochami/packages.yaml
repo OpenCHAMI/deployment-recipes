@@ -8,3 +8,4 @@ ochami_package_dependencies:
   - python3-requests
   - python3-yaml
   - python3-jwt
+  - ipxe-bootimgs-x86

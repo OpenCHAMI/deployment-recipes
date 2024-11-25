@@ -336,13 +336,13 @@ _coresmd_quadlets:
       - haproxy.service
   - name: tftp
     image: docker.io/aguslr/atftpd:latest
-    command: '--daemon --no-fork --user nobody.nogroup --logfile - --port 69 --verbose /var/lib/tftpboot'
+    command: '--daemon --no-fork --user nobody.nogroup --logfile - --port 69 --verbose /usr/share/ipxe/'
     capabilities:
       - NET_ADMIN
     networks:
       - host
     volumes:
-      - /usr/share/ipxe:/var/lib/tftpboot
+      - /usr/share/ipxe:/usr/share/ipxe
     after:
       - haproxy.service
 
