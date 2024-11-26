@@ -18,7 +18,9 @@ server4:
 
     # Optionally include the file plugin here if it matters which IPs get assigned to which
     # MACs. Otherwise, unknown MACs get passed to the bootloop "catch-all" plugin below.
+    # Note that lease_time is used to set the short lease time for the file plugin.
     #
+    #- lease_time: 10m
     #- file /etc/coredhcp/hostsfile
 
     # Args: storage_path boot_script_file short_lease_time ip_pool_start ip_pool_end
