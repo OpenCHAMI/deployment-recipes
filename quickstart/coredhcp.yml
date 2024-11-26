@@ -1,6 +1,6 @@
 services:
   coredhcp:
-    image: ghcr.io/openchami/coredhcp:v0.1.1
+    image: ghcr.io/openchami/coredhcp:v0.2.0
     container_name: coredhcp
     hostname: coredhcp
     network_mode: host
@@ -8,7 +8,6 @@ services:
       - NET_ADMIN
     volumes:
       - ./configs/coredhcp.yaml:/etc/coredhcp/config.yaml:ro
-      - ./ipxe/reboot.ipxe:/tftpboot/reboot.ipxe
       - step-root-ca:/root_ca/:ro
     command:
       - "/coredhcp"
