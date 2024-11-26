@@ -3,9 +3,10 @@
     src: ochami/nodes.yaml.j2
     dest: /etc/ochami/nodes.yaml
 
-- name: get ochami-cmdline
-  ansible.builtin.git:
-    repo: https://github.com/OpenCHAMI/ochami-cmdline.git
-    dest: /opt/ochami/bin/
-    update: no
-    version: main
+- name: Get ochami cmdline tool
+  dnf: name=https://github.com/OpenCHAMI/ochami/releases/download/v0.0.1-beta.11/ochami_0.0.1-beta.11_linux_amd64.rpm
+
+- name: Drop default config
+  template:
+    src: ochami/config.yaml.j2
+    dest: /root/.config/ochami/config.yaml

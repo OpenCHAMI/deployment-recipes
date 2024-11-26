@@ -2,12 +2,11 @@
 - name: Populate SMD with ochami-cli
   ansible.builtin.command:
     argv:
-      - /opt/ochami/bin/ochami-cli
-      - --access-token
+      - /bin/ochami
+      - --token
       - "{{ access_token.stdout }}"
-      - --smd-url
-      - "{{ ochami_smd_url }}"
-      - smd
-      - --fake-discovery
-      - --payload
+      - discover
+      - -f
       - "/etc/ochami/nodes.yaml"
+      - --payload-format
+      - yaml

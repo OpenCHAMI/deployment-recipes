@@ -1,0 +1,8 @@
+clusters:
+    - cluster:
+        base-uri: https://{{ cluster_name }}.{{ cluster_domain }}
+      name: {{ cluster_name }}
+default-cluster: {{ cluster_name }}
+log:
+    format: json
+    level: warning
