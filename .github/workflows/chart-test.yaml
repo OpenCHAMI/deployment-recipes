@@ -1,0 +1,78 @@
+name: PR tests
+
+concurrency:
+  # Run only for most recent commit in PRs but for all tags and commits on main
+  # Ref: https://docs.github.com/en/actions/using-jobs/using-concurrency
+  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - lbnl/helm/**
+  workflow_dispatch: {}
+
+env:
+  KIND_VERSION: v0.25.0
+
+jobs:
+  lint-test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chart-name:
+          - lbnl/helm
+        kubernetes-version:
+          - "1.30.6"
+          - "1.31.2"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.2.0
+
+      - name: Add Helm repos
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
+
+      - name: Run chart-testing (lint)
+        run: ct lint --target-branch main --check-version-increment=false --chart-dirs lbnl --validate-maintainers=false
+
+      - name: Create test cluster
+        env:
+          KUBERNETES_VERSION: ${{ matrix.kubernetes-version }}
+          CHART_NAME: ${{ matrix.chart-name }}
+        run: ./.ci/test-env.sh
+
+      - name: Run ct install
+        run: ct install --target-branch main --charts ${{ matrix.chart-name}}
+
+      - name: Clean up test cluster
+        run: ./.ci/test-env.sh cleanup
+        if: always()
+
+  # Workaround to allow checking the matrix tests as required tests without adding the individual cases
+  # Ref: https://github.com/orgs/community/discussions/26822#discussioncomment-3305794
+  passed:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    needs:
+      - lint-test
+    if: always()
+    steps:
+      - if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          echo "Some jobs failed or were cancelled."
+          exit 1

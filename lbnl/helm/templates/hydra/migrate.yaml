@@ -18,13 +18,25 @@ spec:
           mountPath: /etc/config/hydra
           readOnly: true
         env:
-        - name: HYDRA_POSTGRES_PASSWORD
+        - name: PG_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: postgres-creds
-              key: hydra_postgres_password
+              name: {{ .Release.Name }}-pg-hydra
+              key: password
+        - name: PG_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-pg-hydra
+              key: username
+        - name: PG_DB
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-pg-hydra
+              key: database
+        - name: PG_PORT
+          value: "{{ .Values.postgresql.service.ports.postgresql }}"
         - name: DSN
-          value: postgres://hydra-user:$(HYDRA_POSTGRES_PASSWORD)@postgres.{{ .Release.Namespace }}.svc.cluster.local:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
+          value: postgres://$(PG_USERNAME):$(PG_PASSWORD)@{{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local:$(PG_PORT)/$(PG_DB)?sslmode=disable&max_conns=20&max_idle_conns=4
       volumes:
       - name: hydra-config
         configMap:

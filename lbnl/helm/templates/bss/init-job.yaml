@@ -18,20 +18,24 @@ spec:
             - name: BSS_INSECURE
               value: "true"
             - name: BSS_DBHOST
-              value: postgres.{{ .Release.Namespace }}.svc.cluster.local
-            - name: BSS_DBNAME
-              value: {{ .Values.bss.dbname }}
+              value: {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
             - name: BSS_DBPORT
-              value: "{{ .Values.postgres.service.port }}"
+              value: {{ .Values.postgresql.service.ports.postgresql }}
+              value: "{{ .Values.postgresql.service.ports.postgresql }}"
             - name: BSS_DBUSER
               valueFrom:
                 secretKeyRef:
-                  name: postgres-creds
-                  key: bss_postgres_username
+                  name: {{ .Release.Name }}-pg-bss
+                  key: username
             - name: BSS_DBPASS
               valueFrom:
                 secretKeyRef:
-                  name: postgres-creds
-                  key: bss_postgres_password
+                  name: {{ .Release.Name }}-pg-bss
+                  key: password
+            - name: BSS_DBNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-pg-bss
+                  key: database
       restartPolicy: OnFailure
   backoffLimit: 4
