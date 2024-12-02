@@ -324,7 +324,7 @@ _haproxy_quadlets:
 
 _coresmd_quadlets:
   - name: coresmd
-    image: ghcr.io/openchami/coredhcp:v0.1.1
+    image: ghcr.io/openchami/coredhcp:v0.2.0
     capabilities:
       - NET_ADMIN
     volumes:
