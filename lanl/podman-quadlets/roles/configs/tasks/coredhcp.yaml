@@ -1,0 +1,13 @@
+- name: Create /etc/ochami/configs
+  ansible.builtin.file:
+    path: /etc/ochami/configs
+    state: directory
+    mode: '0755'
+
+- name: Drop coredhcp config file
+  ansible.builtin.template:
+    src: coredhcp/coredhcp.yaml.j2
+    dest: '/etc/ochami/configs/coredhcp.yaml'
+    owner: root
+    group: root
+    mode: '0644'
