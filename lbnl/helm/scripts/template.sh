@@ -14,5 +14,4 @@ helm template \
   --set hydra.deployment.image.repository="${repo}" \
   --set hydra_consent.deployment.image.repository="${repo}" \
   --set swiss_army_knife.deployment.image.repository="${repo}" \
-  --set lighttpd.deployment.image.repository="${repo}" \
   --set tftpd.deployment.image.repository="${repo}" \
