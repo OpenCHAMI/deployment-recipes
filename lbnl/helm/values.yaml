@@ -18,7 +18,7 @@ smd:
     image:
       repository: ghcr.io/openchami
       name: smd
-      tag: "v2.14.2"
+      tag: "v2.17.7"
       pullPolicy: IfNotPresent
     containerPort: 27779
   dbname: hmsds
