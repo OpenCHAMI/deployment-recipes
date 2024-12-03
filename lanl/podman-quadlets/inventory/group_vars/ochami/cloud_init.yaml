@@ -5,8 +5,56 @@ cluster_cloud_init:
         write_files:
           - path: /root/.ssh/authorized_keys
             content: '{{ cluster_boot_ssh_pub_key }}'
+          - path: /etc/chrony.conf
+            content: |
+              server {{ cluster_boot_ip }} iburst
+              driftfile /var/lib/chrony/drift
+              makestep 1.0 3
+              rtcsync
+              keyfile /etc/chrony.keys
+              leapsectz right/UTC
+              logdir /var/log/chrony
+          - path: /etc/sysconfig/slurmd
+            content: | 
+              SLURMD_OPTIONS=--conf-server {{ cluster_boot_ip }}:6817
+          - path: /etc/hosts
+            content: | 
+              172.16.0.254    {{ cluster_name }}.{{ cluster_domain }} {{ ansible_hostname }}
+              172.16.0.1      nid001
+              172.16.0.2      nid002
+              172.16.0.3      nid003
+              172.16.0.4      nid004
+              172.16.0.5      nid005
+              172.16.0.6      nid006
+              172.16.0.7      nid007
+              172.16.0.8      nid008
+              172.16.0.9      nid009
+              172.16.0.101    nid-bmc001
+              172.16.0.102    nid-bmc002
+              172.16.0.103    nid-bmc003
+              172.16.0.104    nid-bmc004
+              172.16.0.105    nid-bmc005
+              172.16.0.106    nid-bmc006
+              172.16.0.107    nid-bmc007
+              172.16.0.108    nid-bmc008
+              172.16.0.109    nid-bmc009
         runcmd:
           - setenforce 0
           - systemctl disable firewalld
+          - systemctl restart chronyd
       metadata:
         instance-id: test
+
+cluster_cloud_init_secure:
+  - name: compute
+    cloud_init:
+      userdata:
+        write_files:
+          - path: /etc/munge/munge.key
+            content: '{{ cluster_munge_key }}'
+            owner: 'munge:munge'
+            permissions: '0400'
+            encoding: base64
+        runcmd:
+          - systemctl start munge
+          - systemctl start slurmd

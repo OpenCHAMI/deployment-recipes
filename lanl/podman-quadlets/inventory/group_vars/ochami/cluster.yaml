@@ -3,6 +3,25 @@ cluster_shortname: "st"
 cluster_domain: "openchami.cluster"
 cluster_boot_ip: 172.16.0.254
 cluster_boot_ssh_pub_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDZW66jaQXHDLgm9kfguy8J0rw/sz0XDuzZcAFyrQ4nE7QvM20vsC2L8NCv28LNozKOP2hzlDyP4aL0Uy8bVew07ApRUmXmselU2ReYxtjDtX2HEQPdyOg8+64sCjU2O3yxvufzI5jRNk+tV8+5T0yi1ZlIUBqM4I0tM0/16OwHEpnGusv58rZBcb+E1ipEnf0gEb4J0cz1NlhmvklF8Mb8NMOpEhjPp9Ilam6em5oulkx7IliQ+tmF+kKYi4jXZsZ4v31cmksQhniznb7YjAYxSN6DiPi2b/Nuxs6FeqTFhSAU9HxG5/7kZG5MrWsGWKPFp11DI7gL2D9zWplTT6577kLfz5IIKSS5qN1eJEaSZ60+ADPvgFMazt4J0nwCbZ+r9FYspV16Da/qPCURUe9D7Mg5qK1B8XaFvvaEPKavq1rT5GflfgI9ehXDNaVUPcqmpi4ALoblYzGQaRxP9LuRs7MOgLwqV2h3CVS8H2GkNeNipG5NRw11zK0w5AjIJlc= root@st-head.si.usrc'
+cluster_munge_key: |
+              1e2MPxDO0opAe7QCxkoPVKeqQjrz7tI2hZU1J55UNOLdHZ3QbSlayR+2Q310kz/2OrsriIRxH1Md
+              Zw5boZC6SSArFscrvgTLG4ai6qqcj+kkiq5mdIc3gm8PC2/sfOQeIFoW5bjDHMjJKk2I5SYqD+bH
+              78Sws+oVEbB7SeEL5NQVo4obSuxXS/zpDxoeUh9EDxnh+CAPHwUMLzYY1gnU9MYuweiKRbjHvN67
+              /M8tFOcKV61UhcTmMA2+PWJC8VvzFwmTERYaWlm9ayujn+cF8neJFtdVKcYGssExRIJUY20ILsh0
+              Tlrzas2xMs4tE36PU2weGOvOEmmc5eAfCsQTjnN3OfWSveEa3MfskMAFGNkOLoFumHkSzaFs2eiG
+              UuZ02uRS+0odwhB04I/Wus4NCZNWWSc8+/1fI1z0+19Tzjuf+/gHOxS/uDLOPylrL2Oe8c49cUB9
+              6aAJY7C108ebxCrfMd2jj5thztqE6K3VQt6fCRA3WevwA1WfBhGGwwvjWRdnt8bg7WfIHNMy74wt
+              RGv08Pw7KcbHkcItOwCLPfUvPEHEAxbjdj4BjkRwTMbWVdLWf2mcYYeWGGCUP2lC//pEV4nxzkTJ
+              pgcS5AMSq5sV0jjbDV7fVwbBeQ5uPAOTqHm4e5zPn5DGB3b1/ZZvkffMsTBAnsOVm0BU4aB5MdJt
+              IlyT1z92kqErcfjXfjO4sfi1+y/wa+5DnmjHHE6R4P1sbQOTXS/HqqNx+EQWrx0L6HZyAvbiwIVl
+              Clgv++KTZFJAJipBeg850iz4CSV/2h5FaAHgEVouJdPfN+6UJ4n8tRhp3FLwprBw9rhfdqAauq2D
+              z2OjKr8RwFv4vOtM/CNIrMs+pjvTG3lcHUjTcHm+GQNmUDekaQgL4Lz0q15lhBp9VdLs7xK35aXK
+              l/4B8YwXHPWH7gBdR/0Z49sFJwOJPSJw5qJ1eTHd5DqAnR5UrqDGXqwONGYG3riJh3FCjISTSx9M
+              78tgVrrAfScYIquOFMQIOYzib0fxlMHv6wm0loIpJTG+VZZK/8KsmmyLHyrkL7kyB3QqfO+FL2LX
+              jCFh0YNnKSIAd/66Nmv6LB4m4NXmJ2Zagn/PPVjbt4SQyF2VbTJ+TyxVavjSzEz9gNFXeKEXbWJQ
+              vSUQWyBsFSQVfYAsKJM4cZts9WOq/jcyp+GNzKL8ycXqKPgI2Y94fRU4LfiPM7plIB0wpl3RnAx2
+              Jez1+wRiiMCFVxSZ0Tv7W7j1h47CgJ0gbnIvwKmM/3o2TpN7K96D981dz25zlVRW/9hGJ+Y56njW
+              F76jiBwr/RHR2xDThYcyVDf7evlOVUKf3gCDuIpOsPJC3gIMc0Mx3KEzUgav2aSsJhuv3pjOfw==
 
 ochami_base_url: "https://{{ cluster_name }}.{{ cluster_domain }}:8443"
 ochami_smd_url: "{{ ochami_base_url }}/hsm/v2"
