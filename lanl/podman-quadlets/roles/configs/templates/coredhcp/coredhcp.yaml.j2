@@ -1,4 +1,6 @@
 server4:
+  listen:
+    - "%{{ cluster_boot_interface }}"
   plugins:
     - server_id: {{ coredhcp_server_id }}
     - dns: {{ coredhcp_dns_server }}
