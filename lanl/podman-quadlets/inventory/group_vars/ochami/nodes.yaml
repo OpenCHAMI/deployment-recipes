@@ -1,64 +1,9 @@
 nodes:
   - bmc_ipaddr: 172.16.0.101
     ipaddr: 172.16.0.1
-    mac: ec:e7:a7:05:a1:fc
+    mac: dc:d7:a3:05:f7:ae
     nid: 1
     xname: x1000c1s7b0n0
     group: compute
-    name: st01
-  - bmc_ipaddr: 172.16.0.102
-    ipaddr: 172.16.0.2
-    mac: ec:e7:a7:05:a2:28
-    nid: 2
-    xname: x1000c1s7b1n0
-    group: compute
-    name: st02
-  - bmc_ipaddr: 172.16.0.103
-    ipaddr: 172.16.0.3
-    mac: ec:e7:a7:05:93:84
-    nid: 3
-    xname: x1000c1s7b2n0
-    group: compute
-    name: st03
-  - bmc_ipaddr: 172.16.0.104
-    ipaddr: 172.16.0.4
-    mac: ec:e7:a7:02:d9:90
-    nid: 4
-    xname: x1000c1s7b3n0
-    group: compute
-    name: st04
-  - bmc_ipaddr: 172.16.0.105
-    ipaddr: 172.16.0.5
-    mac: ec:e7:a7:02:df:4c
-    nid: 5
-    xname: x1000c1s7b4n0
-    group: compute
-    name: st05
-  - bmc_ipaddr: 172.16.0.106
-    ipaddr: 172.16.0.6
-    mac: ec:e7:a7:05:96:74
-    nid: 6
-    xname: x1000c1s7b5n0
-    group: compute
-    name: st06
-  - bmc_ipaddr: 172.16.0.107
-    ipaddr: 172.16.0.7
-    mac: ec:e7:a7:05:9e:88
-    nid: 7
-    xname: x1000c1s7b6n0
-    group: compute
-    name: st07
-  - bmc_ipaddr: 172.16.0.108
-    ipaddr: 172.16.0.8
-    mac: ec:e7:a7:05:93:48
-    nid: 8
-    xname: x1000c1s7b7n0
-    group: compute
-    name: st08
-  - bmc_ipaddr: 172.16.0.109
-    ipaddr: 172.16.0.9
-    mac: ec:e7:a7:05:9f:50
-    nid: 9
-    xname: x1000c1s7b8n0
-    group: compute
-    name: st09
+    name: nid01
+
