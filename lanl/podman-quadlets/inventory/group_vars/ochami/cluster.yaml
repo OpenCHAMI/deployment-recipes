@@ -1,5 +1,5 @@
-cluster_name: "stratus"
-cluster_shortname: "st"
+cluster_name: "demo"
+cluster_shortname: "nid"
 cluster_domain: "openchami.cluster"
 cluster_boot_ip: 172.16.0.254
 cluster_boot_interface: ens259f0
