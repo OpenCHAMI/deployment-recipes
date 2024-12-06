@@ -18,7 +18,7 @@ smd:
     image:
       repository: ghcr.io/openchami
       name: smd
-      tag: "v2.14.2"
+      tag: "v2.17.7"
       pullPolicy: IfNotPresent
     containerPort: 27779
   dbname: hmsds
@@ -35,7 +35,7 @@ bss:
       repository: ghcr.io/openchami
       name: bss
       pullPolicy: IfNotPresent
-      tag: "v1.29.1"
+      tag: "v1.31.3"
     containerPort: 27778
   dbname: bssdb
 
@@ -43,27 +43,6 @@ bss:
     type: ClusterIP
     port: 27778
     annotations:
-
-krakend:
-  deployment:
-    replicaCount: 1
-    image:
-      repository: docker.io/devopsfaith
-      name: krakend
-      pullPolicy: IfNotPresent
-      tag: "2.5.1"
-    containerPort: 8080
-
-  service:
-    type: ClusterIP
-    port: 80
-    annotations:
-      # Specify which BackendConfig to use for GKE to ensure the ingress
-      # backend is healthy. The GKE docs say that sufficient annotation of the
-      # KrakenD Deployment using the standard K8s API should be sufficient to
-      # inspect the ingress backend, but I have not been successful in making
-      # that work. Specifying the BackendConfig by hand seems to help.
-      cloud.google.com/backend-config: '{"default": "krakend-hc-config"}'
 
 # Parameters specific to deploying into Google Kubernetes Engine
 gke:
