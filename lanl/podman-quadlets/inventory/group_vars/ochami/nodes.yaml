@@ -1,9 +1,12 @@
 nodes:
-  - bmc_ipaddr: 172.16.0.101
-    ipaddr: 172.16.0.1
-    mac: dc:d7:a3:05:f7:ae
-    nid: 1
-    xname: x1000c1s7b0n0
-    group: compute
-    name: nid01
-
+- name: nid001
+  xname: x1000c1s7b1n0
+  nid: 1
+  group: compute
+  bmc_mac: c2:77:05:e2:03:48
+  bmc_ip: 172.16.0.101
+  interfaces:
+  - mac_addr: ec:e7:a7:05:a1:fc
+    ip_addrs:
+    - name: management
+      ip_addr: 172.16.0.1

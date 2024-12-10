@@ -201,7 +201,7 @@ _opaal_quadlets:
 
 _ochami_quadlets:
   - name: smd-init
-    image: ghcr.io/openchami/smd:v2.16.1
+    image: ghcr.io/openchami/smd:v2.17.7
     secrets:
       - smd_postgres_password,type=env,target=SMD_DBPASS
     envs:
@@ -218,7 +218,7 @@ _ochami_quadlets:
     restart: 'on-failure'
     type: 'oneshot'
   - name: smd
-    image: ghcr.io/openchami/smd:v2.16.1
+    image: ghcr.io/openchami/smd:v2.17.7
     secrets:
       - smd_postgres_password,type=env,target=SMD_DBPASS
     envs:

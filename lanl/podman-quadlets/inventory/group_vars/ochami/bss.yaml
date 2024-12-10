@@ -9,6 +9,6 @@ bss_params: '{{ bss_params_root }} {{ bss_params_cloud_init }} {{ bss_params_opt
 
 _bss_macs: |
         {% for item in nodes %}
-        - {{ item.mac }}
+        - {{ item.interfaces[0].mac_addr }}
         {% endfor %}
 bss_macs: "{{ _bss_macs | from_yaml }}"

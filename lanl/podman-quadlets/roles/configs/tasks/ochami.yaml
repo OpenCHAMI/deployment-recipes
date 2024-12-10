@@ -1,11 +1,14 @@
+- name: Get ochami latest release URL
+  ansible.builtin.shell: |
+    curl -s https://api.github.com/repos/OpenCHAMI/ochami/releases/latest | jq -r '.assets[] | select(.name | endswith("amd64.rpm")) | .browser_download_url'
+  register: ochami_latest_release_url
+
 - name: Drop ochami nodes.yaml
   ansible.builtin.template:
     src: ochami/nodes.yaml.j2
     dest: /etc/ochami/nodes.yaml
 
-- name: get ochami-cmdline
-  ansible.builtin.git:
-    repo: https://github.com/OpenCHAMI/ochami-cmdline.git
-    dest: /opt/ochami/bin/
-    update: no
-    version: main
+- name: get ochami CLI
+  ansible.builtin.dnf:
+    name: '{{ ochami_latest_release_url.stdout }}'
+    state: present
