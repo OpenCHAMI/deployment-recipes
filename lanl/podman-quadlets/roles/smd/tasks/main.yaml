@@ -2,7 +2,7 @@
 - name: Populate SMD with ochami CLI
   ansible.builtin.command:
     argv:
-      - /usr/local/bin/ochami
+      - /usr/bin/ochami
       - --token
       - "{{ access_token.stdout }}"
       - discover
