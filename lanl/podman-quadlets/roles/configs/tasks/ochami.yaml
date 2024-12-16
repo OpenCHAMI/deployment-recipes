@@ -13,3 +13,8 @@
     name: '{{ ochami_latest_release_url.stdout }}'
     state: present
     disable_gpg_check: true
+
+- name: configure ochami CLI
+  ansible.builtin.template:
+    src: ochami/config.yaml.j2
+    dest: /etc/ochami/config.yaml

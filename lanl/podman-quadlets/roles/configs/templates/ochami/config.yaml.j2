@@ -1,0 +1,8 @@
+clusters:
+  - cluster:
+      base-uri: {{ ochami_base_url }}
+    name: {{ cluster_name }}
+default-cluster: {{ cluster_name }}
+log:
+  format: {{ ochami_cli_log_format }}
+  level: {{ ochami_cli_log_level }}
