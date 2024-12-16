@@ -12,3 +12,4 @@
   ansible.builtin.dnf:
     name: '{{ ochami_latest_release_url.stdout }}'
     state: present
+    disable_gpg_check: true
