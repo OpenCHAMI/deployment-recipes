@@ -43,7 +43,7 @@ This quickstart makes a few assumptions about the target operating system and is
 1. Update your /etc/hosts to point `foobar.openchami.cluster` to 192.168.0.254 (this is important for valid certs).
 1. Start the main services
    ```bash 
-   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f  openchami-svcs.yml -f autocert.yml -f coredhcp.yml up -d
+   docker compose -f base.yml -f postgres.yml -f jwt-security.yml -f haproxy-api-gateway.yml -f  openchami-svcs.yml -f autocert.yml -f coredhcp.yml -f configurator.yml up -d
    ```
    __If this step produces an error like: `Error response from daemon: invalid IP address in add-host: ""` it means you're missing the LOCAL_IP in step 2.__
    You can fix it by destroying everything, editing `.env` manually and starting over.  The command to destroy is the same as the command to create, just replace `up -d` with `down --volumes`
