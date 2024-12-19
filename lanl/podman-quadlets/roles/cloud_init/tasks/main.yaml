@@ -1,29 +1,76 @@
 ---
-- name: Populate cloud-init
-  ansible.builtin.uri:
-    url: '{{ ochami_cloud_init_url }}/{{ item.name }}'
-    method: "DELETE"
-    status_code:
-      - 200
-      - 201
-      - 405
-    headers:
-      Authorization: 'Bearer {{ access_token.stdout }}'
-  with_items:
-    - '{{ cluster_cloud_init }}'
+### Get existing cloud-init data
+- block: 
+  - name: Get API content
+    ansible.builtin.uri:
+      url: '{{ ochami_cloud_init_url }}/admin/groups'
+      method: "GET"
+      return_content: yes
+      body_format: json
+      #    headers:
+      #      Authorization: 'Bearer {{ access_token.stdout }}'
+    register: cloud_init_data
+  
+  - name: get existing cloud-init groups
+    set_fact:
+      existing_cloud_init_groups: '{{ cloud_init_data.content | from_json | list }}'
+  
+  - name: get cloud-init data
+    set_fact:
+      existing_cloud_init_content: '{{ cloud_init_data.content | from_json }}'
 
-- name: Populate cloud-init
-  ansible.builtin.uri:
-    url: '{{ ochami_cloud_init_url }}'
-    method: "POST"
-    status_code:
-      - 200
-      - 201
-    headers:
-      Authorization: 'Bearer {{ access_token.stdout }}'
-    body_format: json
-    body:
-      name: '{{ item.name }}'
-      cloud-init: '{{ item.cloud_init }}'
-  with_items:
-    - '{{ cluster_cloud_init }}'
+### Process template groups
+- block: 
+  - name: POST new cloud-init templates
+    ansible.builtin.uri:
+      url: '{{ ochami_cloud_init_url }}/admin/groups'
+      method: "POST"
+      status_code:
+        - 200
+        - 201
+      headers:
+        Authorization: 'Bearer {{ access_token.stdout }}'
+      body_format: json
+      body:
+        '{{ item }}'
+    when: item.name not in existing_cloud_init_groups
+    with_items:
+      - '{{ cluster_cloud_init_templates | default([]) }}'
+  
+  - name: Check for cloud-init template updates
+    include_tasks: update_cloud_init_templates.yaml 
+    with_items: ' {{ cluster_cloud_init_templates | default([]) }}'
+    loop_control:
+      loop_var: tmplt
+      label: '{{ tmplt.name }}'
+    when:
+      - tmplt.name in existing_cloud_init_groups
+      - tmplt.file is defined
+
+### Process meta-data groups
+- block:
+  - name: POST new cloud-init meta-data groups
+    ansible.builtin.uri:
+      url: '{{ ochami_cloud_init_url }}/admin/groups'
+      method: "POST"
+      status_code:
+        - 200
+        - 201
+      headers:
+        Authorization: 'Bearer {{ access_token.stdout }}'
+      body_format: json
+      body:
+        '{{ item }}'
+    when: item.name not in existing_cloud_init_groups
+    with_items:
+      - '{{ cluster_cloud_init_metadata | default([]) }}'
+
+  - name: Check for cloud-init meta-data updates
+    include_tasks: update_cloud_init_metadata.yaml
+    with_items: ' {{ cluster_cloud_init_metadata | default([]) }}'
+    loop_control:
+      loop_var: tmplt
+      label: '{{ tmplt.name }}'
+    when:
+      - tmplt.name in existing_cloud_init_groups
+      - "'meta-data' in tmplt"

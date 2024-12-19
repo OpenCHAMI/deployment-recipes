@@ -1,12 +1,128 @@
-cluster_cloud_init:
-  - name: compute
-    cloud_init:
-      userdata:
+_cloud_init_merge:
+  merge_how:
+    - name: list
+      settings: [append]
+    - name: dict
+      settings: [no_replace, recurse_list]
+
+cluster_cloud_init_templates:
+  - name: ssh
+    description: 'ssh config templates'
+    file:
+      encoding: plain
+      content: |
+        {% raw %}
+        ## template: jinja
+        #cloud-config
         write_files:
-          - path: /root/.ssh/authorized_keys
-            content: '{{ cluster_boot_ssh_pub_key }}'
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.ssh_root_pub_key }}
+            path: /root/.ssh/authorized_keys
+            owner: 'root:root'
+        {% endraw %}
+        {{ _cloud_init_merge | to_yaml }}
+  - name: chrony
+    description: "chrony.conf template"
+    file:
+      encoding: plain
+      content: |
+        {% raw %}
+        ## template: jinja
+        #cloud-config
+        write_files:
+          - content: |
+              server {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.chrony_server }} iburst
+              driftfile /var/lib/chrony/drift
+              makestep 1.0 3
+              rtcsync
+              keyfile /etc/chrony.keys
+              leapsectz right/UTC
+              logdir /var/log/chrony
+            path: /etc/chrony.conf
+        runcmd:
+          - systemctl restart chronyd
+        {% endraw %}
+        {{ _cloud_init_merge | to_yaml }}
+  - name: hosts
+    description: "hosts file template"
+    file:
+      encoding: plain
+      content: |
+        {% raw %}
+        ## template: jinja
+        #cloud-config
+        merge_how:
+         - name: list
+           settings: [append]
+         - name: dict
+           settings: [no_replace, recurse_list]
+        write_files:
+          - content: |
+              127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+              ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+              {% for host in ds.meta_data.instance_data.v1.vendor_data.groups.compute.hosts %}
+              host.ip host.name
+              {% endfor %}
+            path: /etc/hosts
+        {% endraw %}
+        {{ _cloud_init_merge | to_yaml }}
+  - name: runcmds
+    description: "extra commands to run on boot"
+    file:
+      encoding: plain
+      content: |
+        {% raw %}
+        #cloud-config
         runcmd:
           - setenforce 0
-          - systemctl disable firewalld
-      metadata:
-        instance-id: test
+          - systemctl stop firewalld
+          - systemctl start munge
+          - systemctl start slurmd
+        {% endraw %}
+        {{ _cloud_init_merge | to_yaml }}
+  - name: slurm
+    description: "slurmd template"
+    file:
+      encoding: plain
+      content: |
+        {% raw %}
+        ## template: jinja
+        #cloud-config
+        merge_how:
+         - name: list
+           settings: [append]
+         - name: dict
+           settings: [no_replace, recurse_list]
+        write_files:
+          - content: |
+              SLURMD_OPTIONS=--conf-server {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.slurm_server }}:6817
+            path: /etc/sysconfig/slurmd
+        {% endraw %}
+        {{ _cloud_init_merge | to_yaml }}
+  - name: munge
+    description: "munge template"
+    file:
+      encoding: plain
+      content: |
+        {% raw %}
+        ## template: jinja
+        #cloud-config
+        write_files:
+          - content: | 
+              {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute_secure.munge_key }}
+            path: /etc/munge/munge.key
+            permissions: '0400'
+            owner: 'munge:munge'
+            encoding: base64
+        {% endraw %}
+        {{ _cloud_init_merge | to_yaml }}
+
+cluster_cloud_init_metadata:
+  - name: compute
+    description: "Group for all compute meta-data"
+    meta-data:
+      ssh_root_pub_key: |
+        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDfpY39k6BV2lmw7KERBfiQpW9isWW7R9qnrpY4hGGkmWqQTJNKfPNjjLDfNEsVkzscb9c8Pwrf2bhkgIm+A55sfOcVhvZ7EK6Bdra9enT0jrpbFpDZ7rd83GCmo4x+1uUa9XDTmE7OoSwX0v+BCYG7Q33mJdR3HSRygkBIeVLc29/tYo7oKnRMHcfKYzzI8YpoIe3zUjQCHuKdMV/ip3Xp6nB6f4nx6w6k09s6yks/m3t5kjgp+xI9lgE53CvOVEZdqD7IJZSBBwLrKwh35iyhBEB1Y69QxIhiCeIAsSOMn/AJ3vlCYV3YlnhhxepfdKGXyghPamQWTVdaogGoRnjEqW7qYmdtmk0V1UzagqwT5EwV/I7Gbqj7W6vCG174fv13txOFubonxDo4BQeVXZejTdxasioNevjU6Musyizu9Cl+NDrvamlGKJrJtWwfb8PtMqP+mbQHVaKLFpbgT2Wm4dVZfRxV8nEYTU+4KCo3dMYGd8y7GK+95UEepehPXQk= root@st-head.si.usrc
+      chrony_server: 172.16.0.254
+      slurm_server: 172.16.0.254
+      munge_key: |
+        65C2ytf7hq/Go2qn4scmmuBoCR21KBttNKBm8iCbKFQesV1cUJ/DD6F1aeNoJL0Eqh/nrMpHVAlWtsblFlj+C5RAGEBghYmHJHK4NYhwohFdp5xh2ZObX5WtoaGW/IzXiBHpJRxJef8gw+2Z+8g45WRq6sjMZv4ugh2Cw37eGKCcHWgZohiSceL+Q9rZtuXaIBF7xgm6nqY3AScibzMUkAQ+K2GQdMVV5tzBgxfjGIkImRtUe1zoLuQyEhB/eAsxbKsrYvR+y+8hEj7UyPxbOykKykseLZksg5waRWi1795rNkXuVq+WcG6x5IyledW0i5GLwfVwjzmZW7CpMFB76Lfo32E3CUJvNU1bt8qbJSZY23I51vHAlUK3+BWscMy2CBCi34yMov3GgqwQPcblCI2tfk+HszUuNFIV3tggNH5saaUoe/yZ+7V8BCsQsY8OaGPkPmxBHYD59r5UzN15pZ9d5qjQ7r6dSZ4Z5Rt3lDgs+Dt2wxYK4lh+JZG3Tyl83cVdo7K4BlmI+qwBHSVJ6H+VBeegd6sXAfxe+xe5Sm21mwGFZ8FcbtbuDRUll3pWfbHwbWCg/YNaqd5gr7BIeiMxxW3Qgtbjy9lIgWjDLXmv6m0uISmFBgbrHyMo1roYcV5KX6q3II8KxhvIGB0dWyBM5tEcgnnGJCFfbo+yJtKt8vGhIWIDR2kF0SvL2mr6htCmOkiwQXZerxEOCuWvfC9qdglAi0789CNc/6NEXd8yg/p1g6dGWbpCQUxlfmRqpU7DlorflDZl1fIr8lOQ2SOiYOldcWv7oQMjb9hEENZJO2PAT1RBtHxvewub6FQdGCi6znqi/Oq6daRXpT8B3GR1Ah1QImFJ9AF/3tbkeTazYjEWO4MOHx0/nUYa6nNPNlCHAJwnLN74+KSCZjXq5Wy2Q64Wj++wY7IoxGCT2Ktt5hs86ZZSjvMQlJVIVbeWVohr4Zaa1+ERdPbRfqFRTlSHs6xISvs1J+X5YpxQjnFBbS3bJrsESEPRomd6KpMOSqzmW4AwkN6ESxuoYqwmfiQYJ9gZcp971r18WIZ8pEfjjMLll9cSGX/OBQHjX3ZZj6khk/6RcADFmgrOWTStJiADRv5b0ph+1/5FapAsowBKbe3yyE5wQm2jPxkfug3NboxQrt6myV8/Njk88FzBAK3XCtgItu9sw4WXt37Ov0gmMMx8MAKfSJUt683SJAc3UFWIfNUv+2a7emt190qgOwH9DM/WOfu9kqSucqW99eES9rD/knUv87enGYpYt2+lpu+dmsRHosECHrRYzCzjywrANbFUwlc1hRLQY35QRTj9EQA4dc2oOiwmy7iD7kJLw+16rmizO41RclwAR8x+kw==
