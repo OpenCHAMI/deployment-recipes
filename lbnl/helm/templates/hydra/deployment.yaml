@@ -36,6 +36,9 @@ spec:
         - name: hydra-config
           mountPath: /etc/config/hydra
           readOnly: true
+        resources:
+          requests:
+            cpu: "50m"
         env:
         - name: PG_PASSWORD
           valueFrom:

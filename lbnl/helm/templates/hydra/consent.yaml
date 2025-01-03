@@ -31,6 +31,9 @@ spec:
         env:
         - name: HYDRA_ADMIN_URL
           value: http://hydra.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.hydra.service.ports.admin }}
+        resources:
+          requests:
+            cpu: "50m"
       volumes:
       - name: hydra-config
         configMap:

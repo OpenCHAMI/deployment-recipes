@@ -50,3 +50,6 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-pg-smd
                   key: database
+          resources:
+            requests:
+              cpu: "50m"
