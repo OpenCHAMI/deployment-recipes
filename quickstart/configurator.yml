@@ -8,15 +8,15 @@ services:
       - 'serve'
       - '--config'
       - '/configurator/config.yaml'
+      - '--verbose'
     volumes:
       - ./configs/configurator.yaml:/configurator/config.yaml
     networks:
       - internal
     ports:
       - 3334:3334
-    # NOTE: configurator does not have a /status endpoint yet
-    # healthcheck:
-    #   test: ["CMD", "curl", "--fail", "--silent", "http://localhost:3334/status"]
-    #   interval: 5s
-    #   timeout: 10s
-    #   retries: 60
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:3334/configurator/status"]
+      interval: 5s
+      timeout: 10s
+      retries: 60
