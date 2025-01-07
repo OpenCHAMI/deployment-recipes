@@ -1,4 +1,5 @@
 - import_tasks: packages.yaml
+- import_tasks: configs.yaml
 - import_tasks: coredhcp.yaml
 - import_tasks: haproxy.yaml
 - import_tasks: hydra.yaml
