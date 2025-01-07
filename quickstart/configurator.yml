@@ -8,6 +8,7 @@ services:
       - 'serve'
       - '--config'
       - '/configurator/config.yaml'
+      - '--verbose'
     volumes:
       - ./configs/configurator.yaml:/configurator/config.yaml
     networks:
