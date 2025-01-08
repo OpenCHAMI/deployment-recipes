@@ -1,4 +1,17 @@
 ---
+### POST service configs
+- name: Update cloud-init default values
+  ansible.builtin.uri:
+    url: '{{ ochami_cloud_init_url }}/admin/cluster-defaults'
+    method: 'POST'
+    status_code:
+      - 200
+      - 201
+    body_format: json
+    body:
+      "cluster-name": '{{ cluster_name }}'
+      "base-url": 'http://{{ cloud_init_wireguard_server }}:{{ cloud_init_wireguard_port }}/cloud-init'
+
 ### Get existing cloud-init data
 - block: 
   - name: Get API content
