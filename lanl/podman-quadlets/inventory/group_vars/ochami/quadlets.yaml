@@ -286,21 +286,10 @@ _ochami_quadlets:
       - opaal.service
     networks:
       - ochami-internal.network
-  - name: tpm-manager
-    image: ghcr.io/openchami/tpm-manager:v0.2.2
-    command: "-port 27780 -batch-size 100 -interval 30s"
-    envs:
-      - OPAAL_URL=http://opaal:3333
-      - HSM_URL=http://smd:27779
-      - ANSIBLE_HOST_KEY_CHECKING=False
-    after:
-      - smd.service
-      - opaal.service
-    networks:
-      - ochami-internal.network
-      - ochami-external.network
-    volumes:
-      - /root/.ssh:/root/.ssh:ro
+      - 'ochami-external.network:ip={{ cloud_init_wireguard_endpoint }}
+    capabilities:
+      - CAP_NET_ADMIN
+    command: '/usr/local/bin/cloud-init-server --listen 0.0.0.0:27777 --smd-url http://smd:27779 --token-url http://opaal:3333/token --impersonation=true --cluster-name {{ cluster_name }} --wireguard-server {{ cloud_init_wireguard_server }}/16 --wireguard-only'
 
 _haproxy_quadlets:
   - name: haproxy
