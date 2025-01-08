@@ -7,3 +7,4 @@ coredhcp_tmp_lease_duration: '5m'
 coredhcp_lease_duration: '1h'
 coredhcp_cache_validity: '30s'
 coredhcp_custom_ipxe: 'default'
+coredhcp_tftp_single_port_mode: true
