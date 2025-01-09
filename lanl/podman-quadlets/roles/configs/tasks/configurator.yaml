@@ -1,0 +1,7 @@
+- name: Drop configurator config file
+  ansible.builtin.template:
+    src: configurator/configurator.yaml.j2
+    dest: '/etc/ochami/configs/configurator.yaml'
+    owner: root
+    group: root
+    mode: '0644'

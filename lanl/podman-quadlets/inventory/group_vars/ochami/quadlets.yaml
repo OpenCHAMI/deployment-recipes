@@ -16,7 +16,7 @@ podman_quadlet_volumes:
   - name: acme-certs
   - name: postgres-data
 
-podman_quadlet_containers: '{{ _ochami_init_quadlets + _postgres_quadlets + _step_ca_quadlets + _acme_quadlets + _hydra_quadlets + _opaal_quadlets + _ochami_quadlets + _haproxy_quadlets + _coresmd_quadlets + _image_server_quadlets }}'
+podman_quadlet_containers: '{{ _ochami_init_quadlets + _postgres_quadlets + _step_ca_quadlets + _acme_quadlets + _hydra_quadlets + _opaal_quadlets + _ochami_quadlets + _haproxy_quadlets + _coresmd_quadlets + _image_server_quadlets + _configurator_quadlets }}'
 
 podman_quadlet_start: ['ochami-init', 'image-server']
 
@@ -321,10 +321,11 @@ _haproxy_quadlets:
       - acme-deploy.service
       - cloud-init-server.service
       - tpm-manager.service
+      - configurator.service
 
 _coresmd_quadlets:
   - name: coresmd
-    image: ghcr.io/openchami/coredhcp:v0.2.0
+    image: ghcr.io/openchami/coredhcp:v0.3.0
     capabilities:
       - NET_ADMIN
     volumes:
@@ -344,3 +345,14 @@ _image_server_quadlets:
       - '{{ cluster_boot_ip }}:8080:80'
     pre_start:
       - mkdir -p /data/domain-images
+
+_configurator_quadlets:
+  - name: configurator
+    image: ghcr.io/openchami/configurator:v0.2.1
+    command: '/configurator/configurator serve --verbose --config /usr/local/etc/configurator.yaml'
+    networks:
+      - ochami-internal.network
+    volumes:
+      - /etc/ochami/configs/configurator.yaml:/usr/local/etc/configurator.yaml
+    after:
+      - smd.service
