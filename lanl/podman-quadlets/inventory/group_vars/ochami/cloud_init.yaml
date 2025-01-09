@@ -10,6 +10,20 @@ _cloud_init_merge:
       settings: [no_replace, recurse_list]
 
 cluster_cloud_init_templates:
+  - name: phone_home
+    description: "Phone-home if cloud-init is run successfully"
+    file:
+      encoding: plain
+      content: |
+        ## template: jinja
+        #cloud-config
+        {{ _cloud_init_merge | to_yaml }}
+        {% raw %}
+        phone_home:
+          post: [pub_key_rsa, pub_key_ecdsa, pub_key_ed25519, instance_id, hostname, fqdn]
+          tries: 5
+          url: {{ ds.meta_data.instance_data.v1.vendor_data.cloud_init_base_url }}/phone-home/{{ v1.instance_id }}/
+        {% endraw %}
   - name: ssh
     description: 'ssh config templates'
     file:
@@ -19,11 +33,12 @@ cluster_cloud_init_templates:
         #cloud-config
         {{ _cloud_init_merge | to_yaml }}
         {% raw %}
-        write_files:
-          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.ssh_root_pub_key }}
-            path: /root/.ssh/authorized_keys
-            owner: 'root:root'
+        users:
+          - name: root
+            ssh_authorized_keys: {{ ds.meta_data.instance_data.v1.public_keys }}
+        disable_root: false
         {% endraw %}
+
   - name: chrony
     description: "chrony.conf template"
     file:
@@ -125,6 +140,53 @@ cluster_cloud_init_templates:
             owner: 'munge:munge'
             encoding: base64
         {% endraw %}
+  - name: ssh_host_keys
+    description: "ssh host keys group"
+    file:
+      encoding: plain
+      content: |
+        ## template: jinja
+        #cloud-config
+        {{ _cloud_init_merge | to_yaml }}
+        {% raw %}
+        merge_how:
+         - name: list
+           settings: [append]
+         - name: dict
+           settings: [no_replace, recurse_list]
+        ssh_deletekeys: false
+        write_files:
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.rsa_public }}
+            path: /etc/ssh/ssh_host_rsa_key.pub
+            permissions: '0644'
+            owner: 'root:root'
+            encoding: base64
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.rsa_private }}
+            path: /etc/ssh/ssh_host_rsa_key
+            permissions: '0640'
+            owner: 'root:ssh_keys'
+            encoding: base64
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.ecdsa_public }}
+            path: /etc/ssh/ssh_host_ecdsa_key.pub
+            permissions: '0644'
+            owner: 'root:root'
+            encoding: base64
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.ecdsa_private }}
+            path: /etc/ssh/ssh_host_ecdsa_key
+            permissions: '0640'
+            owner: 'root:ssh_keys'
+            encoding: base64
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.ed25519_public }}
+            path: /etc/ssh/ssh_host_ed25519_key.pub
+            permissions: '0644'
+            owner: 'root:root'
+            encoding: base64
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.ed25519_private }}
+            path: /etc/ssh/ssh_host_ed25519_key
+            permissions: '0640'
+            owner: 'root:ssh_keys'
+            encoding: base64
+          {% endraw %}
 
 cluster_cloud_init_metadata:
   - name: compute
@@ -136,3 +198,9 @@ cluster_cloud_init_metadata:
       slurm_server: 172.16.0.254
       munge_key: |
         65C2ytf7hq/Go2qn4scmmuBoCR21KBttNKBm8iCbKFQesV1cUJ/DD6F1aeNoJL0Eqh/nrMpHVAlWtsblFlj+C5RAGEBghYmHJHK4NYhwohFdp5xh2ZObX5WtoaGW/IzXiBHpJRxJef8gw+2Z+8g45WRq6sjMZv4ugh2Cw37eGKCcHWgZohiSceL+Q9rZtuXaIBF7xgm6nqY3AScibzMUkAQ+K2GQdMVV5tzBgxfjGIkImRtUe1zoLuQyEhB/eAsxbKsrYvR+y+8hEj7UyPxbOykKykseLZksg5waRWi1795rNkXuVq+WcG6x5IyledW0i5GLwfVwjzmZW7CpMFB76Lfo32E3CUJvNU1bt8qbJSZY23I51vHAlUK3+BWscMy2CBCi34yMov3GgqwQPcblCI2tfk+HszUuNFIV3tggNH5saaUoe/yZ+7V8BCsQsY8OaGPkPmxBHYD59r5UzN15pZ9d5qjQ7r6dSZ4Z5Rt3lDgs+Dt2wxYK4lh+JZG3Tyl83cVdo7K4BlmI+qwBHSVJ6H+VBeegd6sXAfxe+xe5Sm21mwGFZ8FcbtbuDRUll3pWfbHwbWCg/YNaqd5gr7BIeiMxxW3Qgtbjy9lIgWjDLXmv6m0uISmFBgbrHyMo1roYcV5KX6q3II8KxhvIGB0dWyBM5tEcgnnGJCFfbo+yJtKt8vGhIWIDR2kF0SvL2mr6htCmOkiwQXZerxEOCuWvfC9qdglAi0789CNc/6NEXd8yg/p1g6dGWbpCQUxlfmRqpU7DlorflDZl1fIr8lOQ2SOiYOldcWv7oQMjb9hEENZJO2PAT1RBtHxvewub6FQdGCi6znqi/Oq6daRXpT8B3GR1Ah1QImFJ9AF/3tbkeTazYjEWO4MOHx0/nUYa6nNPNlCHAJwnLN74+KSCZjXq5Wy2Q64Wj++wY7IoxGCT2Ktt5hs86ZZSjvMQlJVIVbeWVohr4Zaa1+ERdPbRfqFRTlSHs6xISvs1J+X5YpxQjnFBbS3bJrsESEPRomd6KpMOSqzmW4AwkN6ESxuoYqwmfiQYJ9gZcp971r18WIZ8pEfjjMLll9cSGX/OBQHjX3ZZj6khk/6RcADFmgrOWTStJiADRv5b0ph+1/5FapAsowBKbe3yyE5wQm2jPxkfug3NboxQrt6myV8/Njk88FzBAK3XCtgItu9sw4WXt37Ov0gmMMx8MAKfSJUt683SJAc3UFWIfNUv+2a7emt190qgOwH9DM/WOfu9kqSucqW99eES9rD/knUv87enGYpYt2+lpu+dmsRHosECHrRYzCzjywrANbFUwlc1hRLQY35QRTj9EQA4dc2oOiwmy7iD7kJLw+16rmizO41RclwAR8x+kw==
+      rsa_public: '{{ ssh_host_keys.rsa_public }}'
+      rsa_private: '{{ ssh_host_keys.rsa_private }}'
+      ecdsa_public: '{{ ssh_host_keys.ecdsa_public }}'
+      ecdsa_private: '{{ ssh_host_keys.ecdsa_private }}'
+      ed25519_public: '{{ ssh_host_keys.ed25519_public }}'
+      ed25519_private: '{{ ssh_host_keys.ed25519_private }}'

@@ -10,3 +10,17 @@
       - "/etc/ochami/nodes.yaml"
       - --payload-format
       - yaml
+
+- name: Populate SMD groups with ochami CLI
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/ochami
+      - --token
+      - "{{ access_token.stdout }}"
+      - smd
+      - group
+      - add
+      - --payload
+      - "/etc/ochami/groups.yaml"
+      - --payload-format
+      - yaml

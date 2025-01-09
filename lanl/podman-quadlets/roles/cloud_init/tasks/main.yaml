@@ -11,6 +11,9 @@
     body:
       "cluster-name": '{{ cluster_name }}'
       "base-url": 'http://{{ cloud_init_wireguard_server }}:{{ cloud_init_wireguard_port }}/cloud-init'
+      "public-keys": [
+              '{{ cluster_boot_ssh_pub_key }}'
+              ]
 
 ### Get existing cloud-init data
 - block: 
