@@ -5,8 +5,6 @@ metadata:
   name: coredhcp
   namespace: {{ .Release.Namespace }}
 data:
-  # TODO this would probably be better as a helper, probably with a constructed dict that
-  # we toYaml. templating raw yaml strings feels like an icky recipe for failure.
   config.yaml: |
     server4:
       listen:
