@@ -1,0 +1,22 @@
+_xnames: |
+  {% for item in nodes %}
+  - {{ item.xname }}
+  {% endfor %}
+
+xnames: '{{ _xnames | from_yaml }}'
+
+ochami_groups:
+  - label: compute
+    members: '{{ xnames }}'
+  - label: ssh
+    members: '{{ xnames }}'
+  - label: munge
+    members: '{{ xnames }}'
+  - label: slurm
+    members: '{{ xnames }}'
+  - label: runcmds
+    members: '{{ xnames }}'
+  - label: hosts
+    members: '{{ xnames }}'
+  - label: chrony
+    members: '{{ xnames }}'

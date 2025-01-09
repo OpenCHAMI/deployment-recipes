@@ -268,14 +268,13 @@ _ochami_quadlets:
       - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
       - 'BSS_IPXE_SERVER={{ cluster_name }}.{{ cluster_domain }}'
       - BSS_CHAIN_PROTO=https
-      - BSS_BOOTSCRIPT_NOTIFY_URL=http://tpm-manager:27780/Node
     after:
       - bss-init.service
       - opaal.service
     networks:
       - ochami-internal.network
   - name: cloud-init-server
-    image: ghcr.io/openchami/cloud-init:v0.1.1
+    image: cloud-init:test
     envs:
       - LISTEN_ADDR=:27777
       - SMD_URL=http://smd:27779
@@ -286,10 +285,10 @@ _ochami_quadlets:
       - opaal.service
     networks:
       - ochami-internal.network
-      - 'ochami-external.network:ip={{ cloud_init_wireguard_endpoint }}
+      - 'ochami-external.network:ip={{ cloud_init_wireguard_endpoint }}'
     capabilities:
       - CAP_NET_ADMIN
-    command: '/usr/local/bin/cloud-init-server --listen 0.0.0.0:27777 --smd-url http://smd:27779 --token-url http://opaal:3333/token --impersonation=true --cluster-name {{ cluster_name }} --wireguard-server {{ cloud_init_wireguard_server }}/16 --wireguard-only'
+    command: '/usr/local/bin/cloud-init-server --listen 0.0.0.0:27777 --smd-url http://smd:27779 --token-url http://opaal:3333/token --impersonation=true --cluster-name {{ cluster_name }} --wireguard-server {{ cloud_init_wireguard_server }}/16 --wireguard-only --debug'
 
 _haproxy_quadlets:
   - name: haproxy
@@ -309,8 +308,6 @@ _haproxy_quadlets:
       - bss.service
       - acme-deploy.service
       - cloud-init-server.service
-      - tpm-manager.service
-      - configurator.service
 
 _coresmd_quadlets:
   - name: coresmd

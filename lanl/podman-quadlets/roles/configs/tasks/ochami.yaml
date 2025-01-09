@@ -8,6 +8,11 @@
     src: ochami/nodes.yaml.j2
     dest: /etc/ochami/nodes.yaml
 
+- name: Drop ochami groups.yaml
+  template:
+    src: ochami/groups.yaml.j2
+    dest: /etc/ochami/groups.yaml
+
 - name: get ochami CLI
   ansible.builtin.dnf:
     name: '{{ ochami_latest_release_url.stdout }}'

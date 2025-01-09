@@ -1,0 +1,11 @@
+{% for item in ochami_groups %}
+- label: {{ item.label }}
+{% if item.description is defined %}
+  description: {{ item.description }}
+{% endif %}
+  members:
+    ids:
+{% for m in item.members %}
+      - {{ m }}
+{% endfor %} 
+{% endfor %}
