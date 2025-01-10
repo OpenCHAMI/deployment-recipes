@@ -35,7 +35,7 @@ bss:
       repository: ghcr.io/openchami
       name: bss
       pullPolicy: IfNotPresent
-      tag: "v1.31.3"
+      tag: "v1.32.0"
     containerPort: 27778
   dbname: bssdb
 
