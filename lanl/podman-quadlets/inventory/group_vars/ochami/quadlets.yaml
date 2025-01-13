@@ -234,7 +234,7 @@ _ochami_quadlets:
     networks:
       - ochami-internal.network
   - name: bss-init
-    image: ghcr.io/openchami/bss:v1.31.3
+    image: ghcr.io/openchami/bss:v1.32.0
     secrets:
       - bss_postgres_password,type=env,target=BSS_DBPASS
     envs:
@@ -252,7 +252,7 @@ _ochami_quadlets:
     restart: 'on-failure'
     type: 'oneshot'
   - name: bss
-    image: ghcr.io/openchami/bss:v1.31.3
+    image: ghcr.io/openchami/bss:v1.32.0
     secrets:
       - bss_postgres_password,type=env,target=BSS_DBPASS
     envs:
