@@ -43,6 +43,9 @@ spec:
           readinessProbe:
             exec:
               command: ["pgrep", "dnsmasq"]
+          resources:
+            requests:
+              cpu: "50m"
       volumes:
       - name: dnsmasq-config
         configMap:

@@ -76,3 +76,66 @@ jobs:
         run: |
           echo "Some jobs failed or were cancelled."
           exit 1
+
+  deploy-to-gke:
+    runs-on: ubuntu-latest
+    env:
+      NAMESPACE: ochami-ci
+      GC_REGISTRY: ${{ secrets.GC_PROJECT_REGION }}-docker.pkg.dev/${{ secrets.GC_PROJECT_ID }}/ochami
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure GKE credentials
+        uses: google-github-actions/auth@v2.1.7
+        with:
+          credentials_json: ${{ secrets.GKE_SERVICE_ACCOUNT_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Install `kubectl` plugin for gcloud CLI
+        run: gcloud --quiet components install gke-gcloud-auth-plugin kubectl
+
+      - name: Configure `kubectl` to talk to OpenCHAMI cluster in GKE
+        run: gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} --location ${{ secrets.GC_PROJECT_REGION }}
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.2.0
+
+      - name: mask Google Cloud project details
+        run: echo "::add-mask::${{ secrets.GC_PROJECT_ID }}"
+
+      # I can't figure out how to embed shell commands in the `env` section of
+      # a GitHub Action, so we export it by hand here instead.
+      - name: set name of Helm installation
+        run: |
+          export HELM_INSTALL_NAME="ochami-services-$(git rev-parse --short HEAD)"
+          echo "HELM_INSTALL_NAME=${HELM_INSTALL_NAME}" >> ${GITHUB_ENV}
+
+      - name: install Helm chart
+        run: |
+          cd ./lbnl/helm;
+          helm dependency build;
+          bash ./scripts/install.sh ${HELM_INSTALL_NAME} ${NAMESPACE} ${GC_REGISTRY}
+
+      - name: show installed Helm charts
+        run: helm ls -n ${NAMESPACE}
+
+      - name: show running pods
+        run: kubectl get pods -n ${NAMESPACE} -o wide
+
+      - name: show running services
+        run: kubectl get svc -n ${NAMESPACE} -o wide
+
+      - name: run a simple test
+        run: |
+          SMD_PORT=$(kubectl get svc/smd -n ${NAMESPACE} -o json|jq -r '.spec.ports[].targetPort')
+          kubectl exec deploy/swiss-army-knife -n ${NAMESPACE} -c swiss-army-knife -- curl -s smd.${NAMESPACE}.svc.cluster.local:${SMD_PORT}/hsm/v2/service/ready|jq
+
+      - name: uninstall Helm chart
+        run: helm uninstall ${HELM_INSTALL_NAME} -n ${NAMESPACE}
+        if: always()
+
+      - name: delete PostgreSQL PVC because `helm uninstall` won't do that for us
+        run: kubectl delete pvc/data-${HELM_INSTALL_NAME}-postgresql-0 -n ${NAMESPACE}
+        if: always()

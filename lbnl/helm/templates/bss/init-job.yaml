@@ -37,5 +37,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-pg-bss
                   key: database
+          resources:
+            requests:
+              cpu: "50m"
       restartPolicy: OnFailure
   backoffLimit: 4

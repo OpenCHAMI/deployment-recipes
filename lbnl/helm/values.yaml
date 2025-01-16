@@ -62,7 +62,7 @@ tftpd:
     containerPort: 69
 
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 69
     # Since GKE external network LoadBalancers are not proxied, it might be a
     # good idea to add an annotation like loadBalancerSourceRanges to limit who
@@ -82,7 +82,7 @@ dnsmasq:
 
   service:
     dhcp:
-      type: LoadBalancer
+      type: ClusterIP
       port: 67
       # Since GKE external network LoadBalancers are not proxied, it might be a
       # good idea to add an annotation like loadBalancerSourceRanges to limit who
@@ -90,7 +90,7 @@ dnsmasq:
       annotations:
 
     tftp:
-      type: LoadBalancer
+      type: ClusterIP
       port: 69
       # Since GKE external network LoadBalancers are not proxied, it might be a
       # good idea to add an annotation like loadBalancerSourceRanges to limit who

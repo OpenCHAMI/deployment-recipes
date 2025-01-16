@@ -37,6 +37,9 @@ spec:
           value: "{{ .Values.postgresql.service.ports.postgresql }}"
         - name: DSN
           value: postgres://$(PG_USERNAME):$(PG_PASSWORD)@{{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local:$(PG_PORT)/$(PG_DB)?sslmode=disable&max_conns=20&max_idle_conns=4
+        resources:
+          requests:
+            cpu: "50m"
       volumes:
       - name: hydra-config
         configMap:
