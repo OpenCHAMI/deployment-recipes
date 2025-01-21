@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredhcp
+  namespace: {{ .Release.Namespace }}
+data:
+  config.yaml: |
+    server4:
+      listen:
+        - 0.0.0.0:67
+      plugins:
+        # Base CoreDHCP config
+        - server_id: {{ .Values.coredhcp.config.server_id }}
+        - dns: {{ .Values.coredhcp.config.dns | join " " }}
+        - router: {{ .Values.coredhcp.config.router }}
+        - netmask: {{ .Values.coredhcp.config.netmask }}
+        - range: /leases/leases.txt {{ .Values.coredhcp.config.range.start }} {{ .Values.coredhcp.config.range.end }} {{ .Values.coredhcp.config.range.duration }}
+        #
+        # CoreSMD config
+        # Args: ochami_base_url boot_script_base_url ca_cert_path cache_update_interval long_lease_time single_port_mode
+        # SMD does not currently provide HTTPS, but we have to provide a cert for the positional arguments, so "" in arg 3 disables HTTPS.
+        # We need single port mode to allow TFTP requests to traverse container network NAT tables successfully.
+        - coresmd: http://smd:{{ .Values.smd.service.port }} http://bss:{{ .Values.bss.service.port }} "" 30s 1h true
+        #
+        # Optionally include the file plugin here if it matters which IPs get assigned to which
+        # MACs. Otherwise, unknown MACs get passed to the bootloop "catch-all" plugin below.
+        #
+        {{ if .Values.coredhcp.leaseMap.name }}
+        - file /static/{{ .Values.coredhcp.leaseMap.key }}
+        {{ end }}
+        # Args: storage_path ipxe_script_path short_lease_time ip_pool_start ip_pool_end
+        - bootloop: /leases/coredhcp.db default {{ .Values.coredhcp.config.unrecognized_range.duration }} {{ .Values.coredhcp.config.unrecognized_range.start }} {{ .Values.coredhcp.config.unrecognized_range.end }}

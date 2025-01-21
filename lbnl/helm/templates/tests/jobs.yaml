@@ -32,3 +32,21 @@ spec:
         - curl
         - --fail
         - "http://bss.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.bss.service.port }}/boot/v1/hosts"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-tftp"
+  annotations:
+    "helm.sh/hook": test
+spec:
+  restartPolicy: OnFailure
+  containers:
+    - name: "{{ .Release.Name }}-curl"
+      image: curlimages/curl
+      command:
+        - "curl"
+        - "--fail"
+        - "-svo"
+        - "/dev/null"
+        - "tftp://coredhcp.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.coredhcp.service.tftp.port }}/ipxe-x86_64.efi"
