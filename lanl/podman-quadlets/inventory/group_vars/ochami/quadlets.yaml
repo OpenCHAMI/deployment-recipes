@@ -274,7 +274,7 @@ _ochami_quadlets:
     networks:
       - ochami-internal.network
   - name: cloud-init-server
-    image: cloud-init:test
+    image: ghcr.io/openchami/cloud-init:v1.0.4
     envs:
       - LISTEN_ADDR=:27777
       - SMD_URL=http://smd:27779
@@ -288,7 +288,7 @@ _ochami_quadlets:
       - 'ochami-external.network:ip={{ cloud_init_wireguard_endpoint }}'
     capabilities:
       - CAP_NET_ADMIN
-    command: '/usr/local/bin/cloud-init-server --listen 0.0.0.0:27777 --smd-url http://smd:27779 --token-url http://opaal:3333/token --impersonation=true --cluster-name {{ cluster_name }} --wireguard-server {{ cloud_init_wireguard_server }}/16 --wireguard-only --debug'
+    command: '/usr/local/bin/cloud-init-server --listen 0.0.0.0:27777 --smd-url http://smd:27779 --token-url http://opaal:3333/token --impersonation=true --cluster-name {{ cluster_name }}'
 
 _haproxy_quadlets:
   - name: haproxy
