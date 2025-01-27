@@ -8,8 +8,12 @@
       - 200
       - 201
     body_format: json
+    headers:
+      Authorization: 'Bearer {{ access_token.stdout }}'
     body:
       "cluster-name": '{{ cluster_name }}'
+      "short-name": '{{ cluster_shortname }}'
+      "nid-length": '{{ cluster_nidlength }}'
       "base-url": 'http://{{ cloud_init_wireguard_server }}:{{ cloud_init_wireguard_port }}/cloud-init'
       "public-keys": [
               '{{ cluster_boot_ssh_pub_key }}'
@@ -23,8 +27,8 @@
       method: "GET"
       return_content: yes
       body_format: json
-      #    headers:
-      #      Authorization: 'Bearer {{ access_token.stdout }}'
+      headers:
+        Authorization: 'Bearer {{ access_token.stdout }}'
     register: cloud_init_data
   
   - name: get existing cloud-init groups
