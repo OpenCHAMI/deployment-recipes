@@ -1,13 +1,15 @@
-server:         # Server-related parameters when using as service
-  host: 0.0.0.0
-  port: 3334
-  jwks:         # Set the JWKS uri to protect /generate route
+# Server-related parameters when using as service
+server:
+  host: 0.0.0.0:3334
+  # Set the JWKS uri to protect /generate route
+  jwks:
     uri: ""
     retries: 5
-smd:          # SMD-related parameters
-  host: http://smd
-  port: 27779
-targets:        # targets to call with --target flag with CLI or "target" query param
+# SMD-related parameters
+smd:
+  host: http://smd:27779
+# targets to call with --target flag with CLI or "target" query param
+targets:
   coredhcp: 
     templates: 
       - templates/coredhcp.jinja

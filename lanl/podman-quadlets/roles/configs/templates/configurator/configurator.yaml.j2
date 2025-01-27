@@ -1,0 +1,15 @@
+server:
+  host: {{ configurator_server_ip }}:{{ configurator_server_port }}
+  jwks:
+    uri: ""
+    retries: 5
+smd:
+  host: http://smd:27779
+targets:
+{% for target in configurator_targets %}
+  {{ target.name }}:
+    templates:
+{%    for path in target.paths %}
+      - {{ path }}
+{%    endfor %}
+{% endfor %}

@@ -1,0 +1,19 @@
+configurator_server_ip: 0.0.0.0
+configurator_server_port: 3334
+
+configurator_targets:
+  - name: coredhcp
+    paths:
+      - templates/coredhcp.jinja
+  - name: syslog
+    paths:
+      - templates/syslog.jinja
+  - name: ansible
+    paths:
+      - templates/ansible.jinja
+  - name: powerman
+    paths:
+      - templates/powerman.jinja
+  - name: conman
+    paths:
+      - templates/conman.jinja

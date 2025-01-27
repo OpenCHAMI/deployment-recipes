@@ -35,7 +35,7 @@ bss:
       repository: ghcr.io/openchami
       name: bss
       pullPolicy: IfNotPresent
-      tag: "v1.31.3"
+      tag: "v1.32.0"
     containerPort: 27778
   dbname: bssdb
 
@@ -51,51 +51,56 @@ gke:
     port: 80
   securityPolicy: lbnl-nersc
 
-tftpd:
+coredhcp:
   deployment:
     replicaCount: 1
     image:
       repository: ghcr.io/openchami
-      name: tftpd
+      name: coredhcp
       pullPolicy: IfNotPresent
-      tag: "0.1"
-    containerPort: 69
+      tag: v0.3.0
 
   service:
+    tftp:
+      port: 69
+    dhcp:
+      port: 67
     type: LoadBalancer
-    port: 69
-    # Since GKE external network LoadBalancers are not proxied, it might be a
-    # good idea to add an annotation like loadBalancerSourceRanges to limit who
-    # can access the Service.
     annotations:
 
-dnsmasq:
-  deployment:
-    replicaCount: 1
-    image:
-      repository: ghcr.io/openchami
-      name: dnsmasq
-      pullPolicy: IfNotPresent
-      tag: dynamic
-    dhcp_port: 67
-    tftp_port: 69
-
-  service:
-    dhcp:
-      type: LoadBalancer
-      port: 67
-      # Since GKE external network LoadBalancers are not proxied, it might be a
-      # good idea to add an annotation like loadBalancerSourceRanges to limit who
-      # can access the Service.
-      annotations:
-
-    tftp:
-      type: LoadBalancer
-      port: 69
-      # Since GKE external network LoadBalancers are not proxied, it might be a
-      # good idea to add an annotation like loadBalancerSourceRanges to limit who
-      # can access the Service.
-      annotations:
+  # provide a ConfigMap containing static lease configuration for the CoreDHCP file plugin.
+  # the plugin is disabled if the name is empty.
+  leaseMap:
+    name: ""
+    key: "file_leases.txt"
+  # TODO there are a couple options for handling config. we could be very prescriptive
+  # and build a configuration file from specific enumerated values only (the current approach), or
+  # just treat the contents under coredhcp.config as a complete config and toYaml them to produce
+  # a ConfigMap. We could offer a bring your own ConfigMap alternative with either approach. IDK
+  # if we'd expect users to often need settings outside the chosen exposed settings with the
+  # prescriptive approach.
+  config:
+    # with the exception of dns, you _must_ set values appropriate to your network
+    # in this section. the default values are only examples.
+    #
+    # server_id is the address external nodes will use to talk to your DHCP server.
+    # this value will also be used to set the service's LoadBalancer IP.
+    server_id: 192.168.0.254
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    # router is the default gateway for your node network.
+    router: 172.16.0.254
+    # netmask defines the range of addresses the DHCP server will allocate.
+    netmask: 255.255.255.0
+    range:
+      start: 172.16.0.10
+      end: 172.16.0.200
+      duration: 60s
+    unrecognized_range:
+      start: 172.16.0.201
+      end: 172.16.0.220
+      duration: 60s
 
 hydra:
   deployment:

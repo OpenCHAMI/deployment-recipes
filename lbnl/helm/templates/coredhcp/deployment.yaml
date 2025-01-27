@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coredhcp
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: coredhcp
+spec:
+  replicas: {{ .Values.coredhcp.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: coredhcp
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: coredhcp
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/coredhcp/configmap.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: coredhcp
+          image: {{ .Values.coredhcp.deployment.image.repository }}/{{ .Values.coredhcp.deployment.image.name }}:{{ .Values.coredhcp.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.coredhcp.deployment.image.pullPolicy }}
+          args:
+            - "/coredhcp"
+            - "-L"
+            - "debug"
+          ports:
+              # TODO ideall we'd run as non-root with DHCP and TFTP traffic forwarded to high ports from the Service,
+              # but upstream coresmd currently hardcodes port 69
+            - name: dhcp
+              containerPort: 67
+              protocol: UDP
+            - name: tftp
+              containerPort: 69
+              protocol: UDP
+          volumeMounts:
+            - mountPath: /leases
+              name: leases
+            - mountPath: /etc/coredhcp/
+              name: config
+            {{- if .Values.coredhcp.leaseMap.name }}
+            - mountPath: /static
+              name: static
+            {{- end }}
+      volumes:
+        - name: leases
+          emptyDir:
+            sizeLimit: 512M
+        - name: config
+          configMap:
+            name: coredhcp
+        {{- if .Values.coredhcp.leaseMap.name }}
+        - name: static
+          configMap:
+            name: {{ .Values.coredhcp.leaseMap.name }}
+        {{- end }}
