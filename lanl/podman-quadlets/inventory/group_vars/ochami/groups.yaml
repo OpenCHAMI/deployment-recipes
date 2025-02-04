@@ -6,17 +6,12 @@ _xnames: |
 xnames: '{{ _xnames | from_yaml }}'
 
 ochami_groups:
-  - label: compute
-    members: '{{ xnames }}'
-  - label: ssh
-    members: '{{ xnames }}'
-  - label: munge
-    members: '{{ xnames }}'
-  - label: slurm
-    members: '{{ xnames }}'
-  - label: runcmds
-    members: '{{ xnames }}'
-  - label: hosts
-    members: '{{ xnames }}'
-  - label: chrony
-    members: '{{ xnames }}'
+  compute: '{{ xnames }}'
+  ssh: '{{ xnames }}'
+  ssh_host_keys: '{{ xnames }}'
+  munge: '{{ xnames }}'
+  slurm: '{{ xnames }}'
+  runcmds: '{{ xnames }}'
+  hosts: '{{ xnames }}'
+  chrony: '{{ xnames }}'
+  disk_config: [ 'x1000c1s7b1n0' ]
