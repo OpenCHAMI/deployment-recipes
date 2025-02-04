@@ -1,11 +1,11 @@
-{% for item in ochami_groups %}
-- label: {{ item.label }}
+{% for item in ochami_groups | dict2items %}
+- label: {{ item.key }}
 {% if item.description is defined %}
   description: {{ item.description }}
 {% endif %}
   members:
     ids:
-{% for m in item.members %}
+{% for m in item.value %}
       - {{ m }}
-{% endfor %} 
+{% endfor %}
 {% endfor %}

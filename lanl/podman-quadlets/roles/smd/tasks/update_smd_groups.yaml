@@ -1,0 +1,48 @@
+- block:
+  - name: '{{ grp.key }} | Get SMD group data'
+    set_fact:
+      smd_group_members: >-
+        {{ (existing_smd_groups | selectattr("label", "==", grp.key) | first).members.ids }}
+
+  - name: '{{ grp.key }} | Get inventory content'
+    set_fact:
+      inventory_group_members: '{{ grp.value }}'
+
+  - name: '{{ grp.key }} | Set changed if contents do not match'
+    set_fact:
+      smd_group_changed: true
+    when: smd_group_members | symmetric_difference(inventory_group_members) | length  > 0
+
+- name: '{{ grp.key }} | Update SMD groups'
+  ansible.builtin.uri:
+    url: '{{ ochami_smd_url }}/groups/{{ grp.key }}'
+    method: "DELETE"
+    status_code:
+      - 200
+      - 201
+    headers:
+      Authorization: 'Bearer {{ access_token.stdout }}'
+    body_format: json
+    body:
+  changed_when: smd_group_changed
+  when:
+    - smd_group_changed | default(false) | bool
+
+- name: '{{ grp.key }} | Update SMD groups'
+  ansible.builtin.uri:
+    url: '{{ ochami_smd_url }}/groups/'
+    method: "POST"
+    status_code:
+      - 200
+      - 201
+    headers:
+      Authorization: 'Bearer {{ access_token.stdout }}'
+    body_format: json
+    body:
+        "label": '{{ grp.key }}'
+        "members": {
+          "ids": '{{ grp.value }}'
+        }
+  changed_when: smd_group_changed
+  when:
+    - smd_group_changed | default(false) | bool
