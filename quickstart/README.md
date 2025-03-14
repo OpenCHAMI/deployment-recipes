@@ -57,7 +57,7 @@ This quickstart makes a few assumptions about the target operating system and is
    ACCESS_TOKEN=$(gen_access_token)
    # If you're curious about that token, you can safely copy and paste it into https://jwt.io to learn more.
    # Use curl to confirm that everything is working
-   curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" https://foobar.openchami.cluster/hsm/v2/State/Components
+   curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" https://foobar.openchami.cluster:8443/hsm/v2/State/Components
    # This should respond with an empty set of Components: {"Components":[]}
    ```
 
@@ -77,14 +77,14 @@ The first endpoint, located at `/cloud-init/`, permits access to all stored data
 Storing data into this endpoint is accomplished via HTTP POST requests containing JSON-formatted cloud-init configuration details.
 For example:
 ```bash
-curl 'https://foobar.openchami.cluster/cloud-init/' \
+curl --cacert cacert.pem 'https://foobar.openchami.cluster:8443/cloud-init/' \
     -X POST \
     -d '{"name": "IDENTIFIER", "cloud-init": {
         "userdata": {
             "write_files": [{"content": "hello world", "path": "/etc/hello"}]
         },
-        "metadata": {...},
-        "vendordata": {...}
+        "metadata": {},
+        "vendordata": {}
     }}'
 ```
 `IDENTIFIER` can be:
@@ -95,7 +95,7 @@ It may be easiest to add nodes to a group for testing, and upload a cloud-init c
 
 #### Usage
 Data is retrieved via HTTP GET requests to the `meta-data`, `user-data`, and `vendor-data` endpoints.
-For example, one could download all cloud-init data for a node/group via `curl 'https://foobar.openchami.cluster/cloud-init/<IDENTIFIER>/{meta-data,user-data,vendor-data}'`.
+For example, one could download all cloud-init data for a node/group via `curl --cacert cacert.pem 'https://foobar.openchami.cluster:8443/cloud-init/IDENTIFIER/{meta-data,user-data,vendor-data}'`.
 
 When retrieving data, `IDENTIFIER` can also be omitted entirely (e.g. `https://foobar.openchami.cluster/cloud-init/user-data`).
 In this case, the cloud-init server will attempt to look up the relevant xname based on the request's source IP address.
@@ -118,7 +118,7 @@ These may be distributed to nodes at boot time by including [`tpm-manager.yml`](
 For nodes without hardware TPMs, the TPM manager will drop a JWT into `/var/run/cloud-init-jwt`.
 The token can be retrieved and included with a request to the cloud-init server, using an invocation such as:
 ```bash
-curl 'https://foobar.openchami.cluster/cloud-init-secure/<IDENTIFIER>/{meta-data,user-data,vendor-data}' \
+curl 'https://foobar.openchami.cluster:8443/cloud-init-secure/IDENTIFIER/{meta-data,user-data,vendor-data}' \
     --create-dirs --output '/PATH/TO/DATA-DIR/#1' \
     --header "Authorization: Bearer $(</var/run/cloud-init-jwt)"
 ```
