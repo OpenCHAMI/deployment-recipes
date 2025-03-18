@@ -55,7 +55,7 @@
         '{{ item }}'
     when: item.name not in existing_cloud_init_groups
     with_items:
-      - '{{ cluster_cloud_init_templates | default([]) }}'
+      - '{{ cluster_cloud_init_templates }}'
   
   - name: Check for cloud-init template updates
     include_tasks: update_cloud_init_templates.yaml 
@@ -87,7 +87,7 @@
 
   - name: Check for cloud-init meta-data updates
     include_tasks: update_cloud_init_metadata.yaml
-    with_items: ' {{ cluster_cloud_init_metadata | default([]) }}'
+    with_items: ' {{ cluster_cloud_init_metadata }}'
     loop_control:
       loop_var: tmplt
       label: '{{ tmplt.name }}'

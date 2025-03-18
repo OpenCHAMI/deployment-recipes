@@ -133,8 +133,7 @@ cluster_cloud_init_templates:
         {{ _cloud_init_merge | to_yaml }}
         {% raw %}
         write_files:
-          - content: | 
-              {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.munge_key }}
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.munge_key }} 
             path: /etc/munge/munge.key
             permissions: '0400'
             owner: 'munge:munge'
