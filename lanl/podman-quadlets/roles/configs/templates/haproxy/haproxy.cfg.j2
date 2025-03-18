@@ -72,7 +72,7 @@ backend bss
 backend cloud-init
   server cloud-init-server cloud-init-server:27777
 
-{% if enable_configurator | default(False)
+{% if enable_configurator | default(False) %}
 backend configurator
   server configurator configurator:3334
 {% endif %}
