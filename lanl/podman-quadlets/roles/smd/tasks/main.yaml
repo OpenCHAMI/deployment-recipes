@@ -6,9 +6,9 @@
       - "{{ access_token.stdout }}"
       - discover
       - --overwrite
-      - --payload
-      - "/etc/ochami/nodes.yaml"
-      - --payload-format
+      - -d
+      - "@/etc/ochami/nodes.yaml"
+      - -f
       - yaml
 
 - block:
