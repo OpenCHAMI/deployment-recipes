@@ -1,10 +1,10 @@
 # Podman Quadlets Deployment Recipe
-This recipe uses [podman quadlets](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html) to start and orchestrate the OpenCHAMI containers. 
+This recipe uses [podman quadlets](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html) to start and orchestrate the OpenCHAMI containers.
 
 ## Assumptions
 
 ### A running OS
-This has be tested RHEL-like systems(Rocky, Almalinux, etc). 
+This has be tested on RHEL-like systems(Rocky, Almalinux, etc). 
 
 ### Cluster Images
 OpenCHAMI doesn't provide an image build system. It relies on external images being available.  There is an example build below you can use to test things with. If you don't care about actually booting images and only want to deploy the services you don't have to care about this. 
