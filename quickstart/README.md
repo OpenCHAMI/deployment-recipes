@@ -14,7 +14,7 @@ This quickstart makes a few assumptions about the target operating system and is
 * Local Name Registration - The quickstart bootstraps a Certificate Authority and issues an SSL certificate with a predictable name.  For access, you will need to add that name/IP to /etc/hosts on all clients or make it resolvable through your site DNS
 * DHCP Network Configuration:
   * Server/Gateway IP Address: __192.168.0.254__
-  * Range of IPs for Unknown MAC Addresses: __192.168.150__ to __192.168.0.253__ (inclusive)
+  * Range of IPs for Unknown MAC Addresses: __192.168.0.150__ to __192.168.0.253__ (inclusive)
     * These IPs are given to MAC addresses unknown to SMD with a short least time.
   * Network Mask: __255.255.255.0__
   * DNS Servers: __1.1.1.1, 8.8.8.8__
