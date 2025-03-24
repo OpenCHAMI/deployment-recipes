@@ -32,6 +32,17 @@
   register: registrar_quadlet  
   notify: Restart keylime_registrar
 
+
+
+- name: Deploy Keylime Registrar Quadlet file
+  template:
+    src: keylime_registrar.container.j2
+    dest: /etc/containers/systemd/keylime_registrar.container
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd
+
 # fix TLS key permissions
 - name: Set proper permissions on registrar TLS private key
   file:
@@ -47,16 +58,6 @@
     recurse: yes
     owner: keylime
     group: keylime
-
-
-- name: Deploy Keylime Registrar Quadlet file
-  template:
-    src: keylime_registrar.container.j2
-    dest: /etc/containers/systemd/keylime_registrar.container
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Reload systemd
 
 
 - name: Reload systemd to register Quadlet units
