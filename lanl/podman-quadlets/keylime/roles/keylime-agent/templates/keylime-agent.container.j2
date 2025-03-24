@@ -6,8 +6,8 @@ Wants=network-online.target keylime-registrar.service
 [Container]
 #ContainerName=keylime_agent
 # Image={{ keylime_agent_image }}    # e.g. "quay.io/keylime/agent:latest" or custom-built image
-#Image=quay.io/keylime/keylime_agent:latest
-Image=registry.access.redhat.com/rhel9/keylime-agent:latest
+Image=quay.io/keylime/keylime_agent:latest
+#Image=registry.access.redhat.com/rhel9/keylime-agent:latest
 ContainerName=keylime-agent
 PublishPort=9002:9002             # expose agent's port 9002 for verifier to connect
 Environment=TPM2TOOLS_TCTI=device:/dev/tpmrm0

@@ -5,9 +5,9 @@ Wants=network-online.target
 
 [Container]
 # Image={{ keylime_registrar_image }}  # e.g. "quay.io/keylime/registrar:latest"
-# Image=quay.io/keylime/keylime_registrar:latest
+Image=quay.io/keylime/keylime_registrar:latest
 # ContainerName=keylime_registrar
-Image=registry.access.redhat.com/rhel9/keylime-registrar:latest
+#Image=registry.access.redhat.com/rhel9/keylime-registrar:latest
 ContainerName=keylime-registrar
 # Expose Registrar port on host (8890)
 PublishPort=8890:8890               # expose registrar's port 8890 on host

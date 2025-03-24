@@ -7,8 +7,8 @@ Requires=keylime-registrar.service
 [Container]
 # ContainerName=keylime_verifier
 # Image={{ keylime_verifier_image }}   # e.g. "quay.io/keylime/verifier:latest"
-# Image=quay.io/keylime/keylime_verifier:latest
-Image=registry.access.redhat.com/rhel9/keylime-verifier:latest
+Image=quay.io/keylime/keylime_verifier:latest
+#Image=registry.access.redhat.com/rhel9/keylime-verifier:latest
 ContainerName=keylime-verifier
 PublishPort=8881:8881                # expose verifier's port 8881 on host
 Environment=TPM2TOOLS_TCTI=device:/dev/tpmrm0
