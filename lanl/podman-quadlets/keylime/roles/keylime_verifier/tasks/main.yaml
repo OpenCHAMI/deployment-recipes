@@ -48,6 +48,7 @@
     recurse: yes
     owner: keylime
     group: keylime
+    mode: '0700'
 
 - name: Reload systemd to register Quadlet units
   command: systemctl daemon-reload

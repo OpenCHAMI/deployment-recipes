@@ -13,7 +13,6 @@ ContainerName=keylime_verifier
 PublishPort=8881:8881                # expose verifier's port 8881 on host
 Environment=TPM2TOOLS_TCTI=device:/dev/tpmrm0
 
-
 Environment=KEYLIME_VERIFIER_SERVER_KEY_PASSWORD={{ keylime_tls_passphrase | default("CHANGEME") }}
 Environment=KEYLIME_VERIFIER_CLIENT_KEY_PASSWORD={{ keylime_tls_passphrase | default("CHANGEME") }}
 
