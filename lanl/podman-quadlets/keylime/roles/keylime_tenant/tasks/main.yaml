@@ -1,0 +1,41 @@
+# roles/keylime_tenant/tasks/main.yml
+- name: Install Keylime tenant CLI
+  dnf:
+    name: keylime
+    state: present
+  # The keylime package provides the 'keylime_tenant' CLI.
+
+- name: Ensure tenant config directory exists
+  file:
+    path: /etc/keylime/tenant.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configure tenant CLI (TLS and service endpoints)
+  copy:
+    dest: /etc/keylime/tenant.conf.d/00-tenant.conf
+    content: |
+      [tenant]
+      registrar_ip = 127.0.0.1
+      registrar_port = 8890
+      verifier_ip = 127.0.0.1
+      verifier_port = 8881
+
+      [tls]
+      tls_dir = /var/lib/keylime/cv_ca
+      client_cert = tenant-cert.crt
+      client_key = tenant-private.pem
+      trusted_server_ca = cacert.crt
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Secure Keylime certificate directory
+  file:
+    path: /var/lib/keylime/cv_ca
+    recurse: yes
+    owner: keylime
+    group: keylime
+    mode: '0640'

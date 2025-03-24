@@ -1,0 +1,6 @@
+[keylime_server]
+server-node ansible_host=re-head
+
+[keylime_agents]
+nid0003 ansible_host=nid0003
+nid0004 ansible_host=nid0004

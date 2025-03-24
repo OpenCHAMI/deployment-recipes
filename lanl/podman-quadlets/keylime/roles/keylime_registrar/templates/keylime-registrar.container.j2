@@ -1,0 +1,29 @@
+[Unit]
+Description=Keylime Registrar Service (Podman)
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+# Image={{ keylime_registrar_image }}  # e.g. "quay.io/keylime/registrar:latest"
+# Image=quay.io/keylime/keylime_registrar:latest
+# ContainerName=keylime_registrar
+Image=registry.access.redhat.com/rhel9/keylime-registrar:latest
+ContainerName=keylime-registrar
+# Expose Registrar port on host (8890)
+PublishPort=8890:8890               # expose registrar's port 8890 on host
+PublishPort=8891:8891               # expose registrar's port 8891 on host
+Environment=TPM2TOOLS_TCTI=device:/dev/tpmrm0
+
+# Mount volume for Keylime data (certificates, DB)
+Volume=keylime-data.volume:/var/lib/keylime
+# Mount configuration directory
+Volume=/etc/ochami/keylime:/etc/keylime:Z
+
+Volume=/etc/keylime/registrar.conf.d:/etc/keylime/registrar.conf.d:Z
+Volume=/var/lib/keylime/cv_ca:/var/lib/keylime/cv_ca:Z
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

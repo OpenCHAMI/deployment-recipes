@@ -1,0 +1,66 @@
+- name: Include common TPM setup
+  import_role:
+    name: common
+
+- name: Ensure Quadlet directory exists
+  file:
+    path: /etc/containers/systemd
+    state: directory
+    mode: "0755"
+- name: Ensure agent config directory exists
+  file:
+    path: /etc/keylime/agent.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configure agent (IP and Registrar connection)
+  copy:
+    dest: /etc/keylime/agent.conf.d/00-agent.conf
+    content: |
+      [agent]
+      ip = 0.0.0.0
+      registrar_ip = 127.0.0.1
+      registrar_port = 8890
+      # TLS settings for Registrar (if mutual TLS enabled):
+      # trusted_server_ca = "cacert.crt"
+      # agent_cert = "client-cert.crt"
+      # agent_key = "client-private.pem"
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Restart keylime-agent
+
+- name: Configure Keylime Agent to trust Registrar (registrar IP/port)
+  copy:
+    dest: /etc/keylime/agent.conf.d/00-registrar.conf
+    content: |
+      [agent]
+      registrar_ip = "{{ keylime_registrar_host }}"
+      registrar_port = 8890
+  notify: Reload keylime-agent
+
+- name: Deploy Keylime Agent Quadlet file
+  template:
+    src: keylime-agent.container.j2
+    dest: /etc/containers/systemd/keylime-agent.container
+    owner: root
+    group: root
+    mode: "0644"
+  notify: 
+    - Reload systemd
+    - Restart keylime-agent
+
+- name: Reload systemd to register Quadlet units
+  command: systemctl daemon-reload
+  when: result is changed
+  listen: Reload systemd
+
+- name: Start Keylime Agent container service
+  systemd:
+    name: keylime-agent.service
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  notify: Reload systemd

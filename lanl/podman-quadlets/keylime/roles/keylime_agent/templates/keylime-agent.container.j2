@@ -1,0 +1,40 @@
+[Unit]
+Description=Keylime Agent Service (Podman)
+After=network-online.target keylime-registrar.service
+Wants=network-online.target keylime-registrar.service
+
+[Container]
+#ContainerName=keylime_agent
+# Image={{ keylime_agent_image }}    # e.g. "quay.io/keylime/agent:latest" or custom-built image
+#Image=quay.io/keylime/keylime_agent:latest
+Image=registry.access.redhat.com/rhel9/keylime-agent:latest
+ContainerName=keylime-agent
+PublishPort=9002:9002             # expose agent's port 9002 for verifier to connect
+Environment=TPM2TOOLS_TCTI=device:/dev/tpmrm0
+User=0                            # run container as root user
+RemapUsers=no                     # disable user namespace remapping (container root == host root)
+DropCapability=                   # do not drop capabilities (allow full privileges)
+# Optionally, explicitly allow TPM device (if needed by cgroups):
+# DeviceAllow=/dev/tpmrm0 rwm
+Network=host
+# Mount TPM device into the container (for hardware TPM access)
+Device=/dev/tpm0
+Device=/dev/tpmrm0
+
+# Mount Keylime data (certificates and keys)
+Volume=/var/lib/keylime:/var/lib/keylime:Z
+
+Volume=/etc/keylime/agent.conf.d:/etc/keylime/agent.conf.d:Z
+Volume=/var/lib/keylime/cv_ca:/var/lib/keylime/cv_ca:Z
+AddDevice=/dev/tpmrm0:/dev/tpmrm0:rwm
+AddDevice=-/dev/tpm0:/dev/tpm0:rwm
+Volume=/sys/kernel/security/ima:/sys/kernel/security/ima:ro
+AddCapability=CAP_SYS_ADMIN
+
+# Run the agent with necessary privileges (needs access to TPM device)
+SecurityOpt=label=disable
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

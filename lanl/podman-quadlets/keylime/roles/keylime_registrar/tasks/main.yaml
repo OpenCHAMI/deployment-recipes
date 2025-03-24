@@ -1,0 +1,54 @@
+- name: Include common TPM setup
+  import_role:
+    name: common
+
+- name: Ensure Quadlet directory exists
+  file:
+    path: /etc/containers/systemd
+    state: directory
+    mode: "0755"
+
+- name: Ensure registrar config directory exists
+  file:
+    path: /etc/keylime/registrar.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configure registrar (bind IP and TLS)
+  copy:
+    dest: /etc/keylime/registrar.conf.d/00-registrar.conf
+    content: |
+      [registrar]
+      ip = 0.0.0.0
+      tls_dir = /var/lib/keylime/cv_ca
+      server_cert = server-cert.crt
+      server_key = server-private.pem
+      trusted_client_ca = cacert.crt
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart keylime-registrar
+
+- name: Deploy Keylime Registrar Quadlet file
+  template:
+    src: keylime-registrar.container.j2
+    dest: /etc/containers/systemd/keylime-registrar.container
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Reload systemd to register Quadlet units
+  command: systemctl daemon-reload
+  when: result is changed  # only reload if the template was updated
+  listen: Reload systemd
+
+- name: Start Keylime Registrar container service
+  systemd:
+    name: keylime-registrar.service
+    state: started
+    enabled: yes  # enable is handled by [Install], but this ensures it’s active now
+    daemon_reload: yes
+  notify: Reload systemd
