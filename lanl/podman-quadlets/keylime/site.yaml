@@ -3,7 +3,7 @@
   hosts: keylime_server
   become: true
   roles:
-    - common              # Prepare system (TPM, packages, env)
+    #- common              # Prepare system (TPM, packages, env)
     - keylime_registrar   # Set up Keylime Registrar service
     - keylime_verifier    # Set up Keylime Verifier service (after Registrar)
     #- keylime_agent       # Set up Keylime Agent service (after Registrar)
