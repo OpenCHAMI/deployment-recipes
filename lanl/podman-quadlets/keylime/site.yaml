@@ -1,6 +1,6 @@
 # site.yml
 - name: Deploy Keylime services on Rocky Linux
-  hosts: keylime_servers
+  hosts: keylime_server
   become: true
   roles:
     - common              # Prepare system (TPM, packages, env)
