@@ -6,7 +6,7 @@
   file:
     path: /etc/containers/systemd
     state: directory
-    mode: "0755"
+    mode: '0755'
 
 - name: Ensure registrar config directory exists
   file:
@@ -39,7 +39,7 @@
     recurse: yes
     owner: keylime
     group: keylime
-    mode: "0744"
+    mode: '0744'
 
 
 - name: Deploy Keylime Registrar Quadlet file
@@ -48,7 +48,7 @@
     dest: /etc/containers/systemd/keylime_registrar.container
     owner: root
     group: root
-    mode: "0644"
+    mode: '0644'
   notify: Reload systemd
 
 
