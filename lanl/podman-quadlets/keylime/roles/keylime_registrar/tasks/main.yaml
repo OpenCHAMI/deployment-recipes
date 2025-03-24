@@ -32,6 +32,14 @@
   register: registrar_quadlet  
   notify: Restart keylime_registrar
 
+# Optional: fix ownership on entire cert dir
+- name: Ensure keylime user owns the full TLS CA directory
+  file:
+    path: /var/lib/keylime/cv_ca
+    recurse: yes
+    owner: keylime
+    group: keylime
+    mode: "0744"
 
 
 - name: Deploy Keylime Registrar Quadlet file
@@ -51,16 +59,6 @@
   notify: Reload systemd
 
 
-# Optional: fix ownership on entire cert dir
-- name: Ensure keylime user owns the full TLS CA directory
-  file:
-    path: /var/lib/keylime/cv_ca
-    recurse: yes
-    owner: keylime
-    group: keylime
-    mode: "0744"
-
-
 - name: Start Keylime Registrar container service
   systemd:
     name: keylime_registrar.service
@@ -68,3 +66,13 @@
     enabled: yes  # enable is handled by [Install], but this ensures it’s active now
     daemon_reload: yes
   notify: Reload systemd
+
+- name: Open Keylime registrar firewall ports (8890, 8891)
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  with_items:
+    - "8890/tcp"
+    - "8891/tcp"

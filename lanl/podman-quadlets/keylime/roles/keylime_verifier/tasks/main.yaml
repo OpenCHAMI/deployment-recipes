@@ -52,12 +52,21 @@
   notify: Reload systemd
 
 
+- name: Open Keylime verifier firewall ports (8881)
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  with_items:
+    - "8881/tcp"
 
 
 - name: Reload systemd to register Quadlet units
   command: systemctl daemon-reload
   #when: verifier_quadlet.changed 
   notify: Reload systemd
+
 
 - name: Start Keylime Verifier container service (will auto-start registrar if not running)
   systemd:
