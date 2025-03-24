@@ -8,20 +8,22 @@
     state: directory
     mode: "0755"
 
-- name: Ensure registrar config directory exists
+- name: Ensure verifier config directory exists
   file:
-    path: /etc/keylime/registrar.conf.d
+    path: /etc/keylime/verifier.conf.d
     state: directory
     owner: root
     group: root
     mode: '0755'
 
-- name: Configure registrar (bind IP and TLS)
+- name: Configure verifier (IP, Registrar, TLS)
   copy:
-    dest: /etc/keylime/registrar.conf.d/00-registrar.conf
+    dest: /etc/keylime/verifier.conf.d/00-verifier.conf
     content: |
-      [registrar]
+      [verifier]
       ip = 0.0.0.0
+      registrar_ip = 127.0.0.1
+      registrar_port = 8890
       tls_dir = /var/lib/keylime/cv_ca
       server_cert = server-cert.crt
       server_key = server-private.pem
@@ -29,27 +31,27 @@
     owner: root
     group: root
     mode: '0644'
-  register: registrar_quadlet  
-  notify: Restart keylime-registrar
+  notify: Restart keylime_verifier
 
-- name: Deploy Keylime Registrar Quadlet file
+- name: Deploy Keylime Verifier Quadlet file
   template:
-    src: keylime-registrar.container.j2
-    dest: /etc/containers/systemd/keylime-registrar.container
+    src: keylime_verifier.container.j2
+    dest: /etc/containers/systemd/keylime_verifier.container
     owner: root
     group: root
     mode: "0644"
+  register: verifier_quadlet  
   notify: Reload systemd
 
 - name: Reload systemd to register Quadlet units
   command: systemctl daemon-reload
-  #when: registrar_quadlet.changed   # only reload if the template was updated
+  #when: verifier_quadlet.changed 
   notify: Reload systemd
 
-- name: Start Keylime Registrar container service
+- name: Start Keylime Verifier container service (will auto-start registrar if not running)
   systemd:
-    name: keylime-registrar.service
+    name: keylime_verifier.service
     state: started
-    enabled: yes  # enable is handled by [Install], but this ensures it’s active now
+    enabled: yes
     daemon_reload: yes
   notify: Reload systemd

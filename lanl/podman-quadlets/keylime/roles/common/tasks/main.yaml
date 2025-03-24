@@ -2,7 +2,7 @@
   package:
     name:
       - keylime
-      - keylime-agent
+      - keylime_agent
       - tpm2-tools
       - tpm2-tss
     state: present
@@ -20,7 +20,7 @@
 # (Optional) If running Keylime agent as a host service instead of container, set TPM2TOOLS_TCTI via systemd override
 #- name: Configure TPM environment for Keylime agent service (if not containerized)
 #  copy:
-#    dest: /etc/systemd/system/keylime-agent.service.d/override.conf
+#    dest: /etc/systemd/system/keylime_agent.service.d/override.conf
 #    content: |
 #      [Service]
 #      Environment="TPM2TOOLS_TCTI=device:/dev/tpmrm0"

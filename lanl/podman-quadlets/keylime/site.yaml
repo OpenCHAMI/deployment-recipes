@@ -4,7 +4,7 @@
   become: true
   roles:
     #- common              # Prepare system (TPM, packages, env)
-    - keylime-registrar   # Set up Keylime Registrar service
-    - keylime-verifier    # Set up Keylime Verifier service (after Registrar)
+    - keylime_registrar   # Set up Keylime Registrar service
+    - keylime_verifier    # Set up Keylime Verifier service (after Registrar)
     #- keylime_agent       # Set up Keylime Agent service (after Registrar)
-    - keylime-tenant      # Set up Keylime Tenant CLI (after services)
+    - keylime_tenant      # Set up Keylime Tenant CLI (after services)
