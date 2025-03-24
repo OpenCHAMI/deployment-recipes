@@ -25,7 +25,7 @@
       tls_dir = /var/lib/keylime/cv_ca
       server_cert = server-cert.crt
       server_key = server-private.pem
-      trusted_client_ca = cacert.crt
+      trusted_client_ca = ["cacert.crt"]
     owner: root
     group: root
     mode: '0644'
