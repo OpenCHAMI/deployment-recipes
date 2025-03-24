@@ -58,6 +58,7 @@
     recurse: yes
     owner: keylime
     group: keylime
+    mode: "0744"
 
 
 - name: Start Keylime Registrar container service

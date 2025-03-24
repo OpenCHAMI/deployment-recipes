@@ -16,6 +16,15 @@
     group: root
     mode: '0755'
 
+# Optional: fix ownership on entire cert dir
+- name: Ensure keylime user owns the full TLS CA directory
+  file:
+    path: /var/lib/keylime/cv_ca
+    recurse: yes
+    owner: keylime
+    group: keylime
+    mode: '0755'
+
 - name: Configure verifier (IP, Registrar, TLS)
   copy:
     dest: /etc/keylime/verifier.conf.d/00-verifier.conf
@@ -30,6 +39,8 @@
     mode: '0644'
   notify: Restart keylime_verifier
 
+
+
 - name: Deploy Keylime Verifier Quadlet file
   template:
     src: keylime_verifier.container.j2
@@ -41,14 +52,7 @@
   notify: Reload systemd
 
 
-# Optional: fix ownership on entire cert dir
-- name: Ensure keylime user owns the full TLS CA directory
-  file:
-    path: /var/lib/keylime/cv_ca
-    recurse: yes
-    owner: keylime
-    group: keylime
-    mode: '0700'
+
 
 - name: Reload systemd to register Quadlet units
   command: systemctl daemon-reload
