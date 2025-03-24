@@ -1,6 +1,6 @@
-- name: Include common TPM setup
-  import_role:
-    name: common
+#- name: Include common TPM setup
+#  import_role:
+#    name: common
 
 - name: Ensure Quadlet directory exists
   file:
