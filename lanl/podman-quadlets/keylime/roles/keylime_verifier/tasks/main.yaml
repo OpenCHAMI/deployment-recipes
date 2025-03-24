@@ -6,7 +6,7 @@
   file:
     path: /etc/containers/systemd
     state: directory
-    mode: "0755"
+    mode: '0755'
 
 - name: Ensure verifier config directory exists
   file:
