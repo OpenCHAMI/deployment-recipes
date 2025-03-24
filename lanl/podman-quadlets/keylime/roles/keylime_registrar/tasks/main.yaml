@@ -43,13 +43,13 @@
     mode: "0644"
   notify: Reload systemd
 
-# fix TLS key permissions
-- name: Set proper permissions on registrar TLS private key
-  file:
-    path: /var/lib/keylime/cv_ca/server-private.pem
-    owner: keylime
-    group: keylime
-    mode: '0400'
+
+
+- name: Reload systemd to register Quadlet units
+  command: systemctl daemon-reload
+  #when: registrar_quadlet.changed   # only reload if the template was updated
+  notify: Reload systemd
+
 
 # Optional: fix ownership on entire cert dir
 - name: Ensure keylime user owns the full TLS CA directory
@@ -59,11 +59,6 @@
     owner: keylime
     group: keylime
 
-
-- name: Reload systemd to register Quadlet units
-  command: systemctl daemon-reload
-  #when: registrar_quadlet.changed   # only reload if the template was updated
-  notify: Reload systemd
 
 - name: Start Keylime Registrar container service
   systemd:
