@@ -43,7 +43,7 @@
 
 - name: Reload systemd to register Quadlet units
   command: systemctl daemon-reload
-  when: registrar_quadlet.changed   # only reload if the template was updated
+  #when: registrar_quadlet.changed   # only reload if the template was updated
   notify: Reload systemd
 
 - name: Start Keylime Registrar container service

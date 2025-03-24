@@ -45,7 +45,7 @@
 
 - name: Reload systemd to register Quadlet units
   command: systemctl daemon-reload
-  when: verifier_quadlet.changed 
+  #when: verifier_quadlet.changed 
   notify: Reload systemd
 
 - name: Start Keylime Verifier container service (will auto-start registrar if not running)
