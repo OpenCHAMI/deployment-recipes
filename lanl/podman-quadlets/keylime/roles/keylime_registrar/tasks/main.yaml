@@ -29,6 +29,7 @@
     owner: root
     group: root
     mode: '0644'
+  register: registrar_quadlet  
   notify: Restart keylime-registrar
 
 - name: Deploy Keylime Registrar Quadlet file
@@ -42,7 +43,7 @@
 
 - name: Reload systemd to register Quadlet units
   command: systemctl daemon-reload
-  when: result is changed  # only reload if the template was updated
+  when: registrar_quadlet.changed   # only reload if the template was updated
   notify: Reload systemd
 
 - name: Start Keylime Registrar container service
