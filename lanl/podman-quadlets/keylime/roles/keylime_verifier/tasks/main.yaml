@@ -23,7 +23,16 @@
     recurse: yes
     owner: 1000
     group: 1000
-    mode: '0700'
+    mode: '0755'
+
+# Optional: fix ownership on entire cert dir
+- name: Ensure keylime user owns the full TLS CA directory
+  file:
+    path: /var/lib/keylime/cv_ca
+    recurse: yes
+    owner: keylime
+    group: keylime
+    mode: '0755'
 
 - name: Configure verifier (IP, Registrar, TLS)
   copy:

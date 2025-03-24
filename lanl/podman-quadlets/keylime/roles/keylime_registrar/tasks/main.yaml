@@ -39,7 +39,7 @@
     recurse: yes
     owner: keylime
     group: keylime
-    mode: '0744'
+    mode: '0755'
 
 # Optional: fix ownership on entire cert dir
 - name: Ensure keylime user owns the full TLS CA directory
@@ -48,8 +48,8 @@
     recurse: yes
     owner: 1000
     group: 1000
-    mode: '0700'
-    
+    mode: '0755'
+
 - name: Deploy Keylime Registrar Quadlet file
   template:
     src: keylime_registrar.container.j2
