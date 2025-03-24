@@ -55,7 +55,7 @@
 - name: Reload systemd to register Quadlet units
   command: systemctl daemon-reload
   when: result is changed
-  listen: Reload systemd
+  notify: Reload systemd
 
 - name: Start Keylime Agent container service
   systemd:
