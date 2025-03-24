@@ -32,6 +32,6 @@
     dest: /etc/profile.d/tpm2tools.sh
     content: |
       export TPM2TOOLS_TCTI="device:/dev/tpmrm0"
-  owner: root
-  group: root
-  mode: '0644'
+    owner: root
+    group: root
+    mode: '0644'
