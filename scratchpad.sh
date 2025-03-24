@@ -7,3 +7,9 @@ sudo systemctl status keylime_verifier.service
 sudo systemctl status keylime_registrar.service
 sudo systemctl status keylime_agent.service
 sudo systemctl status keylime_tenant.service
+
+pm -0 nid00003
+pm -0 nid00004
+
+pm -1 nid00003
+pm -1 nid00004

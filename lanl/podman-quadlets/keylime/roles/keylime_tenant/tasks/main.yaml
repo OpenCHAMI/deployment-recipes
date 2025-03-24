@@ -38,4 +38,4 @@
     recurse: yes
     owner: keylime
     group: keylime
-    mode: '0640'
+    mode: '0755'

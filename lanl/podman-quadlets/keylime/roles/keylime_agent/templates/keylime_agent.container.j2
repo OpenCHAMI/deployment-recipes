@@ -20,16 +20,17 @@ Network=host
 # Mount TPM device into the container (for hardware TPM access)
 Device=/dev/tpm0
 Device=/dev/tpmrm0
+AddDevice=/dev/tpmrm0:/dev/tpmrm0:rwm
+AddDevice=-/dev/tpm0:/dev/tpm0:rwm
+AddCapability=CAP_SYS_ADMIN
 
 # Mount Keylime data (certificates and keys)
 Volume=/var/lib/keylime:/var/lib/keylime:Z
 
 Volume=/etc/keylime/agent.conf.d:/etc/keylime/agent.conf.d:Z
 Volume=/var/lib/keylime/cv_ca:/var/lib/keylime/cv_ca:Z
-AddDevice=/dev/tpmrm0:/dev/tpmrm0:rwm
-AddDevice=-/dev/tpm0:/dev/tpm0:rwm
 Volume=/sys/kernel/security/ima:/sys/kernel/security/ima:ro
-AddCapability=CAP_SYS_ADMIN
+
 
 # Run the agent with necessary privileges (needs access to TPM device)
 SecurityOpt=label=disable
