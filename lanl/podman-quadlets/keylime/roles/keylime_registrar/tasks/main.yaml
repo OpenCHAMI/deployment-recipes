@@ -32,6 +32,23 @@
   register: registrar_quadlet  
   notify: Restart keylime_registrar
 
+# fix TLS key permissions
+- name: Set proper permissions on registrar TLS private key
+  file:
+    path: /var/lib/keylime/cv_ca/server-private.pem
+    owner: keylime
+    group: keylime
+    mode: '0400'
+
+# Optional: fix ownership on entire cert dir
+- name: Ensure keylime user owns the full TLS CA directory
+  file:
+    path: /var/lib/keylime/cv_ca
+    recurse: yes
+    owner: keylime
+    group: keylime
+
+
 - name: Deploy Keylime Registrar Quadlet file
   template:
     src: keylime_registrar.container.j2
@@ -40,6 +57,7 @@
     group: root
     mode: "0644"
   notify: Reload systemd
+
 
 - name: Reload systemd to register Quadlet units
   command: systemctl daemon-reload
