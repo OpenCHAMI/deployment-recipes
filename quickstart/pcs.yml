@@ -19,6 +19,6 @@ services:
       CRAY_VAULT_AUTH_PATH: auth/jwt/login
       LOG_LEVEL: DEBUG
     volumes:
-      - /home/user/keys:/etc/keys
+      - ./keys:/etc/keys
     ports:
       - 28007:28007
