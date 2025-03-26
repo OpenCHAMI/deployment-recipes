@@ -27,8 +27,6 @@
       client_key = default
       trusted_server_ca = default
       enable_agent_mtls = True
-      client_key = default
-      trusted_server_ca = default
       tpm_cert_store = /var/lib/keylime/tpm_cert_store
       max_payload_size = 1048576
       accept_tpm_hash_algs = ['sha512', 'sha384', 'sha256']
