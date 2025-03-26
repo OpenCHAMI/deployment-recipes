@@ -19,7 +19,7 @@
     content: |
       [tenant]
       registrar_ip = 127.0.0.1
-      registrar_port = 8890
+      registrar_port = 8891
       verifier_ip = 127.0.0.1
       verifier_port = 8881
       tls_dir = /var/lib/keylime/cv_ca

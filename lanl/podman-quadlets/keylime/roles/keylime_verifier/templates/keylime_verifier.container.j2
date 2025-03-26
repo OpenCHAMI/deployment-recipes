@@ -1,7 +1,7 @@
 [Unit]
 Description=Keylime Verifier Service (Podman)
-After=network-online.target keylime_registrar.service
-Wants=network-online.target keylime_registrar.service
+After=network-online.target 
+Wants=network-online.target
 
 [Container]
 Image=quay.io/keylime/keylime_verifier:latest

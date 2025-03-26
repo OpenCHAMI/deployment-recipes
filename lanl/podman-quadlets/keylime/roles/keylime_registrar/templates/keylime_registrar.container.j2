@@ -1,7 +1,7 @@
 [Unit]
 Description=Keylime Registrar Service (Podman)
-After=network-online.target
-Wants=network-online.target
+After=network-online.target keylime_verifier.service
+Wants=network-online.target keylime_verifier.service
 
 [Container]
 # Image={{ keylime_registrar_image }}  # e.g. "quay.io/keylime/registrar:latest"
