@@ -1,5 +1,8 @@
-run:
+run: keys
 	bash run.sh
+
+keys:
+	bash create-keys.sh
 
 check:
 	bash check.sh
