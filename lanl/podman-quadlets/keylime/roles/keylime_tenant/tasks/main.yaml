@@ -22,12 +22,25 @@
       registrar_port = 8890
       verifier_ip = 127.0.0.1
       verifier_port = 8881
-
-      [tls]
       tls_dir = /var/lib/keylime/cv_ca
-      client_cert = tenant-cert.crt
-      client_key = tenant-private.pem
-      trusted_server_ca = cacert.crt
+      client_cert = default
+      client_key = default
+      trusted_server_ca = default
+      enable_agent_mtls = True
+      client_key = default
+      trusted_server_ca = default
+      tpm_cert_store = /var/lib/keylime/tpm_cert_store
+      max_payload_size = 1048576
+      accept_tpm_hash_algs = ['sha512', 'sha384', 'sha256']
+      accept_tpm_encryption_algs = ['ecc', 'rsa']
+      accept_tpm_signing_algs =  ['ecschnorr', 'rsassa']
+      exponential_backoff = True
+      client_key_password =
+      retry_interval = 2
+      max_retries = 5
+      request_timeout = 60
+
+      require_ek_cert = True
     owner: root
     group: root
     mode: '0644'
