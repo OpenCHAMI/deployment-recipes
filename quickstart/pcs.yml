@@ -1,0 +1,23 @@
+services:
+  pcs:
+    image: ghcr.io/openchami/pcs
+    container_name: pcs
+    restart: always
+    networks:
+      - internal
+      - jwt-internal
+    environment:
+      SMS_SERVER: http://smd:27779
+      VAULT_ENABLED: "true"
+      VAULT_ADDR: "http://vault:8200"
+      VAULT_KEYPATH: "secret/hms-creds"
+      API_URL: "http://localhost"
+      API_SERVER_PORT: ":28007"
+      API_BASE_PATH: "/v1"
+      CRAY_VAULT_JWT_FILE: /etc/keys/token
+      CRAY_VAULT_ROLE_FILE: /etc/keys/role
+      CRAY_VAULT_AUTH_PATH: auth/jwt/login
+    volumes:
+      - /home/user/keys:/etc/keys
+    ports:
+      - 28007:28007
