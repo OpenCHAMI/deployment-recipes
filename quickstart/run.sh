@@ -29,3 +29,4 @@ done
 
 source bash_functions.sh
 gen_access_token > access_token
+get_ca_cert > cacert.pem
