@@ -17,6 +17,7 @@ services:
       CRAY_VAULT_JWT_FILE: /etc/keys/token
       CRAY_VAULT_ROLE_FILE: /etc/keys/role
       CRAY_VAULT_AUTH_PATH: auth/jwt/login
+      LOG_LEVEL: DEBUG
     volumes:
       - /home/user/keys:/etc/keys
     ports:
