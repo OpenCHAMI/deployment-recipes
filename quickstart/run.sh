@@ -3,6 +3,8 @@
 export VAULT_ADDR=http://vault:8200
 export VAULT_TOKEN=hms
 
+XNAME=x1000c0s0b3
+
 KEYS_PATH="keys"
 
 start_service() {
@@ -64,8 +66,6 @@ vault_create_keystore() {
 }
 
 vault_populate_node() {
-	XNAME=x1000c0s0b3
-
 	vault write \
 	secret/hms-creds/"${XNAME}" \
 	refresh_interval="768h" \
@@ -77,12 +77,17 @@ vault_populate_node() {
 	Xname="${XNAME}"
 }
 
+smd_populate() {
+	manta add redfish-endpoint --id "${XNAME}" --hostname "${XNAME}" -u root -M 02:05:78:02:34:00
+}
+
 main() {
 	start_service
 	generate_file
 	vault_configure_jwt
 	vault_create_keystore
 	vault_populate_node
+	smd_populate
 }
 
 main
