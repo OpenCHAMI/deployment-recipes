@@ -10,5 +10,8 @@ check:
 test:
 	bash test-request-on-smd.sh
 
+clean: stop
+	bash clean.sh
+
 stop:
 	bash stop.sh
