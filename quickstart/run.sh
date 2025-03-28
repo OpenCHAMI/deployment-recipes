@@ -3,7 +3,7 @@
 export VAULT_ADDR=http://vault:8200
 export VAULT_TOKEN=hms
 
-KEYS_PATH="${HOME}/keys"
+KEYS_PATH="keys"
 
 start_service() {
 	until docker-compose \
