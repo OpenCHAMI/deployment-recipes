@@ -1,3 +1,5 @@
+re: clean run
+
 run: keys
 	bash run.sh
 
