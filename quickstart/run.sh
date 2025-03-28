@@ -56,10 +56,33 @@ vault_configure_jwt() {
 	vault write auth/jwt/config jwt_supported_algs=RS256 jwt_validation_pubkeys=@$KEYS_PATH/public_key.pem
 }
 
+vault_create_keystore() {
+	vault secrets disable secret
+	vault secrets enable \
+	-path "secret/hms-creds" \
+	-version=1 kv
+}
+
+vault_populate_node() {
+	XNAME=x1000c0s0b3
+
+	vault write \
+	secret/hms-creds/"${XNAME}" \
+	refresh_interval="768h" \
+	Password="--REDACTED--" \
+	SNMPAuthPass="n/a" \
+	SNMPPrivPass="n/a" \
+	URL="${XNAME}/redfish/v1/Systems/Node1" \
+	Username="root" \
+	Xname="${XNAME}"
+}
+
 main() {
 	start_service
 	generate_file
 	vault_configure_jwt
+	vault_create_keystore
+	vault_populate_node
 }
 
 main
