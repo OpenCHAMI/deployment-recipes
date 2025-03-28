@@ -1,0 +1,44 @@
+= PCS integration in quickstart
+
+== Interact with PCS through cURL
+
+A list of differents tests.
+
+[source, shell]
+----
+docker exec power-control-smd-1 curl -s power-control-power-control-1:28007/v1/
+<a href="//power-control-power-control-1:28007/v1">Moved Permanently</a>.
+----
+
+[source, shell]
+----
+docker exec power-control-smd-1 curl -s power-control-power-control-1:28007/
+hms-power-control
+----
+
+[source, shell]
+----
+docker exec power-control-smd-1 curl -s power-control-power-control-1:28007/liveness
+----
+
+[source, shell]
+----
+docker exec power-control-smd-1 curl -s power-control-power-control-1:28007/notfound
+404 page not found
+----
+
+From `./internal/hsm/state_manager.go` of `power-control` repository:
+
+[source, go]
+----
+hsmLivenessPath                   = "/hsm/v2/service/liveness"
+hsmStateComponentsPath            = "/hsm/v2/State/Components"
+hsmStateComponentsQueryPath       = "/hsm/v2/State/Components/Query"
+hsmInventoryComponentEndpointPath = "/hsm/v2/Inventory/ComponentEndpoints"
+hsmReservationCheckPath           = "/hsm/v2/locks/service/reservations/check"
+hsmReservationPath                = "/hsm/v2/locks/service/reservations"
+hsmReservationReleasePath         = "/hsm/v2/locks/service/reservations/release"
+hsmPowerMapPath                   = "/hsm/v2/sysinfo/powermaps"
+----
+
+I cannot use these routes.
