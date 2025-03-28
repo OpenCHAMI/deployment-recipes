@@ -57,10 +57,15 @@ create_token() {
 	)
 }
 
+create_role() {
+	echo "test-role" > "${KEYS_PATH}"/role
+}
+
 main() {
 	mkdir -p "${KEYS_PATH}"
 	create_keys
 	create_token
+	create_role
 }
 
 main
