@@ -11,7 +11,7 @@ start_service() {
 	  -f postgres.yml \
 	  -f jwt-security.yml \
 	  -f haproxy-api-gateway.yml \
-	  -f  openchami-svcs.yml \
+	  -f openchami-svcs.yml \
 	  -f autocert.yml \
 	  -f coredhcp.yml \
 	  -f pcs.yml \
@@ -24,7 +24,7 @@ start_service() {
 	  -f postgres.yml \
 	  -f jwt-security.yml \
 	  -f haproxy-api-gateway.yml \
-	  -f  openchami-svcs.yml \
+	  -f openchami-svcs.yml \
 	  -f autocert.yml \
 	  -f coredhcp.yml \
 	  -f pcs.yml \
