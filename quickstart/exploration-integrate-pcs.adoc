@@ -1,6 +1,10 @@
 = PCS integration in quickstart
+:toc:
+:sectnums:
 
 == Interact with PCS through cURL
+
+From this docker compose https://github.com/OpenCHAMI/power-control/blob/main/docker-compose.test.ct.yaml[docker-compose.test.ct.yaml]
 
 A list of differents tests.
 
@@ -42,3 +46,37 @@ hsmPowerMapPath                   = "/hsm/v2/sysinfo/powermaps"
 ----
 
 I cannot use these routes.
+
+== Interact with PCS through Manta cli and cURL
+
+From this quickstart folder.
+
+Manta cli
+
+----
+manta power off nodes --assume-yes x1000c0s0b3
+ERROR - Could not power off node/s '[]'. Reason:
+ERROR - Message: ERROR - MESA: <html><body><h1>503 Service Unavailable</h1>
+No server is available to handle this request.
+</body></html>
+----
+
+curl
+
+----
+docker exec smd curl -s http://pcs:28007/health | jq
+{
+  "KvStore": "connected, responsive",
+  "DistLocking": "connected, responsive",
+  "StateManager": "connected, responsive",
+  "Vault": "connected, responsive",
+  "TaskRunner": "connected, responsive, local mode"
+}
+----
+
+ochami
+
+----
+ochami pcs status
+2025-03-31T15:54:32+02:00 FTL pcs-status.go:55 > PCS status (readiness) request yielded unsuccessful HTTP response error="GetReadiness(): error getting PCS liveness: unsuccessful HTTP status: HTTP/1.1 503 Service Unavailable: <html><body><h1>503 Service Unavailable</h1>\nNo server is available to handle this request.\n</body></html>\n"
+----
