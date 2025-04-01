@@ -99,3 +99,19 @@ ERROR - Message: ERROR - MESA: <html><body><h1>503 Service Unavailable</h1>
 No server is available to handle this request.
 </body></html>
 ----
+
+== retry
+
+----
+ochami pcs status
+{"pcs":"ready"}
+manta power off nodes --assume-yes x1000c0s0b3
+INFO  | Create PCS transition 'force-off' on []
+ERROR - Could not power off node/s '[]'. Reason:
+ERROR - Message: ERROR - MESA: <html><body><h1>503 Service Unavailable</h1>
+No server is available to handle this request.
+</body></html>
+
+manta --version
+manta 1.54.1-beta.100
+----
