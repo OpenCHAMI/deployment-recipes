@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export VAULT_ADDR=http://vault:8200
+export VAULT_ADDR=http://127.0.0.1:8200
 export VAULT_TOKEN=hms
 
 XNAME=x1000c0s0b3
@@ -8,7 +8,7 @@ XNAME=x1000c0s0b3
 KEYS_PATH="keys"
 
 start_service() {
-	until docker-compose \
+	until docker compose \
 	  -f base.yml \
 	  -f postgres.yml \
 	  -f jwt-security.yml \
@@ -21,7 +21,7 @@ start_service() {
 	  -f etcd.yml \
 	  -f configurator.yml up -d
 	do
-	docker-compose \
+	docker compose \
 	  -f base.yml \
 	  -f postgres.yml \
 	  -f jwt-security.yml \
@@ -43,30 +43,30 @@ generate_file() {
 }
 
 vault_configure_jwt() {
-	if vault auth list --format json | jq -e 'has("jwt/")'
+	if docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault auth list --format json | jq -e 'has("jwt/")'
 	then
 		return
 	fi
 
-	vault auth enable -path=jwt jwt
-	vault write auth/jwt/role/test-role policies="metrics" user_claim="sub" role_type="jwt" bound_audiences="test"
-	vault policy write metrics -<<-EOF
+	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault auth enable -path=jwt jwt
+	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault write auth/jwt/role/test-role policies="metrics" user_claim="sub" role_type="jwt" bound_audiences="test"
+	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault policy write metrics -<<-EOF
 	path "secret/hms-creds" {
 	capabilities = ["read", "list"]
 	}
 	EOF
-	vault write auth/jwt/config jwt_supported_algs=RS256 jwt_validation_pubkeys=@$KEYS_PATH/public_key.pem
+	docker exec vault vault write auth/jwt/config jwt_supported_algs=RS256 jwt_validation_pubkeys=@$KEYS_PATH/public_key.pem
 }
 
 vault_create_keystore() {
-	vault secrets disable secret
-	vault secrets enable \
+	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault secrets disable secret
+	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault secrets enable \
 	-path "secret/hms-creds" \
 	-version=1 kv
 }
 
 vault_populate_node() {
-	vault write \
+	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault write \
 	secret/hms-creds/"${XNAME}" \
 	refresh_interval="768h" \
 	Password="--REDACTED--" \
@@ -87,7 +87,7 @@ main() {
 	vault_configure_jwt
 	vault_create_keystore
 	vault_populate_node
-	smd_populate
+	#smd_populate
 }
 
 main
