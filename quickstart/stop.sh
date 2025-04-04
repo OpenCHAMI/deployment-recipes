@@ -1,4 +1,4 @@
-docker compose \
+docker-compose \
   -f base.yml \
   -f postgres.yml \
   -f jwt-security.yml \
