@@ -2,6 +2,21 @@
 :toc:
 :sectnums:
 
+== Step
+
+. Deploy sushy-emulator
+. Create a virtual node
+. Do a `make run` that will
+** generate keys folder
+** start openchami services
+** create access token to openchami service
+** configure vault for jwt authentification
+** populate vault with virtual node url
+
+. with manta:
+.. Add a redfish-endpoint
+.. Add a node in a group
+
 == Interact with PCS through cURL
 
 From this docker compose https://github.com/OpenCHAMI/power-control/blob/main/docker-compose.test.ct.yaml[docker-compose.test.ct.yaml]
