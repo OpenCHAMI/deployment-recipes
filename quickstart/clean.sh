@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 rm -rf keys
 
-VOLUME=$(docker volume ls --format "{{.Name}}" --filter "name=quickstart")
+VOLUME=($(docker volume ls --format "{{.Name}}" --filter "name=quickstart"))
 
-if [ -n "${VOLUME}" ]; then docker volume rm "${VOLUME}"; fi
+if [ -n "${VOLUME}" ]; then docker volume rm "${VOLUME[@]}"; fi
