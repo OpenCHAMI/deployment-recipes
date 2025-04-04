@@ -2,6 +2,7 @@
 
 export VAULT_ADDR=http://127.0.0.1:8200
 export VAULT_TOKEN=hms
+export SUSHY_URL="http://localhost:8000"
 
 XNAME=x1000c0s0b3
 
@@ -34,6 +35,21 @@ start_service() {
 	  -f etcd.yml \
 	  -f configurator.yml down
 	done
+}
+
+_sushy_getter() {
+	if [ -z "${!1}" ]; then
+		export "${1}"="$(curl \
+			--silent \
+			"${SUSHY_URL}${2}" \
+			| jq --raw-output "${3}")"
+	fi
+}
+
+get_virtual_node_url() {
+	_sushy_getter "VIRTUAL_NODE" "/redfish/v1/Systems" '.Members[0]."@odata.id"'
+
+	echo "localhost:8000${VIRTUAL_NODE}"
 }
 
 generate_file() {
@@ -75,7 +91,7 @@ vault_populate_node() {
 	Password="--REDACTED--" \
 	SNMPAuthPass="n/a" \
 	SNMPPrivPass="n/a" \
-	URL="${XNAME}/redfish/v1/Systems/Node1" \
+	URL="$(get_virtual_node_url)" \
 	Username="root" \
 	Xname="${XNAME}"
 }
