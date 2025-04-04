@@ -50,12 +50,15 @@ vault_configure_jwt() {
 
 	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault auth enable -path=jwt jwt
 	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault write auth/jwt/role/test-role policies="metrics" user_claim="sub" role_type="jwt" bound_audiences="test"
-	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault policy write metrics -<<-EOF
+	cat > policy.yml <<-\EOF
 	path "secret/hms-creds" {
 	capabilities = ["read", "list"]
 	}
 	EOF
-	docker exec vault vault write auth/jwt/config jwt_supported_algs=RS256 jwt_validation_pubkeys=@$KEYS_PATH/public_key.pem
+        docker cp policy.yml vault:/policy.yml
+        docker exec -e VAULT_TOKEN=hms vault vault policy write metrics /policy.yml
+	docker cp $KEYS_PATH/public_key.pem vault:/public_key.pem
+	docker exec -e VAULT_TOKEN=hms vault vault write auth/jwt/config jwt_supported_algs=RS256 jwt_validation_pubkeys=@/public_key.pem
 }
 
 vault_create_keystore() {

@@ -2,9 +2,6 @@
 
 rm -rf keys
 
-docker volume rm \
-$( \
-docker volume ls \
---format "{{.Name}}" \
---filter "name=quickstart"\
-)
+VOLUME=$(docker volume ls --format "{{.Name}}" --filter "name=quickstart")
+
+if [[ -z VOLUME ]]; then docker volume rm $VOLUME; fi
