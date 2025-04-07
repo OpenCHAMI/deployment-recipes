@@ -9,7 +9,7 @@ XNAME=x1000c0s0b3
 KEYS_PATH="keys"
 
 start_service() {
-	until docker-compose \
+	until docker compose \
 	  -f base.yml \
 	  -f postgres.yml \
 	  -f jwt-security.yml \
@@ -22,7 +22,7 @@ start_service() {
 	  -f etcd.yml \
 	  -f configurator.yml up -d
 	do
-	docker-compose \
+	docker compose \
 	  -f base.yml \
 	  -f postgres.yml \
 	  -f jwt-security.yml \
