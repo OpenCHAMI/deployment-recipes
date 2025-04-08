@@ -96,6 +96,12 @@ vault_populate_node() {
 	Xname="${XNAME}"
 }
 
+ochami_discover() {
+	ochami discover --help | head -n 29 | tail -n 20 > nodes.yaml
+	ochami discover --token "$(<access_token)" --cacert "cacert.pem" -f yaml -d @nodes.yaml
+	# rm nodes.yaml
+}
+
 smd_populate() {
 	manta add redfish-endpoint --id "${XNAME}" --hostname "${XNAME}" -u root -M 02:05:78:02:34:00
 }
