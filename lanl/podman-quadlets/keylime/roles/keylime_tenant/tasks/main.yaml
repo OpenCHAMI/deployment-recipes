@@ -37,11 +37,11 @@
       retry_interval = 2
       max_retries = 5
       request_timeout = 60
-
       require_ek_cert = True
+      ek_check_script = /usr/local/bin/ek_check.sh
     owner: root
     group: root
-    mode: '0644'
+    mode: '0755'
 
 - name: Secure Keylime certificate directory
   file:

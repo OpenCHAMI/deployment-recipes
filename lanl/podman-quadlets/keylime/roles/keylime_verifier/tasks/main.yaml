@@ -37,7 +37,7 @@
       tls_dir = generate
     owner: root
     group: root
-    mode: '0644'
+    mode: '0755'
   notify: Restart keylime_verifier
 
 
@@ -48,7 +48,7 @@
     dest: /etc/containers/systemd/keylime_verifier.container
     owner: root
     group: root
-    mode: "0644"
+    mode: '0755'
   register: verifier_quadlet  
   notify: Reload systemd
 
