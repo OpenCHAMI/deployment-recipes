@@ -103,7 +103,9 @@ ochami_discover() {
 }
 
 smd_populate() {
-	manta add redfish-endpoint --id "${XNAME}" --hostname "${XNAME}" -u root -M 02:05:78:02:34:00
+	echo manta add redfish-endpoint --id "${XNAME}" --hostname "${XNAME}" -u root -M 02:05:78:02:34:00
+	ACCESS_TOKEN="$(<access_token)" manta add redfish-endpoint --id "${XNAME}" --hostname "${XNAME}" -u root -M 02:05:78:02:34:00
+	curl --cacert cacert.pem -H "Authorization: Bearer $(<access_token)" https://foobar.openchami.cluster:8443/hsm/v2/State/Components -d "{\"Components\":[{\"ID\":\"${XNAME}\", \"State\":\"Ready\"}]}"
 }
 
 main() {
@@ -112,7 +114,7 @@ main() {
 	vault_configure_jwt
 	vault_create_keystore
 	vault_populate_node
-	#smd_populate
+	smd_populate
 }
 
 main
