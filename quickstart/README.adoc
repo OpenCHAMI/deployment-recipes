@@ -7,3 +7,28 @@ level=warning msg="getHWStatesFromHW: Missing FQDN or power status URI for x1000
 level=warning msg="getHWStatesFromHW: Missing FQDN or power status URI for x1000c0s0b3" func=github.com/OpenCHAMI/power-control/v2/internal/domain.getHWStatesFromHW file="/home/runner/work/power-control/power-control/internal/domain/power-status.go:509"
 level=warning msg="getHWStatesFromHW: No TRS tasks to launch" func=github.com/OpenCHAMI/power-control/v2/internal/domain.getHWStatesFromHW file="/home/runner/work/power-control/power-control/internal/domain/power-status.go:539"
 ----
+
+----
+level=debug msg="The transition fits in a single etcd entry" func="github.com/OpenCHAMI/power-control/v2/internal/storage.(*ETCDStorage).truncateAndPageTransitionIfNeeded" file="/home/runner/work/power-control/power-control/internal/storage/storage_etcd_impl.go:493" TransitionID=def86c7b-80ae-46d0-bb1e-7468c08f2073 maxSize=1570000 size=438
+level=info msg="POST /transitions CreateTransition 10.506342ms" func=github.com/OpenCHAMI/power-control/v2/internal/api.NewRouter.Logger.func1 file="/home/runner/work/power-control/power-control/internal/api/routers.go:63"
+level=info msg="Starting Transition def86c7b-80ae-46d0-bb1e-7468c08f2073 (c794162c38dd)" func=github.com/OpenCHAMI/power-control/v2/internal/domain.doTransition file="/home/runner/work/power-control/power-control/internal/domain/transitions.go:291"
+level=info msg="Starting keep alive for Transition, def86c7b-80ae-46d0-bb1e-7468c08f2073." func=github.com/OpenCHAMI/power-control/v2/internal/domain.transitionKeepAlive file="/home/runner/work/power-control/power-control/internal/domain/transitions.go:1111"
+level=debug msg="The transition fits in a single etcd entry" func="github.com/OpenCHAMI/power-control/v2/internal/storage.(*ETCDStorage).truncateAndPageTransitionIfNeeded" file="/home/runner/work/power-control/power-control/internal/storage/storage_etcd_impl.go:493" TransitionID=def86c7b-80ae-46d0-bb1e-7468c08f2073 maxSize=1570000 size=484
+level=error msg="Key /powerstate/x1000c0s0b3n0 does not exist" func="github.com/OpenCHAMI/power-control/v2/internal/storage.(*ETCDStorage).GetPowerStatus" file="/home/runner/work/power-control/power-control/internal/storage/storage_etcd_impl.go:290"
+level=error msg="Missing xnames detected" ERROR="<nil>" xnames="[x1000c0s0b3n0]"
+level=error msg="No xnames to operate on" ERROR="No xnames to operate on"
+level=debug msg="The transition fits in a single etcd entry" func="github.com/OpenCHAMI/power-control/v2/internal/storage.(*ETCDStorage).truncateAndPageTransitionIfNeeded" file="/home/runner/work/power-control/power-control/internal/storage/storage_etcd_impl.go:493" TransitionID=def86c7b-80ae-46d0-bb1e-7468c08f2073 maxSize=1570000 size=618
+level=info msg="Transition def86c7b-80ae-46d0-bb1e-7468c08f2073 Completed (c794162c38dd)" func=github.com/OpenCHAMI/power-control/v2/internal/domain.doTransition file="/home/runner/work/power-control/power-control/internal/domain/transitions.go:391"
+----
+
+----
+level=info msg="POST /transitions CreateTransition 10.321432ms" func=github.com/OpenCHAMI/power-control/v2/internal/api.NewRouter.Logger.func1 file="/home/runner/work/power-control/power-control/internal/api/routers.go:63"
+level=info msg="Starting Transition c08eb75e-afc1-4c96-9b74-8c2a272e6a60 (c794162c38dd)" func=github.com/OpenCHAMI/power-control/v2/internal/domain.doTransition file="/home/runner/work/power-control/power-control/internal/domain/transitions.go:291"
+level=info msg="Starting keep alive for Transition, c08eb75e-afc1-4c96-9b74-8c2a272e6a60." func=github.com/OpenCHAMI/power-control/v2/internal/domain.transitionKeepAlive file="/home/runner/work/power-control/power-control/internal/domain/transitions.go:1111"
+level=debug msg="The transition fits in a single etcd entry" func="github.com/OpenCHAMI/power-control/v2/internal/storage.(*ETCDStorage).truncateAndPageTransitionIfNeeded" file="/home/runner/work/power-control/power-control/internal/storage/storage_etcd_impl.go:493" TransitionID=c08eb75e-afc1-4c96-9b74-8c2a272e6a60 maxSize=1570000 size=481
+level=error msg="Key /powerstate/x1000c0s0b3 does not exist" func="github.com/OpenCHAMI/power-control/v2/internal/storage.(*ETCDStorage).GetPowerStatus" file="/home/runner/work/power-control/power-control/internal/storage/storage_etcd_impl.go:290"
+level=error msg="Missing xnames detected" ERROR="<nil>" xnames="[x1000c0s0b3]"
+level=error msg="No xnames to operate on" ERROR="No xnames to operate on"
+level=debug msg="The transition fits in a single etcd entry" func="github.com/OpenCHAMI/power-control/v2/internal/storage.(*ETCDStorage).truncateAndPageTransitionIfNeeded" file="/home/runner/work/power-control/power-control/internal/storage/storage_etcd_impl.go:493" TransitionID=c08eb75e-afc1-4c96-9b74-8c2a272e6a60 maxSize=1570000 size=614
+level=info msg="Transition c08eb75e-afc1-4c96-9b74-8c2a272e6a60 Completed (c794162c38dd)" func=github.com/OpenCHAMI/power-control/v2/internal/domain.doTransition file="/home/runner/work/power-control/power-control/internal/domain/transitions.go:391"
+----
