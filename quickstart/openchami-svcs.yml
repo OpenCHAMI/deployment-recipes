@@ -42,8 +42,8 @@ services:
         condition: service_completed_successfully
       opaal:
         condition: service_healthy
-    #ports:
-    #  - "27779:27779"
+    ports:
+      - "27779:27779"
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:27779/hsm/v2/service/ready"]
       interval: 5s
