@@ -1,0 +1,9 @@
+----
+[DEBUG] POST http://smd:27779/hsm/v2/State/Components/Query
+[DEBUG] GET http://smd:27779/hsm/v2/Inventory/ComponentEndpoints?id=x1000c1s7b0n0&id=x1000c0s0b3
+level=warning msg="getVaultCredsAll(): Missing/empty creds for 'x1000c1s7b0n0'" func=github.com/OpenCHAMI/power-control/v2/internal/domain.getVaultCredsAll file="/home/runner/work/power-control/power-control/internal/domain/power-status.go:405"
+level=warning msg="getVaultCredsAll(): Missing/empty creds for 'x1000c0s0b3'" func=github.com/OpenCHAMI/power-control/v2/internal/domain.getVaultCredsAll file="/home/runner/work/power-control/power-control/internal/domain/power-status.go:405"
+level=warning msg="getHWStatesFromHW: Missing FQDN or power status URI for x1000c1s7b0n0" func=github.com/OpenCHAMI/power-control/v2/internal/domain.getHWStatesFromHW file="/home/runner/work/power-control/power-control/internal/domain/power-status.go:509"
+level=warning msg="getHWStatesFromHW: Missing FQDN or power status URI for x1000c0s0b3" func=github.com/OpenCHAMI/power-control/v2/internal/domain.getHWStatesFromHW file="/home/runner/work/power-control/power-control/internal/domain/power-status.go:509"
+level=warning msg="getHWStatesFromHW: No TRS tasks to launch" func=github.com/OpenCHAMI/power-control/v2/internal/domain.getHWStatesFromHW file="/home/runner/work/power-control/power-control/internal/domain/power-status.go:539"
+----
