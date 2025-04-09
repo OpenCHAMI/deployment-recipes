@@ -33,7 +33,8 @@ services:
       - SMD_DBUSER=smd-user
       - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
       - SMD_DBOPTS=sslmode=disable
-      - SMD_JWKS_URL=http://opaal:3333/keys
+      # - SMD_JWKS_URL=http://opaal:3333/keys
+      - SMD_JWKS_URL= # To help PCS querying hardware from SMD/HSM hardware inventory without authentication
     depends_on:
       postgres:
         condition: service_healthy
