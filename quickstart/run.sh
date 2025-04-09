@@ -84,7 +84,9 @@ vault_create_keystore() {
 	-version=1 kv
 }
 
-vault_populate_node() {
+_vault_populate_node() {
+	local XNAME="${1}"
+
 	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault write \
 	secret/hms-creds/"${XNAME}" \
 	refresh_interval="768h" \
@@ -94,6 +96,13 @@ vault_populate_node() {
 	URL="$(get_virtual_node_url)" \
 	Username="root" \
 	Xname="${XNAME}"
+}
+
+vault_populate_node() {
+	_vault_populate_node "${XNAME}"
+	_vault_populate_node "x1000c0s0b3n0"
+	_vault_populate_node "x1000c1s7b0"
+	_vault_populate_node "x1000c1s7b0n0"
 }
 
 ochami_discover() {
