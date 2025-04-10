@@ -88,6 +88,8 @@ vault_create_keystore() {
 
 _vault_populate_node() {
 	local XNAME="${1}"
+	# sushy-tool
+	# URL="$(get_virtual_node_url)" \
 
 	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault write \
 	secret/hms-creds/"${XNAME}" \
@@ -95,7 +97,7 @@ _vault_populate_node() {
 	Password="--REDACTED--" \
 	SNMPAuthPass="n/a" \
 	SNMPPrivPass="n/a" \
-	URL="$(get_virtual_node_url)" \
+	URL="${XNAME}" \
 	Username="root" \
 	Xname="${XNAME}"
 }
