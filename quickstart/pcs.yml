@@ -22,3 +22,12 @@ services:
       - ./keys:/etc/keys
     ports:
       - 28007:28007
+
+    # TODO: try [depends_on][1]
+    # 1: https://github.com/OpenCHAMI/power-control/blob/46d7f18ccea0687da383d3ad02ee1b5a0581c34f/docker-compose.test.ct.yaml#L321
+    # depends_on:
+    #   - etcd # needed to bring up PCS
+    #   - smd # needed to bring up PCS
+    #   - vault-kv-enabler # needed for discovery of emulated hardware to succeed
+    #   - emulator-loader # needed to bring up emulated hardware
+    #   - wait-for-smd # needed to give PCS time for its initial hardware scan
