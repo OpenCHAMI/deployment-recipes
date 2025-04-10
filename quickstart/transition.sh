@@ -21,6 +21,6 @@ print_operation_list() {
 
 print_operation_list
 
-# transition '[{"operation": "forceoff", "taskDeadlineMinutes": 12, "location": {"xname": "x1000c0s0b3", "deputyKey,omitempty": "asdf"}}]'
-# transition '{"operation": "off", "taskDeadlineMinutes": 12, "location": [{"xname": "x1000c0s0b3", "deputyKey,omitempty": "asdf"}]}'
+transition '[{"operation": "forceoff", "taskDeadlineMinutes": 12, "location": {"xname": "x1000c0s0b3", "deputyKey,omitempty": "asdf"}}]'
+transition '{"operation": "off", "taskDeadlineMinutes": 12, "location": [{"xname": "x1000c0s0b3", "deputyKey,omitempty": "asdf"}]}'
 transition '{"operation": "off", "taskDeadlineMinutes": 12, "location": [{"xname": "x1000c0s0b3n0", "deputyKey,omitempty": "asdf"}]}'
