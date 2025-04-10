@@ -1,0 +1,86 @@
+#- name: Include common TPM setup
+#  import_role:
+#    name: common
+
+- name: Ensure Quadlet directory exists
+  file:
+    path: /etc/containers/systemd
+    state: directory
+    mode: '0755'
+
+- name: Ensure registrar config directory exists
+  file:
+    path: /etc/keylime/registrar.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configure registrar (bind IP and TLS)
+  copy:
+    dest: /etc/keylime/registrar.conf.d/00-registrar.conf
+    content: |
+      [registrar]
+      ip = 0.0.0.0
+      tls_dir = /var/lib/keylime/cv_ca
+      server_cert = server-cert.crt
+      server_key = server-private.pem
+      trusted_client_ca = ["cacert.crt"]
+    owner: root
+    group: root
+    mode: '0755'
+  register: registrar_quadlet  
+  notify: Restart keylime_registrar
+
+# Optional: fix ownership on entire cert dir
+- name: Ensure keylime user owns the full TLS CA directory
+  file:
+    path: /var/lib/keylime/cv_ca
+    recurse: yes
+    owner: keylime
+    group: keylime
+    mode: '0755'
+
+# Optional: fix ownership on entire cert dir
+- name: Ensure keylime user owns the full TLS CA directory
+  file:
+    path: /var/lib/keylime/cv_ca
+    recurse: yes
+    owner: 1000
+    group: 1000
+    mode: '0755'
+
+- name: Deploy Keylime Registrar Quadlet file
+  template:
+    src: keylime_registrar.container.j2
+    dest: /etc/containers/systemd/keylime_registrar.container
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Reload systemd
+
+
+
+- name: Reload systemd to register Quadlet units
+  command: systemctl daemon-reload
+  #when: registrar_quadlet.changed   # only reload if the template was updated
+  notify: Reload systemd
+
+
+- name: Start Keylime Registrar container service
+  systemd:
+    name: keylime_registrar.service
+    state: started
+    enabled: yes  # enable is handled by [Install], but this ensures it’s active now
+    daemon_reload: yes
+  notify: Reload systemd
+
+#- name: Open Keylime registrar firewall ports (8890, 8891)
+#  firewalld:
+#    port: "{{ item }}"
+#    permanent: yes
+#    immediate: yes
+#    state: enabled
+#  with_items:
+#    - "8890/tcp"
+#    - "8891/tcp"

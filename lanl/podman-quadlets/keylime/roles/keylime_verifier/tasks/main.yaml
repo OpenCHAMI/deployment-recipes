@@ -1,0 +1,88 @@
+#- name: Include common TPM setup
+#  import_role:
+#    name: common
+
+- name: Ensure Quadlet directory exists
+  file:
+    path: /etc/containers/systemd
+    state: directory
+    mode: '0755'
+
+- name: Ensure verifier config directory exists
+  file:
+    path: /etc/keylime/verifier.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# Optional: fix ownership on entire cert dir
+- name: Ensure keylime user owns the full TLS CA directory
+  file:
+    path: /var/lib/keylime/cv_ca
+    recurse: yes
+    owner: 1000
+    group: 1000
+    mode: '0755'
+
+
+- name: Configure verifier (IP, Registrar, TLS)
+  copy:
+    dest: /etc/keylime/verifier.conf.d/00-verifier.conf
+    content: |
+      [verifier]
+      ip = 0.0.0.0
+      registrar_ip = 127.0.0.1
+      registrar_port = 8890
+      tls_dir = generate
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Restart keylime_verifier
+
+
+
+- name: Deploy Keylime Verifier Quadlet file
+  template:
+    src: keylime_verifier.container.j2
+    dest: /etc/containers/systemd/keylime_verifier.container
+    owner: root
+    group: root
+    mode: '0755'
+  register: verifier_quadlet  
+  notify: Reload systemd
+
+
+#- name: Open Keylime verifier firewall ports (8881)
+#  firewalld:
+#    port: "{{ item }}"
+#    permanent: yes
+#    immediate: yes
+#    state: enabled
+#  with_items:
+#    - "8881/tcp"
+
+# Optional: fix ownership on entire cert dir
+- name: Ensure keylime user owns the full TLS CA directory
+  file:
+    path: /var/lib/keylime/cv_ca
+    recurse: yes
+    owner: keylime
+    group: keylime
+    mode: '0755'
+
+- name: Reload systemd to register Quadlet units
+  command: systemctl daemon-reload
+  #when: verifier_quadlet.changed 
+  notify: Reload systemd
+
+
+
+
+- name: Start Keylime Verifier container service (will auto-start registrar if not running)
+  systemd:
+    name: keylime_verifier.service
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  notify: Reload systemd

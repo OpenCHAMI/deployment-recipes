@@ -1,0 +1,90 @@
+- name: Include common TPM setup
+  import_role:
+    name: common
+
+- name: Ensure Quadlet directory exists
+  file:
+    path: /etc/containers/systemd
+    state: directory
+    mode: "0755"
+- name: Ensure agent config directory exists
+  file:
+    path: /etc/keylime/agent.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Ensure TLS CA directory exists on agent
+  file:
+    path: /var/lib/keylime/cv_ca
+    state: directory
+    owner: keylime
+    group: keylime
+    mode: '0750'
+
+- name: Copy CA certificate from Registrar (re-head.usrc) to agents
+  delegate_to: "{{ keylime_registrar_host }}"
+  fetch:
+    src: /var/lib/keylime/cv_ca/cacert.crt
+    dest: /tmp/keylime_ca_certificates/{{ inventory_hostname }}/
+    flat: yes
+
+- name: Copy fetched CA certificate into agent's cv_ca directory
+  copy:
+    src: "/tmp/keylime_ca_certificates/{{ inventory_hostname }}/cacert.crt"
+    dest: "/var/lib/keylime/cv_ca/cacert.crt"
+    owner: keylime
+    group: keylime
+    mode: '0644'
+
+
+- name: Configure agent (IP and Registrar connection)
+  copy:
+    dest: /etc/keylime/agent.conf.d/00-agent.conf
+    content: |
+      [agent]
+      ip = 0.0.0.0
+      registrar_ip = "{{ keylime_registrar_host }}"
+      registrar_port = 8890
+      # TLS settings for Registrar (if mutual TLS enabled):
+      trusted_server_ca = "cacert.crt"
+      agent_cert = "client-cert.crt"
+      agent_key = "client-private.pem"
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Restart keylime_agent
+
+- name: Configure Keylime Agent to trust Registrar (registrar IP/port)
+  copy:
+    dest: /etc/keylime/agent.conf.d/00-registrar.conf
+    content: |
+      [agent]
+      registrar_ip = "{{ keylime_registrar_host }}"
+      registrar_port = 8890
+  notify: Reload keylime_agent
+
+- name: Deploy Keylime Agent Quadlet file
+  template:
+    src: keylime_agent.container.j2
+    dest: /etc/containers/systemd/keylime_agent.container
+    owner: root
+    group: root
+    mode: "0644"
+  notify: 
+    - Reload systemd
+    - Restart keylime_agent
+
+- name: Reload systemd to register Quadlet units
+  command: systemctl daemon-reload
+  when: result is changed
+  notify: Reload systemd
+
+- name: Start Keylime Agent container service
+  systemd:
+    name: keylime_agent.service
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  notify: Reload systemd

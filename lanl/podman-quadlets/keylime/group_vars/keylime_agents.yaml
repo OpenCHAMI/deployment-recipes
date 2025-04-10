@@ -1,0 +1,5 @@
+# group_vars/keylime_agents.yml
+keylime_registrar_host: re-head
+keylime_registrar_port: 8890
+keylime_verifier_host: re-head
+keylime_verifier_port: 8881
