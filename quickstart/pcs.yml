@@ -8,15 +8,16 @@ services:
       - jwt-internal
     environment:
       SMS_SERVER: http://smd:27779
-      VAULT_ENABLED: "true"
+      VAULT_ENABLED: true
       VAULT_ADDR: "http://vault:8200"
       VAULT_KEYPATH: "secret/hms-creds"
       API_URL: "http://localhost"
       API_SERVER_PORT: ":28007"
       API_BASE_PATH: "/v1"
-      CRAY_VAULT_JWT_FILE: /etc/keys/token
-      CRAY_VAULT_ROLE_FILE: /etc/keys/role
-      CRAY_VAULT_AUTH_PATH: auth/jwt/login
+      CRAY_VAULT_ROLE_FILE: configs/namespace
+      CRAY_VAULT_JWT_FILE: configs/token
+      CRAY_VAULT_AUTH_PATH: auth/token/create
+      VAULT_TOKEN: hms
       LOG_LEVEL: DEBUG
     volumes:
       - ./keys:/etc/keys

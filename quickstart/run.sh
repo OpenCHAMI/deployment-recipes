@@ -130,7 +130,7 @@ main() {
 	generate_file
 	vault_configure_jwt
 	vault_create_keystore
-	vault_populate_node
+	#vault_populate_node
 	smd_populate
 }
 
