@@ -116,9 +116,13 @@ ochami_discover() {
 }
 
 smd_populate() {
-	echo manta add redfish-endpoint --id "${XNAME}" --hostname "${XNAME}" -u root -M 02:05:78:02:34:00 --rediscover-on-update
-	ACCESS_TOKEN="$(<access_token)" manta add redfish-endpoint --id "${XNAME}" --hostname "${XNAME}" -u root -M 02:05:78:02:34:00 --rediscover-on-update
-	curl --cacert cacert.pem -H "Authorization: Bearer $(<access_token)" https://foobar.openchami.cluster:8443/hsm/v2/State/Components -d "{\"Components\":[{\"ID\":\"${XNAME}\", \"State\":\"Ready\"}]}"
+	curl -X POST -d '{"RedfishEndpoints":[{
+	  "ID":"x1000c0s0b3",
+	  "FQDN":"x1000c0s0b3",
+	  "RediscoverOnUpdate":true,
+	  "User":"root",
+	  "Password":"root_password"
+	}]}' http://localhost:27779/hsm/v2/Inventory/RedfishEndpoints
 }
 
 main() {
