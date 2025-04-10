@@ -20,6 +20,7 @@ start_service() {
 	  -f pcs.yml \
 	  -f vault.yml \
 	  -f etcd.yml \
+	  -f rfe.yml \
 	  -f configurator.yml up -d
 	do
 	docker compose \
@@ -33,6 +34,7 @@ start_service() {
 	  -f pcs.yml \
 	  -f vault.yml \
 	  -f etcd.yml \
+	  -f rfe.yml \
 	  -f configurator.yml down
 	done
 }
