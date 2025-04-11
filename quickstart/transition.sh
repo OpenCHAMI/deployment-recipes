@@ -29,6 +29,3 @@ main() {
 # bash transition.sh x1000c0s0b3 on
 
 main "${@}"
-transition '{"operation": "force-off", "location": [{"xname": "x1000c0s0b3"}]}'
-transition '{"operation": "off", "location": [{"xname": "x1000c0s0b3"}]}'
-transition '{"operation": "off", "location": [{"xname": "x1000c0s0b3n0"}]}'
