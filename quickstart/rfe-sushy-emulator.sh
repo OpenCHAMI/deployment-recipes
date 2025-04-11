@@ -42,9 +42,23 @@ create_ssl() {
 	openssl x509 -req -days 3650 -in ${SERVER_CSR} -signkey ${SERVER_KEY} -out ${SERVER_CRT}
 }
 
+create_htpasswd() {
+	local HTPASSWD_PATH="${SUSHY_EMULATOR_PATH}/htpasswd"
+	mkdir -p "${HTPASSWD_PATH}"
+	htpasswd -cb "${HTPASSWD_PATH}"/auth-file root root_password
+}
+
+create_config() {
+	local CONFIG_PATH="${SUSHY_EMULATOR_PATH}/config"
+	mkdir -p "${CONFIG_PATH}"
+	echo 'SUSHY_EMULATOR_AUTH_FILE = /htpasswd/auth-file' > "${CONFIG_PATH}"/config.py
+}
+
 main() {
 	create_ssh
 	create_ssl
+	create_config
+	create_htpasswd
 }
 
 main
