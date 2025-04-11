@@ -19,8 +19,15 @@ print_operation_list() {
 	echo "soft-off"
 }
 
-print_operation_list
+#1 xname
+#2 operation
+main() {
+	transition \
+		"$(echo '{"operation": "${OPERATION}", "taskDeadlineMinutes": 12, "location": [{"xname": "${XNAME}", "deputyKey,omitempty": "asdf"}]}' | \
+		XNAME="${1}" OPERATION="${2}" envsubst)"
+}
 
-transition '[{"operation": "forceoff", "taskDeadlineMinutes": 12, "location": {"xname": "x1000c0s0b3", "deputyKey,omitempty": "asdf"}}]'
-transition '{"operation": "off", "taskDeadlineMinutes": 12, "location": [{"xname": "x1000c0s0b3", "deputyKey,omitempty": "asdf"}]}'
-transition '{"operation": "off", "taskDeadlineMinutes": 12, "location": [{"xname": "x1000c0s0b3n0", "deputyKey,omitempty": "asdf"}]}'
+# example
+# bash transition.sh x1000c0s0b3 on
+
+main "${@}"
