@@ -1,0 +1,15 @@
+services:
+  sushy:
+    image: tgrivel/sushy-emulator:0.0.1
+    hostname: x1000c0s0b5
+    container_name: x1000c0s0b5
+    restart: always
+    networks:
+      - internal
+      - jwt-internal
+    volumes:
+      - ./sushy-emulator/ssl:/ssl
+      - ./sushy-emulator/ssh:/root/.ssh
+    ports:
+      - 8000:443
+    command: /env/bin/sushy-emulator --port 443 --interface 0.0.0.0 --ssl-certificate /ssl/sushy-emulator.crt --ssl-key /ssl/sushy-emulator.key --libvirt-uri "qemu+ssh://cloud-user@172.17.0.1/system"
