@@ -10,7 +10,7 @@ check_pcs_logs() {
 
 check_vault_list() {
 	for secret in $(docker exec -e VAULT_TOKEN=hms vault vault list --format json secret/hms-creds/ | jq -r  | tr -d '[],\n"'); do
-		echo $secret
+		echo -e "\nvault read secret/hms-creds/$secret\n"
 		docker exec -e VAULT_TOKEN=hms vault vault read secret/hms-creds/$secret
 	done
 }
