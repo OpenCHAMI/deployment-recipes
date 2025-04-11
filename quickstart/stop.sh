@@ -10,4 +10,5 @@ docker compose \
   -f vault.yml \
   -f etcd.yml \
   -f rfe.yml \
+  -f sushy.yml \
   -f configurator.yml down
