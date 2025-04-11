@@ -10,6 +10,8 @@ services:
     volumes:
       - ./sushy-emulator/ssl:/ssl
       - ./sushy-emulator/ssh:/root/.ssh
+      - ./sushy-emulator/config:/config
+      - ./sushy-emulator/htpasswd:/htpasswd
     ports:
       - 8000:443
-    command: /env/bin/sushy-emulator --port 443 --interface 0.0.0.0 --ssl-certificate /ssl/sushy-emulator.crt --ssl-key /ssl/sushy-emulator.key --libvirt-uri "qemu+ssh://cloud-user@172.17.0.1/system"
+    command: /env/bin/sushy-emulator --port 443 --config /config/config.py --interface 0.0.0.0 --ssl-certificate /ssl/sushy-emulator.crt --ssl-key /ssl/sushy-emulator.key --libvirt-uri "qemu+ssh://cloud-user@172.17.0.1/system"
