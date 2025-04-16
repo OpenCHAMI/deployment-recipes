@@ -55,7 +55,7 @@ create_htpasswd() {
 create_config() {
 	local CONFIG_PATH="${SUSHY_EMULATOR_PATH}/config"
 	mkdir -p "${CONFIG_PATH}"
-	echo 'SUSHY_EMULATOR_AUTH_FILE = /htpasswd/auth-file' > "${CONFIG_PATH}"/config.py
+	echo 'SUSHY_EMULATOR_AUTH_FILE = "/htpasswd/auth-file"' > "${CONFIG_PATH}"/config.py
 }
 
 main() {
