@@ -24,6 +24,13 @@ bash libvirt/virtual-node.sh
 bash openchami.sh
 ----
 
+. Create sushy-emulator folder
++
+[source, shell]
+----
+bash rfe-sushy-emulator.sh
+----
+
 . Run openchami services
 +
 [source, shell]
