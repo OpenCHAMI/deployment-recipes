@@ -1,0 +1,33 @@
+= PCS with Sushy-tools
+
+== Steps
+
+. Deploy a debian 12
+. Setup libvirt with
++
+[source, shell]
+----
+bash libvirt/setup-libvirt.sh
+----
+
+. Create a virtual node with
++
+[source, shell]
+----
+bash libvirt/virtual-node.sh
+----
+
+. Install docker and clone openchami services with
++
+[source, shell]
+----
+bash openchami.sh
+----
+
+. Run openchami services
++
+[source, shell]
+----
+cd quickstart
+make run
+----
