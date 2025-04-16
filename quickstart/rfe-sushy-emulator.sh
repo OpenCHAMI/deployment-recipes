@@ -2,6 +2,10 @@
 
 SUSHY_EMULATOR_PATH="sushy-emulator"
 
+install_packages() {
+	sudo apt install -y apache2-utils # for htpasswd
+}
+
 create_ssh() {
 	SSH_PATH="${SUSHY_EMULATOR_PATH}/ssh"
 
@@ -55,6 +59,7 @@ create_config() {
 }
 
 main() {
+	install_packages
 	create_ssh
 	create_ssl
 	create_config
