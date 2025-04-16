@@ -3,6 +3,10 @@
 SUSHY_EMULATOR_PATH="sushy-emulator"
 
 install_packages() {
+	if type htpasswd; then
+		return
+	fi
+
 	sudo apt install -y apache2-utils # for htpasswd
 }
 
