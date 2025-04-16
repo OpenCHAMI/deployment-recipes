@@ -38,7 +38,24 @@ By default, this deployment will **generate** self-signed certificates for the K
 
 2.  Within the **"Configure Verifier"** section, locate the variable `tls_dir` or any reference to `generate`.
 
-3.  Update it to point to your certificate directory or change the generation logic to install your own cert/key pair.
+3.  The default option `generate` generates certificates and stores them at tls_dir = /var/lib/keylime/cv_ca if you want to use your own certificates, Update it to point to your certificate directory. Refer to [Redhat Keylime Documentation](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/security_hardening/assembly_ensuring-system-integrity-with-keylime_security-hardening#configuring-keylime-verifier_assembly_ensuring-system-integrity-with-keylime) for more details. 
+
+To load existing keys and certificates in the configuration, define their location in the verifier configuration. The certificates must be accessible by the keylime user, under which the Keylime services are running.
+
+Create a new .conf file in the /etc/keylime/verifier.conf.d/ directory, for example, /etc/keylime/verifier.conf.d/00-keys-and-certs.conf, with the following content:
+```
+[verifier]
+tls_dir = /var/lib/keylime/cv_ca
+server_key = </path/to/server_key>
+server_key_password = <passphrase1>
+server_cert = </path/to/server_cert>
+trusted_client_ca = ['</path/to/ca/cert1>', '</path/to/ca/cert2>']
+client_key = </path/to/client_key>
+client_key_password = <passphrase2>
+client_cert = </path/to/client_cert>
+trusted_server_ca = ['</path/to/ca/cert3>', '</path/to/ca/cert4>']
+```
+
 
 > **Note**: Custom certificates should also be placed on the Keylime Agents or otherwise trusted by the Agents to ensure secure communication.
 
@@ -114,4 +131,4 @@ Next Steps
 * * * * *
 
 
-For more details on Keylime usage and advanced configuration, consult the [Keylime documentation](https://keylime.dev/) and the official Red Hat guides if you are on RHEL systems.
+For more details on Keylime usage and advanced configuration, consult the [Keylime documentation](https://keylime.dev/) and the official Red Hat [Keylime Guide](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/security_hardening/assembly_ensuring-system-integrity-with-keylime_security-hardening) if you are on RHEL systems.

@@ -23,7 +23,7 @@
     group: keylime
     mode: '0750'
 
-- name: Copy CA certificate from Registrar (re-head.usrc) to agents
+- name: Copy CA certificate from Registrar (keylime_registrar_host) to agents
   delegate_to: "{{ keylime_registrar_host }}"
   fetch:
     src: /var/lib/keylime/cv_ca/cacert.crt

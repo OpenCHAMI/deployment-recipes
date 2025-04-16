@@ -2,5 +2,5 @@
 server-node ansible_connection=local
 
 [keylime_agents]
-nid0003 ansible_host=nid0003
-nid0004 ansible_host=nid0004
+agent1 ansible_host=agent1
+agent2 ansible_host=agent2

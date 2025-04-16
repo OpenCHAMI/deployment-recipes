@@ -74,13 +74,3 @@
     enabled: yes  # enable is handled by [Install], but this ensures it’s active now
     daemon_reload: yes
   notify: Reload systemd
-
-#- name: Open Keylime registrar firewall ports (8890, 8891)
-#  firewalld:
-#    port: "{{ item }}"
-#    permanent: yes
-#    immediate: yes
-#    state: enabled
-#  with_items:
-#    - "8890/tcp"
-#    - "8891/tcp"

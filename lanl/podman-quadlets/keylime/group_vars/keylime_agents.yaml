@@ -1,5 +1,6 @@
 # group_vars/keylime_agents.yml
-keylime_registrar_host: re-head
+# Note that Keylime Registrar and Verifier can be run on the same host as the Head Node
+keylime_registrar_host: registrar-host # IP address or hostname of the host running the Keylime Registrar typically Head Node
 keylime_registrar_port: 8890
-keylime_verifier_host: re-head
+keylime_verifier_host: registrar-host # IP address or hostname of the host running the Keylime Verifier typically Head Node
 keylime_verifier_port: 8881

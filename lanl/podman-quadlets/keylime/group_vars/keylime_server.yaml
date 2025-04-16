@@ -1,6 +1,6 @@
-keylime_verifier_ip: re-head
+keylime_verifier_ip: verifier-host # IP address or hostname to deploy the Keylime Verifier 
 keylime_verifier_port: 8881
-keylime_registrar_ip: re-head
+keylime_registrar_ip: registrar-host # IP address or hostname to deploy Keylime Registrar
 keylime_registrar_port: 8890
 keylime_registrar_image: quay.io/keylime/registrar:latest
 keylime_verifier_image: quay.io/keylime/verifier:latest
