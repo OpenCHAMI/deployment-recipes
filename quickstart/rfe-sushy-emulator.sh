@@ -53,7 +53,7 @@ create_ssl() {
 create_htpasswd() {
 	local HTPASSWD_PATH="${SUSHY_EMULATOR_PATH}/htpasswd"
 	mkdir -p "${HTPASSWD_PATH}"
-	htpasswd -cb "${HTPASSWD_PATH}"/auth-file root root_password
+	htpasswd -cbB "${HTPASSWD_PATH}"/auth-file root root_password
 }
 
 create_config() {
