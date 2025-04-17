@@ -28,7 +28,7 @@ bash openchami.sh
 +
 [source, shell]
 ----
-bash rfe-sushy-emulator.sh
+(cd quickstart; bash rfe-sushy-emulator.sh)
 ----
 
 . Run openchami services
