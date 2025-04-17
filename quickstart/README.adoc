@@ -45,3 +45,16 @@ make run
 ----
 docker exec x1000c0s0b5 bash -c "ssh-keyscan 172.17.0.1 > /root/.ssh/known_hosts"
 ----
+
+. Add sushy-emulator as RFE
++
+[source, shell]
+----
+curl -X POST -d '{"RedfishEndpoints":[{
+  "ID":"x1000c0s0b5",
+  "FQDN":"x1000c0s0b5",
+  "RediscoverOnUpdate":true,
+  "User":"root",
+  "Password":"root_password"
+}]}' http://localhost:27779/hsm/v2/Inventory/RedfishEndpoints
+----
