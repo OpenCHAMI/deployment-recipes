@@ -58,3 +58,15 @@ curl -X POST -d '{"RedfishEndpoints":[{
   "Password":"root_password"
 }]}' http://localhost:27779/hsm/v2/Inventory/RedfishEndpoints
 ----
+
+. Switch state off
++
+NOTE: Follow logs of `x1000c0s0b5`, `smd` and `pcs`.
++
+[source, shell]
+----
+bash transition.sh x1000c0s0b5 off
+bash transition.sh x1000c0s0b5 on
+----
++
+NOTE: smd logs print nothings while x1000c0s0b3 does
