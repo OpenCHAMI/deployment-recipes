@@ -3,6 +3,17 @@
 == Steps
 
 . Deploy a debian 12
+. Clone the repository
++
+[source, shell]
+----
+sudo apt update -y
+sudo apt install -y jq git
+git clone --branch work-in-progress https://github.com/t-h2o/deployment-recipes
+ln -s "${HOME}/deployment-recipes/quickstart/" "${HOME}"
+cd quickstart
+----
+
 . Setup libvirt with
 +
 [source, shell]
@@ -28,14 +39,13 @@ bash openchami.sh
 +
 [source, shell]
 ----
-(cd quickstart; bash rfe-sushy-emulator.sh)
+bash rfe-sushy-emulator.sh
 ----
 
 . Run openchami services
 +
 [source, shell]
 ----
-cd quickstart
 make run
 ----
 
