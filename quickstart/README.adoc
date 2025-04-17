@@ -43,7 +43,7 @@ make run
 +
 [source, shell]
 ----
-docker exec x1000c0s0b5 bash -c "ssh-keyscan 172.17.0.1 > /root/.ssh/known_hosts"
+docker exec x1000c0s0b5 bash -c "ssh-keyscan \"$(docker network inspect bridge -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}')\" > /root/.ssh/known_hosts"
 ----
 
 . Add sushy-emulator as RFE
