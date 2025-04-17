@@ -38,3 +38,10 @@ bash openchami.sh
 cd quickstart
 make run
 ----
+
+. Add ssh key to sushy-emulator
++
+[source, shell]
+----
+docker exec x1000c0s0b5 bash -c "ssh-keyscan 172.17.0.1 > /root/.ssh/known_hosts"
+----
