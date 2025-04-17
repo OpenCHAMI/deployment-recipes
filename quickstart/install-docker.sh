@@ -2,11 +2,6 @@
 
 set -e
 
-install_packages(){
-	sudo apt update -y
-	sudo apt install -y jq git
-}
-
 install_last_docker_version_debian() {
 	# Add Docker's official GPG key:
 	sudo apt-get install -y ca-certificates curl
@@ -26,18 +21,8 @@ install_last_docker_version_debian() {
 	sudo usermod -aG docker "$(whoami)"
 }
 
-clone_openchami() {
-	git clone https://github.com/t-h2o/deployment-recipes
-	cd deployment-recipes/quickstart/
-	git checkout work-in-progress
-	./generate-configs.sh
-}
-
 main() {
-	install_packages
 	install_last_docker_version_debian
-	clone_openchami
-	ln -s "${HOME}/deployment-recipes/quickstart/" "${HOME}/"
 }
 
 main

@@ -20,6 +20,8 @@ cd quickstart
 ----
 bash libvirt/setup-libvirt.sh
 ----
++
+NOTE: logout, login for the group
 
 . Create a virtual node with
 +
@@ -28,12 +30,14 @@ bash libvirt/setup-libvirt.sh
 bash libvirt/virtual-node.sh
 ----
 
-. Install docker and clone openchami services with
+. Install docker with
 +
 [source, shell]
 ----
-bash openchami.sh
+bash install-docker.sh
 ----
++
+NOTE: logout, login for the group
 
 . Create sushy-emulator folder
 +
