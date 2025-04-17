@@ -26,6 +26,6 @@ main() {
 }
 
 # example
-# bash transition.sh x1000c0s0b3 on
+# bash transition.sh x1000c0s0b3n0 force-off
 
 main "${@}"
