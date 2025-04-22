@@ -1,10 +1,15 @@
 transition() {
 	echo "${1}" | jq
 
-	curl \
+	TRANSITION_OUTPUT="$(curl \
 		-s \
 		-d "${1}" \
-		localhost:28007/transitions | jq
+		localhost:28007/transitions)"
+
+	TRANSITION_ID="$(echo "${TRANSITION_OUTPUT}" | jq -r .transitionID)"
+	echo "${TRANSITION_OUTPUT}" | jq
+	echo "---- TRANSITION STATUS ----"
+	curl -s "localhost:28007/transitions/${TRANSITION_ID}" | jq
 }
 
 print_operation_list() {
