@@ -85,3 +85,23 @@ bash transition.sh x1000c0s0b5 on
 ----
 +
 NOTE: smd logs print nothings while x1000c0s0b3 does
+
+== extra
+
+=== Get transition status
+
+----
+curl -s localhost:28007/transitions/${TRANSITION_ID} | jq
+----
+
+=== Get components list
+
+----
+curl --cacert cacert.pem -H "Authorization: Bearer $(<access_token)" https://foobar.openchami.cluster:8443/hsm/v2/State/Components | jq
+----
+
+=== Get endpoints
+
+----
+curl --cacert cacert.pem -H "Authorization: Bearer $ACCESS_TOKEN" "https://foobar.openchami.cluster:8443/hsm/v2/Inventory/ComponentEndpoints" | jq
+----
