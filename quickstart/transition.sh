@@ -25,7 +25,11 @@ main() {
 		XNAME="${1}" OPERATION="${2}" envsubst)"
 }
 
-# example
-# bash transition.sh x1000c0s0b3n0 force-off
+if [ $# -eq 0 ] ; then
+	echo "error: missing argument"
+	echo "example:"
+	echo "${0} x1000c0s0b3n0 force-off"
+	exit 1
+fi
 
 main "${@}"
