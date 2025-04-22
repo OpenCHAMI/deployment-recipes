@@ -1,6 +1,6 @@
 services:
   sushy:
-    image: tgrivel/sushy-emulator:0.0.2
+    image: tgrivel/sushy-emulator:0.0.3
     hostname: x1000c0s0b5
     container_name: x1000c0s0b5
     restart: always
