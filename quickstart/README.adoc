@@ -21,8 +21,6 @@ cd quickstart
 ----
 bash libvirt/setup-libvirt.sh
 ----
-+
-NOTE: logout, login for the group
 
 . Create a virtual node with
 +
