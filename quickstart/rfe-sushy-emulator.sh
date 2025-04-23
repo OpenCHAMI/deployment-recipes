@@ -59,10 +59,11 @@ create_htpasswd() {
 create_config() {
 	local CONFIG_PATH="${SUSHY_EMULATOR_PATH}/config"
 	mkdir -p "${CONFIG_PATH}"
+	NODE_UUID="$(sudo virsh dumpxml virtual-node | grep uuid | sed 's|  <uuid>\(....................................\)</uuid>|\1|')"
 	cat > "${CONFIG_PATH}"/config.py <<-eof
 	SUSHY_EMULATOR_AUTH_FILE = "/htpasswd/auth-file"
 	SUSHY_EMULATOR_STORAGE = {
-	    "69699fd8-a17e-4fee-b816-99005d113ef6": [
+	    "${NODE_UUID}": [
 	        {
 	            "Id": "1",
 	            "Name": "Local Storage Controller",
@@ -81,7 +82,7 @@ create_config() {
 	}
 
 	SUSHY_EMULATOR_DRIVES = {
-	    ("69699fd8-a17e-4fee-b816-99005d113ef6", "1"): [
+	    ("${NODE_UUID}", "1"): [
 	        {
 	            "Id": "32ADF365C6C1B7BD",
 	            "Name": "Drive Sample",
@@ -92,7 +93,7 @@ create_config() {
 	}
 
 	SUSHY_EMULATOR_VOLUMES = {
-	    ('69699fd8-a17e-4fee-b816-99005d113ef6', '1'): [
+	    ('${NODE_UUID}', '1'): [
 	        {
 	            "libvirtPoolName": "sushyPool",
 	            "libvirtVolName": "testVol",
