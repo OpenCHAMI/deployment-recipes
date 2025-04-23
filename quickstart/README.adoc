@@ -80,7 +80,7 @@ NOTE: Follow logs of `x1000c0s0b5`, `smd` and `pcs`.
 +
 [source, shell]
 ----
-bash transition.sh x1000c0s0b5 off
+bash transition.sh x1000c0s0b5 force-off
 bash transition.sh x1000c0s0b5 on
 ----
 +
