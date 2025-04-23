@@ -88,12 +88,6 @@ vault_create_keystore() {
 	-version=1 kv
 }
 
-ochami_discover() {
-	ochami discover --help | head -n 29 | tail -n 20 > nodes.yaml
-	ochami discover --token "$(<access_token)" --cacert "cacert.pem" -f yaml -d @nodes.yaml
-	# rm nodes.yaml
-}
-
 smd_populate() {
 	# populate like this [docker compose][1] do
 	# 1: https://github.com/OpenCHAMI/power-control/blob/main/docker-compose.test.ct.yaml#L108
