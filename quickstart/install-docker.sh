@@ -3,6 +3,9 @@
 set -e
 
 install_last_docker_version_debian() {
+	# Read the official documentation
+	# https://docs.docker.com/engine/install/debian/#install-using-the-repository
+
 	# Add Docker's official GPG key:
 	sudo apt-get install -y ca-certificates curl
 	sudo install -m 0755 -d /etc/apt/keyrings
