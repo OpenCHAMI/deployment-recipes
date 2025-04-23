@@ -88,29 +88,6 @@ vault_create_keystore() {
 	-version=1 kv
 }
 
-_vault_populate_node() {
-	local XNAME="${1}"
-	# sushy-tool
-	# URL="$(get_virtual_node_url)" \
-
-	docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault write \
-	secret/hms-creds/"${XNAME}" \
-	refresh_interval="768h" \
-	Password="--REDACTED--" \
-	SNMPAuthPass="n/a" \
-	SNMPPrivPass="n/a" \
-	URL="${XNAME}" \
-	Username="root" \
-	Xname="${XNAME}"
-}
-
-vault_populate_node() {
-	_vault_populate_node "${XNAME}"
-	_vault_populate_node "x1000c0s0b3n0"
-	_vault_populate_node "x1000c1s7b0"
-	_vault_populate_node "x1000c1s7b0n0"
-}
-
 ochami_discover() {
 	ochami discover --help | head -n 29 | tail -n 20 > nodes.yaml
 	ochami discover --token "$(<access_token)" --cacert "cacert.pem" -f yaml -d @nodes.yaml
@@ -135,7 +112,6 @@ main() {
 	generate_file
 	vault_configure_jwt
 	vault_create_keystore
-	#vault_populate_node
 	smd_populate
 }
 
