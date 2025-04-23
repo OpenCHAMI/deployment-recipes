@@ -36,7 +36,9 @@ bash libvirt/virtual-node.sh
 bash install-docker.sh
 ----
 +
-NOTE: logout, login for the group
+NOTE: `install-docker.sh` will add the current user in the docker group. +
+To avoid permission error: +
+Login to the current user (eg: `su $(whoami)`).
 
 . Create sushy-emulator folder
 +
