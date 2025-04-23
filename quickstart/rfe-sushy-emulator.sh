@@ -33,7 +33,7 @@ create_ssl() {
 	default_bit = 4096
 	distinguished_name = req_distinguished_name
 	prompt = no
-	
+
 	[req_distinguished_name]
 	countryName             = CH
 	stateOrProvinceName     = Vaud
