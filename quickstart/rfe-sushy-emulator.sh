@@ -17,9 +17,6 @@ create_ssh() {
 
 	ssh-keygen -N '' -t ed25519 -f "${SSH_PATH}"/id_ed25519
 	cat "${SSH_PATH}"/id_ed25519.pub >> ~/.ssh/authorized_keys
-
-	# ssh-keyscan 172.17.0.1 > ~/.ssh/known_hosts
-	# virsh --connect qemu+ssh://cloud-user@172.17.0.1/system
 }
 
 create_ssl() {
