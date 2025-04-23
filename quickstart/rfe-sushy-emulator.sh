@@ -59,7 +59,59 @@ create_htpasswd() {
 create_config() {
 	local CONFIG_PATH="${SUSHY_EMULATOR_PATH}/config"
 	mkdir -p "${CONFIG_PATH}"
-	echo 'SUSHY_EMULATOR_AUTH_FILE = "/htpasswd/auth-file"' > "${CONFIG_PATH}"/config.py
+	cat > "${CONFIG_PATH}"/config.py <<-eof
+	SUSHY_EMULATOR_AUTH_FILE = "/htpasswd/auth-file"
+	SUSHY_EMULATOR_STORAGE = {
+	    "69699fd8-a17e-4fee-b816-99005d113ef6": [
+	        {
+	            "Id": "1",
+	            "Name": "Local Storage Controller",
+	            "StorageControllers": [
+	                {
+	                    "MemberId": "0",
+	                    "Name": "Contoso Integrated RAID",
+	                    "SpeedGbps": 12
+	                }
+	            ],
+	            "Drives": [
+	                "32ADF365C6C1B7BD"
+	            ]
+	        }
+	    ]
+	}
+
+	SUSHY_EMULATOR_DRIVES = {
+	    ("69699fd8-a17e-4fee-b816-99005d113ef6", "1"): [
+	        {
+	            "Id": "32ADF365C6C1B7BD",
+	            "Name": "Drive Sample",
+	            "CapacityBytes": 899527000000,
+	            "Protocol": "SAS"
+	        }
+	    ]
+	}
+
+	SUSHY_EMULATOR_VOLUMES = {
+	    ('69699fd8-a17e-4fee-b816-99005d113ef6', '1'): [
+	        {
+	            "libvirtPoolName": "sushyPool",
+	            "libvirtVolName": "testVol",
+	            "Id": "1",
+	            "Name": "Sample Volume 1",
+	            "VolumeType": "Mirrored",
+	            "CapacityBytes": 23748
+	        },
+	        {
+	            "libvirtPoolName": "sushyPool",
+	            "libvirtVolName": "testVol1",
+	            "Id": "2",
+	            "Name": "Sample Volume 2",
+	            "VolumeType": "StripedWithParity",
+	            "CapacityBytes": 48395
+	        }
+	    ]
+	}
+	eof
 }
 
 main() {
