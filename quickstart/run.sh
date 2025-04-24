@@ -75,8 +75,8 @@ vault_configure_jwt() {
 	capabilities = ["read", "list"]
 	}
 	EOF
-        docker cp policy.yml vault:/policy.yml
-        docker exec -e VAULT_TOKEN=hms vault vault policy write metrics /policy.yml
+	docker cp policy.yml vault:/policy.yml
+	docker exec -e VAULT_TOKEN=hms vault vault policy write metrics /policy.yml
 	docker cp $KEYS_PATH/public_key.pem vault:/public_key.pem
 	docker exec -e VAULT_TOKEN=hms vault vault write auth/jwt/config jwt_supported_algs=RS256 jwt_validation_pubkeys=@/public_key.pem
 }

@@ -21,29 +21,29 @@ sushy_create_disk() {
 sushy_create_domain() {
 	tmpfile=$(mktemp /tmp/sushy-domain.XXXXXX)
 	sudo virt-install \
-	   --name "${VBMC_DOMAIN_NAME}" \
-	   --ram 1024 \
-	   --disk path=${HOME}/file.qcow2,size=4,format=qcow2 \
-	   --vcpus 2 \
-	   --os-variant fedora28 \
-	   --graphics vnc \
-	   --network network=vbmc \
-	   --print-xml > $tmpfile
+		--name "${VBMC_DOMAIN_NAME}" \
+		--ram 1024 \
+		--disk path=${HOME}/file.qcow2,size=4,format=qcow2 \
+		--vcpus 2 \
+		--os-variant fedora28 \
+		--graphics vnc \
+		--network network=vbmc \
+		--print-xml >$tmpfile
 	sudo virsh define --file $tmpfile
 	rm $tmpfile
 }
 
 sushy_create_network() {
 	tmpfile=$(mktemp /tmp/sushy-domain.XXXXXX)
-	cat > "${tmpfile}" <<-XML
-	<network>
-	  <name>vbmc</name>
-	  <forward mode='nat'/>
-	  <bridge name='virbr1' stp='on' delay='0'/>
-	  <domain name='vbmc.local'/>
-	  <ip family='ipv4' address='10.0.200.1' prefix='24'>
-	  </ip>
-	</network>
+	cat >"${tmpfile}" <<-XML
+		<network>
+		  <name>vbmc</name>
+		  <forward mode='nat'/>
+		  <bridge name='virbr1' stp='on' delay='0'/>
+		  <domain name='vbmc.local'/>
+		  <ip family='ipv4' address='10.0.200.1' prefix='24'>
+		  </ip>
+		</network>
 	XML
 	sudo virsh net-create "${tmpfile}"
 	rm "${tmpfile}"

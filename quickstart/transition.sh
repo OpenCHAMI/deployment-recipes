@@ -26,11 +26,11 @@ print_operation_list() {
 #2 operation
 main() {
 	transition \
-		"$(echo '{"operation": "${OPERATION}", "location": [{"xname": "${XNAME}"}]}' | \
-		XNAME="${1}" OPERATION="${2}" envsubst)"
+		"$(echo '{"operation": "${OPERATION}", "location": [{"xname": "${XNAME}"}]}' |
+			XNAME="${1}" OPERATION="${2}" envsubst)"
 }
 
-if [ $# -eq 0 ] ; then
+if [ $# -eq 0 ]; then
 	echo "error: missing argument"
 	echo "example:"
 	echo "${0} x1000c0s0b3n0 force-off"
