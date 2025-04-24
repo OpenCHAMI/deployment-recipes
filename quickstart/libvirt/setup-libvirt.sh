@@ -9,7 +9,6 @@ install_packages() {
 		libvirt-daemon-system \
 		qemu-system \
 		pkg-config \
-		libvirt-dev \
 		build-essential \
 		libssl-dev \
 		libffi-dev
