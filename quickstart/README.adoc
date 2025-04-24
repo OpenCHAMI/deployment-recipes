@@ -138,15 +138,11 @@ curl -X POST -d '{"RedfishEndpoints":[{
 
 . Switch state off
 +
-NOTE: Follow logs of `x1000c0s0b5`, `smd` and `pcs`.
-+
 [source, shell]
 ----
 bash transition.sh x1000c0s0b5n0 force-off
 bash transition.sh x1000c0s0b5n0 on
 ----
-+
-NOTE: smd logs print nothings while x1000c0s0b3 does
 
 == extra
 
