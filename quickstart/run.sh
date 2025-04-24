@@ -41,21 +41,6 @@ start_service() {
 	done
 }
 
-_sushy_getter() {
-	if [ -z "${!1}" ]; then
-		export "${1}"="$(curl \
-			--silent \
-			"${SUSHY_URL}${2}" \
-			| jq --raw-output "${3}")"
-	fi
-}
-
-get_virtual_node_url() {
-	_sushy_getter "VIRTUAL_NODE" "/redfish/v1/Systems" '.Members[0]."@odata.id"'
-
-	echo "localhost:8000${VIRTUAL_NODE}"
-}
-
 generate_file() {
 	source bash_functions.sh
 	gen_access_token > access_token
