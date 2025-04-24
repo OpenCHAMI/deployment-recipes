@@ -1,4 +1,6 @@
 = PCS with Sushy-tools
+:toc:
+:sectnums:
 
 == Introduction
 
