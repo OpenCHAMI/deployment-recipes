@@ -1,5 +1,19 @@
 = PCS with Sushy-tools
 
+== Introduction
+
+=== Deployment diagram
+
+image:assets/deployment-openchami-testing-environment.svg[]
+
+(see link:assets/deployment-openchami-testing-environment.plantuml[diagram])
+
+=== Sequence diagram
+
+image:assets/sequence-openchami-testing-environment.svg[]
+
+(see link:assets/sequence-openchami-testing-environment.plantuml[diagram])
+
 == Steps
 
 . Deploy a debian 12
