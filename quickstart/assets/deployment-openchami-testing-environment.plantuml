@@ -1,0 +1,33 @@
+@startuml
+
+left to right direction
+
+package machine_pkg as "Machine" {
+  package libvirtd_pkg as "libvirtd" {
+    (virtual_node) as "Virtual node"
+  }
+  package sshd as "sshd" {
+  	(user)
+  }
+  package docker_pkg as "Docker" {
+    package smd as "SMD" {
+    	rectangle smd_postgresql as "Postrgres cred"
+    	rectangle smd_vault as "vault cred"
+    }
+    package sushy_emulator as "Sushy-emulator" {
+      rectangle sushy_emulator_ssl as "ssl"
+      rectangle sushy_emulator_ssh as "ssh"
+      rectangle sushy_emulator_config as "config"
+      rectangle sushy_emulator_htpwasswd as "htpwasswd"
+    }
+    package pcs as "Power control service" {
+      rectangle pcs_vault as "vault cred/path"
+      rectangle pcs_token as "auth JWS token for vault"
+    }
+    package vault as "vault" {
+      rectangle vault_public_key as "authorized public key"
+    }
+  }
+}
+
+@enduml
