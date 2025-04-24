@@ -38,12 +38,12 @@ run -> vault : create keystore
 
 == populate smd ==
 
-curl -> smd : Inventory/RedfishEndpoints
+curl -> smd : /Inventory/RedfishEndpoints
 smd -> vault : write password
 
 == switch the power status ==
 
-curl -> pcs : xname
+curl -> pcs : /transitions
 pcs <-> etcd : ?
 pcs -> vault : read password
 pcs -> sushy_emulator_rfe : command

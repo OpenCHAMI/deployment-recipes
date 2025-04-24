@@ -7,25 +7,26 @@ package machine_pkg as "Machine" {
     (virtual_node) as "Virtual node"
   }
   package sshd as "sshd" {
-  	(user)
+    (user)
   }
   package docker_pkg as "Docker" {
-    package smd as "SMD" {
-    	rectangle smd_postgresql as "Postrgres cred"
-    	rectangle smd_vault as "vault cred"
-    }
     package sushy_emulator as "Sushy-emulator" {
       rectangle sushy_emulator_ssl as "ssl"
       rectangle sushy_emulator_ssh as "ssh"
       rectangle sushy_emulator_config as "config"
-      rectangle sushy_emulator_htpwasswd as "htpwasswd"
-    }
-    package pcs as "Power control service" {
-      rectangle pcs_vault as "vault cred/path"
-      rectangle pcs_token as "auth JWS token for vault"
+      rectangle sushy_emulator_htpasswd as "htpasswd"
     }
     package vault as "vault" {
-      rectangle vault_public_key as "authorized public key"
+      rectangle vault_keystore as "keystore"
+      rectangle vault_jwt_auth as "JWT auth"
+    }
+    package pcs as "Power control service" {
+      rectangle pcs_vault as "vault path"
+      rectangle pcs_token as "vault token"
+    }
+    package smd as "SMD" {
+      rectangle smd_vault as "vault path"
+      rectangle smd_token as "vault token"
     }
   }
 }
