@@ -1,0 +1,53 @@
+@startuml
+
+Box "Admin" #chartreuse
+participant curl
+participant run as "run.sh"
+end box
+
+Box "OpenCHAMI"
+participant smd as "SMD"
+participant pcs as "PCS"
+participant etcd as "ETCD"
+participant vault as "Vault"
+end box
+
+Box "Sushy-emulator"
+participant sushy_emulator_rfe as "redfish endpoint"
+participant sushy_emulator_ssh as "ssh"
+end box
+
+Box "sshd"
+participant user
+end box
+
+Box "libvirtd"
+participant virtual_node as "Node"
+end box
+
+== setup ==
+
+hnote over sushy_emulator_rfe : create\nssl
+hnote over sushy_emulator_ssh : create\nssh
+
+hnote over run : create\nkeys
+hnote over run : start\nservices
+
+run -> vault : create jwt auth
+run -> vault : create keystore
+
+== populate smd ==
+
+curl -> smd : /Inventory/RedfishEndpoints
+smd -> vault : write password
+
+== switch the power status ==
+
+curl -> pcs : /transitions
+pcs <-> etcd : read/save data
+pcs -> vault : read password
+pcs -> sushy_emulator_rfe : command
+sushy_emulator_ssh -> user : ssh+qemu
+user -> virtual_node : command
+
+@enduml

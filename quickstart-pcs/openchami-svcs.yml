@@ -33,7 +33,18 @@ services:
       - SMD_DBUSER=smd-user
       - SMD_DBPASS=${SMD_POSTGRES_PASSWORD} # Set in .env file
       - SMD_DBOPTS=sslmode=disable
-      - SMD_JWKS_URL=http://opaal:3333/keys
+      # - SMD_JWKS_URL=http://opaal:3333/keys
+      - SMD_JWKS_URL= # To help PCS querying hardware from SMD/HSM hardware inventory without authentication
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_TOKEN=hms
+      - CRAY_VAULT_AUTH_PATH=auth/token/create
+      - CRAY_VAULT_ROLE_FILE=configs/namespace
+      - CRAY_VAULT_JWT_FILE=configs/token
+      - SMD_WVAULT=true
+      - SMD_RVAULT=true
+    volumes:
+      - ./configs/namespace:/configs/namespace
+      - ./configs/token:/configs/token
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,8 +52,8 @@ services:
         condition: service_completed_successfully
       opaal:
         condition: service_healthy
-    #ports:
-    #  - "27779:27779"
+    ports:
+      - "27779:27779"
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:27779/hsm/v2/service/ready"]
       interval: 5s
