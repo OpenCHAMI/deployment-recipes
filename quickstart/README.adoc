@@ -64,7 +64,21 @@ PCS needs Etcd.
 
 == Steps
 
-. Deploy a debian 12
+. Deploy a debian 12 +
+Recommended specs:
++
+[cols="1,1"]
+|===
+| vCPU
+| 4
+
+| Memory
+| 16 GB
+
+| nested virtualization
+| enabled
+|===
+
 . Clone the repository
 +
 [source, shell]
