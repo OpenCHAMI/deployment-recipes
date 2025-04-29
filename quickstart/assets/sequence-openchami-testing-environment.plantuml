@@ -44,7 +44,7 @@ smd -> vault : write password
 == switch the power status ==
 
 curl -> pcs : /transitions
-pcs <-> etcd : ?
+pcs <-> etcd : read/save data
 pcs -> vault : read password
 pcs -> sushy_emulator_rfe : command
 sushy_emulator_ssh -> user : ssh+qemu
