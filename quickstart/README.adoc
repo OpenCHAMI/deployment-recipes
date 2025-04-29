@@ -4,6 +4,13 @@
 
 == Introduction
 
+=== Glossary
+
+PCS:: Power control service
+RFE:: Redfish endpoint
+SMD:: State management database
+https://libvirt.org/[Libvirt]:: is a toolkit to manage virtualization platforms
+
 === Deployment diagram
 
 image:assets/deployment-openchami-testing-environment.svg[]
