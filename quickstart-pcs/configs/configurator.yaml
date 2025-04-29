@@ -1,0 +1,27 @@
+# Server-related parameters when using as service
+server:
+  host: 0.0.0.0:3334
+  # Set the JWKS uri to protect /generate route
+  jwks:
+    uri: ""
+    retries: 5
+# SMD-related parameters
+smd:
+  host: http://smd:27779
+# targets to call with --target flag with CLI or "target" query param
+targets:
+  coredhcp: 
+    templates: 
+      - templates/coredhcp.jinja
+  syslog: 
+    templates: 
+      - templates/syslog.jinja
+  ansible: 
+    templates: 
+      - templates/ansible.jinja
+  powerman: 
+    templates: 
+      - templates/powerman.jinja
+  conman: 
+    templates: 
+      - templates/conman.jinja

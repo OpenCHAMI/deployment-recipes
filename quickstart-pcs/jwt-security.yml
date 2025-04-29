@@ -1,0 +1,91 @@
+services:
+  opaal-idp:
+    image: ghcr.io/openchami/opaal:v0.3.8
+    container_name: opaal-idp
+    hostname: opaal-idp
+    command:
+      - '/opaal/opaal'
+      - 'serve'
+      - '--config'
+      - '/opaal/config/opaal.yaml'
+    volumes:
+      - ./configs:/opaal/config/
+    networks:
+      - jwt-internal
+    #ports:
+    #  - 3332:3332
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://opaal-idp:3332/.well-known/jwks.json"]
+      interval: 5s
+      timeout: 10s
+      retries: 60
+  opaal:
+    image: ghcr.io/openchami/opaal:v0.3.8
+    container_name: opaal
+    hostname: opaal
+    command:
+      - '/opaal/opaal'
+      - 'login'
+      - '--config'
+      - '/opaal/config/opaal.yaml'
+    volumes:
+      - ./configs:/opaal/config/
+    networks:
+      - internal
+      - jwt-internal
+    extra_hosts:
+      - "${SYSTEM_NAME}.${SYSTEM_DOMAIN}:${LOCAL_IP}"
+
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://opaal:3333/keys"]
+      interval: 5s
+      timeout: 10s
+      retries: 60
+    depends_on:
+      hydra:
+        condition: service_healthy
+      opaal-idp:
+        condition: service_healthy
+  hydra:
+    image: docker.io/oryd/hydra:v2.2.0-rc.3
+    container_name: hydra
+    hostname: hydra
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://hydra:4444/health/alive"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    #ports:
+    #  - "4444:4444" # Public port
+    #  - "4445:4445" # Admin port
+    #  - "5555:5555" # Port for hydra token user
+    command: serve -c /etc/config/hydra/hydra.yml all --sqa-opt-out
+    volumes:
+      - ./configs/:/etc/config/hydra
+    environment:
+      - SECRETS_SYSTEM=${HYDRA_SYSTEM_SECRET} # set in .env
+      - URLS_SELF_ISSUER=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}/
+      - URLS_SELF_PUBLIC=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}/
+      - URLS_LOGIN=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}/login
+      - URLS_CONSENT=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}/consent
+      - URLS_LOGOUT=https://${SYSTEM_NAME}.${SYSTEM_DOMAIN}/logout
+      - DSN=postgres://hydra-user:${HYDRA_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
+    restart: unless-stopped
+    depends_on:
+      hydra-migrate:
+        condition: service_completed_successfully
+    networks:
+      - jwt-internal
+  hydra-migrate:
+    image: docker.io/oryd/hydra:v2.2.0-rc.3
+    container_name: hydra-migrate
+    hostname: hydra-migrate
+    environment:
+      - SECRETS_SYSTEM=${HYDRA_SYSTEM_SECRET} # set in .env
+      - DSN=postgres://hydra-user:${HYDRA_POSTGRES_PASSWORD}@postgres:5432/hydradb?sslmode=disable&max_conns=20&max_idle_conns=4
+    command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
+    volumes:
+      - ./configs/:/etc/config/hydra
+    restart: on-failure
+    networks:
+      - internal

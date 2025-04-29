@@ -1,0 +1,25 @@
+volumes:
+  postgres-data:
+
+services:
+  postgres: # Postgres
+    image: docker.io/postgres:11.5-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Set in .env file for now.
+      POSTGRES_MULTIPLE_DATABASES: hmsds:smd-user:${SMD_POSTGRES_PASSWORD},bssdb:bss-user:${BSS_POSTGRES_PASSWORD},hydradb:hydra-user:${HYDRA_POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./pg-init:/docker-entrypoint-initdb.d
+    networks:
+      - internal
+      - jwt-internal
+    #ports:
+    #  - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "--username", "${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 10s
+      retries: 5

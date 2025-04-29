@@ -1,0 +1,32 @@
+services:
+  ###
+  # TPM-manager container, pushes cloud-init tokens into nodes' TPM storage
+  ###
+  tpm-manager:
+    image: ghcr.io/openchami/tpm-manager:v0.2.2
+    container_name: tpm-manager
+    hostname: tpm-manager
+    command: ["-port", "27780", "-batch-size", "100", "-interval", "30s"]
+    environment:
+      - OPAAL_URL=http://opaal:3333
+      - HSM_URL=http://smd:27779
+      - ANSIBLE_HOST_KEY_CHECKING=False
+    volumes:
+      - type: bind
+        source: /root/.ssh
+        target: /root/.ssh
+    depends_on:
+      opaal:
+        condition: service_healthy
+      smd:
+        condition: service_healthy
+    networks:
+      - internal
+  ###
+  # cloud-init server container, provides secured config access via JWT authorization
+  # NOTE: This merges with the default cloud-init config specified in openchami-svcs.yml
+  ###
+  cloud-init:
+    environment:
+      # This enables the server's secure route
+      - JWKS_URL=http://opaal:3333/keys
