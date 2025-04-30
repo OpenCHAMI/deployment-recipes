@@ -85,7 +85,7 @@ Network={{ network  }}
 {% if item.health is defined %}
 # Health Checks
 # Health Check Command
-HealthCmd=CMD-SHELL '{{ item.health.cmd }}'
+HealthCmd={{ item.health.cmd }}
 # Health Check Interval
 {% if item.health.interval is defined %}
 HealthInterval={{ item.health.interval }}
