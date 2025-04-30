@@ -56,6 +56,11 @@ _step_ca_quadlets:
       - DOCKER_STEPCA_INIT_ACME=true
     networks:
       - ochami-cert-internal.network
+    health:
+      cmd: '["step", "ca", "health"]'
+      interval: '10s'
+      retries: 5
+      timeout: '10s'
     no_hosts: true
     after: 
       - ochami-jenga.service
@@ -77,6 +82,11 @@ _postgres_quadlets:
     networks:
       - ochami-internal.network
       - ochami-jwt-internal.network
+    health:
+      cmd: '["pg_isready", "--dbname", "${POSTGRES_USER}", "--username", "${POSTGRES_USER}"]'
+      interval: 10s
+      timeout: 10s
+      retries: 5
     after:
       - ochami-jenga.service
 
@@ -159,6 +169,12 @@ _hydra_quadlets:
       - ochami-jenga.service
     networks:
       - ochami-jwt-internal.network
+    health:
+      cmd: '["wget", "--spider", "-q", "http://hydra:4444/health/alive"]'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
   # Fix for hydra race condition
   - name: hydra-gen-jwks
     image: cgr.dev/chainguard/curl:latest
@@ -192,11 +208,11 @@ _opaal_quadlets:
       - "{{ cluster_name }}.{{ cluster_domain }}:{{ cluster_boot_ip }}"
     post_start:
       - sleep 10s
-        #    health:
-        #      cmd: 'curl --fail --silent http://opaal:3333/keys'
-        #      interval: 5s
-        #      timeout: 10s
-        #      retries: 60
+    health:
+      cmd: '["curl", "--fail", "--silent", "http://opaal:3333/keys"]'
+      interval: 5s
+      timeout: 10s
+      retries: 60
     after:
       - opaal-idp.service
 
@@ -229,6 +245,12 @@ _ochami_quadlets:
       - SMD_DBUSER=smd-user
       - SMD_DBOPTS=sslmode=disable
       - SMD_JWKS_URL=http://opaal:3333/keys
+    health:
+      cmd: '["curl", "--fail", "--silent", "http://localhost:27779/hsm/v2/service/ready"]'
+      interval: 5s
+      retries: 60
+      timeout: 10s
+
     after:
       - smd-init.service
       - opaal.service
@@ -274,6 +296,12 @@ _ochami_quadlets:
       - opaal.service
     networks:
       - ochami-internal.network
+    health:
+      cmd: '["curl", "--fail", "--silent", "http://localhost:27778/boot/v1/service/status"]'
+      interval: 5s
+      retries: 60
+      timeout: 10s
+
   - name: cloud-init-server
     image: ghcr.io/openchami/cloud-init:v1.2.1
     envs:
