@@ -57,7 +57,7 @@ _step_ca_quadlets:
     networks:
       - ochami-cert-internal.network
     health:
-      cmd: '["step", "ca", "health"]'
+      cmd: "step ca health"
       interval: '10s'
       retries: 5
       timeout: '10s'
@@ -83,7 +83,7 @@ _postgres_quadlets:
       - ochami-internal.network
       - ochami-jwt-internal.network
     health:
-      cmd: '["pg_isready", "--dbname", "${POSTGRES_USER}", "--username", "${POSTGRES_USER}"]'
+      cmd: "pg_isready --dbname ${POSTGRES_USER} --username ${POSTGRES_USER}"
       interval: 10s
       timeout: 10s
       retries: 5
@@ -170,7 +170,7 @@ _hydra_quadlets:
     networks:
       - ochami-jwt-internal.network
     health:
-      cmd: '["wget", "--spider", "-q", "http://hydra:4444/health/alive"]'
+      cmd: "wget --spider -q http://hydra:4444/health/alive"
       interval: 10s
       timeout: 10s
       retries: 10
@@ -209,7 +209,7 @@ _opaal_quadlets:
     post_start:
       - sleep 10s
     health:
-      cmd: '["curl", "--fail", "--silent", "http://opaal:3333/keys"]'
+      cmd: "curl --fail --silent http://opaal:3333/keys"
       interval: 5s
       timeout: 10s
       retries: 60
@@ -246,7 +246,7 @@ _ochami_quadlets:
       - SMD_DBOPTS=sslmode=disable
       - SMD_JWKS_URL=http://opaal:3333/keys
     health:
-      cmd: '["curl", "--fail", "--silent", "http://localhost:27779/hsm/v2/service/ready"]'
+      cmd: "curl --fail --silent http://localhost:27779/hsm/v2/service/ready"
       interval: 5s
       retries: 60
       timeout: 10s
@@ -297,7 +297,7 @@ _ochami_quadlets:
     networks:
       - ochami-internal.network
     health:
-      cmd: '["curl", "--fail", "--silent", "http://localhost:27778/boot/v1/service/status"]'
+      cmd: "curl --fail --silent http://localhost:27778/boot/v1/service/status"
       interval: 5s
       retries: 60
       timeout: 10s
@@ -338,6 +338,11 @@ _haproxy_quadlets:
       - bss.service
       - acme-deploy.service
       - cloud-init-server.service
+    health:
+      cmd: "bash -c 'exec 3<>/dev/tcp/haproxy/8404; echo -e \"GET / HTTP/1.1\\nConnection: close\\n\" >&3; cat <&3 | grep \"200 OK\"'"
+      interval: '10s'
+      retries: 5
+      timeout: '10s'
 
 _coresmd_quadlets:
   - name: coresmd
