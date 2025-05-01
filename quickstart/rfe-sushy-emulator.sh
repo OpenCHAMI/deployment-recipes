@@ -58,6 +58,7 @@ create_config() {
 	mkdir -p "${CONFIG_PATH}"
 	NODE_UUID="$(sudo virsh dumpxml virtual-node | grep uuid | sed 's|  <uuid>\(....................................\)</uuid>|\1|')"
 	cat >"${CONFIG_PATH}"/config.py <<-eof
+		SUSHY_EMULATOR_LIBVIRT_URI = u'qemu+ssh://$(whoami)@172.17.0.1/system'
 		SUSHY_EMULATOR_AUTH_FILE = "/htpasswd/auth-file"
 		SUSHY_EMULATOR_STORAGE = {
 		    "${NODE_UUID}": [
