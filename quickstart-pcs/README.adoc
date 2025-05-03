@@ -141,7 +141,7 @@ make run
 +
 [source, shell]
 ----
-docker exec x1000c0s0b5 bash -c "ssh-keyscan \"$(docker network inspect bridge -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}')\" > /root/.ssh/known_hosts"
+docker exec x1000c0s0b0 bash -c "ssh-keyscan \"$(docker network inspect bridge -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}')\" > /root/.ssh/known_hosts"
 ----
 
 . Add sushy-emulator as RFE
@@ -149,8 +149,8 @@ docker exec x1000c0s0b5 bash -c "ssh-keyscan \"$(docker network inspect bridge -
 [source, shell]
 ----
 curl -X POST -d '{"RedfishEndpoints":[{
-  "ID":"x1000c0s0b5",
-  "FQDN":"x1000c0s0b5",
+  "ID":"x1000c0s0b0",
+  "FQDN":"x1000c0s0b0",
   "RediscoverOnUpdate":true,
   "User":"root",
   "Password":"root_password"
@@ -161,8 +161,8 @@ curl -X POST -d '{"RedfishEndpoints":[{
 +
 [source, shell]
 ----
-bash transition.sh x1000c0s0b5n0 force-off
-bash transition.sh x1000c0s0b5n0 on
+bash transition.sh x1000c0s0b0n0 force-off
+bash transition.sh x1000c0s0b0n0 on
 ----
 
 == extra
