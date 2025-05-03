@@ -69,7 +69,7 @@ From this quickstart folder.
 Manta cli
 
 ----
-manta power off nodes --assume-yes x1000c0s0b3
+manta power off nodes --assume-yes x1000c0s0b1
 ERROR - Could not power off node/s '[]'. Reason:
 ERROR - Message: ERROR - MESA: <html><body><h1>503 Service Unavailable</h1>
 No server is available to handle this request.
@@ -120,7 +120,7 @@ No server is available to handle this request.
 ----
 ochami pcs status
 {"pcs":"ready"}
-manta power off nodes --assume-yes x1000c0s0b3
+manta power off nodes --assume-yes x1000c0s0b1
 INFO  | Create PCS transition 'force-off' on []
 ERROR - Could not power off node/s '[]'. Reason:
 ERROR - Message: ERROR - MESA: <html><body><h1>503 Service Unavailable</h1>
@@ -270,7 +270,7 @@ index ca54d3e..e83590f 100644
 === Retry to power off
 
 ----
-target/debug/manta power off nodes --assume-yes x1000c0s0b3
+target/debug/manta power off nodes --assume-yes x1000c0s0b1
 INFO  | Create PCS transition 'force-off' on []
 INFO  | PCS transition ID: 04ba747f-8f6c-4df5-80c2-9318251024fe
 Ok(
