@@ -57,6 +57,12 @@ create_config() {
 	local CONFIG_PATH="${SUSHY_EMULATOR_PATH}/config"
 	mkdir -p "${CONFIG_PATH}"
 	NODE_UUID="$(sudo virsh dumpxml virtual-node | grep uuid | sed 's|  <uuid>\(....................................\)</uuid>|\1|')"
+
+	if [ -z "${NODE_UUID}" ]; then
+		echo "error: cannot get the UUID of the virtual-node (see ${FUNCNAME})"
+		exit 1
+	fi
+
 	cat >"${CONFIG_PATH}"/config.py <<-eof
 		SUSHY_EMULATOR_LIBVIRT_URI = u'qemu+ssh://$(whoami)@172.17.0.1/system'
 		SUSHY_EMULATOR_AUTH_FILE = "/htpasswd/auth-file"
