@@ -1,0 +1,39 @@
+volumes:
+  step-ca-db:
+  step-ca-home:
+  step-root-ca:
+  local-certs:
+
+networks:
+  cert-internal:
+
+services:
+  # step-ca is a local CA that can be used to issue certificates.  
+  # It supports the ACME standard for automatic certificate issuance and rotation.
+  # See https://github.com/smallstep/certificates for more information.
+  # Our container is based on wolfi and an entrypoint from the step-ca repository.
+  step-ca:
+    container_name: step-ca
+    hostname: step-ca
+    image: ghcr.io/openchami/local-ca:v0.2.2
+    #ports: 
+    #  - "9000:9000"
+    networks:
+      - cert-internal
+    volumes:
+      - step-ca-home:/home/step
+      # Keeping the database in a volume improves performance.  I don't understand why.
+      - step-ca-db:/home/step/db
+      # Keeping the root CA in a volume allows us to back it up and restore it.
+      - step-root-ca:/root_ca/
+    environment:
+      # To initialize your CA, modify these environment variables
+      - STEPPATH=/home/step
+      - DOCKER_STEPCA_INIT_NAME=OpenCHAMI
+      - DOCKER_STEPCA_INIT_DNS_NAMES=localhost,step-ca
+      - DOCKER_STEPCA_INIT_ACME=true
+    healthcheck:
+      test: ["CMD", "step", "ca", "health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5

@@ -1,0 +1,23 @@
+services:
+  coredhcp:
+    image: ghcr.io/openchami/coredhcp:v0.3.0
+    container_name: coredhcp
+    hostname: coredhcp
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./configs/coredhcp.yaml:/etc/coredhcp/config.yaml:ro
+      - step-root-ca:/root_ca/:ro
+    command:
+      - "/coredhcp"
+      - "-L"
+      - "debug"
+    healthcheck:
+      test: pgrep coredhcp
+      interval: 5s
+      timeout: 10s
+      retries: 60
+    depends_on:
+      smd:
+        condition: service_healthy
