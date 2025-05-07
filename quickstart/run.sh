@@ -22,6 +22,7 @@ start_service() {
 	  -f etcd.yml \
 	  -f rfe.yml \
 	  -f sushy.yml \
+	  -f manta.yml \
 	  -f configurator.yml up -d
 	do
 	docker compose \
@@ -37,6 +38,7 @@ start_service() {
 	  -f etcd.yml \
 	  -f rfe.yml \
 	  -f sushy.yml \
+	  -f manta.yml \
 	  -f configurator.yml down
 	done
 }

@@ -1,0 +1,16 @@
+log = "info"
+
+site = "ochami"
+
+parent_hsm_group = "nodes_free"
+
+audit_file = "/tmp/manta_audit.log"
+
+[sites]
+
+[sites.ochami]
+
+backend = "ochami"
+
+shasta_base_url = "https://foobar.openchami.cluster:8443"
+root_ca_cert_file = "/root/cacert.pem"

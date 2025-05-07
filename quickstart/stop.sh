@@ -11,4 +11,5 @@ docker compose \
 	-f etcd.yml \
 	-f rfe.yml \
 	-f sushy.yml \
+	-f manta.yml \
 	-f configurator.yml down
