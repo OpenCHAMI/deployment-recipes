@@ -5,7 +5,7 @@ volumes:
 
 services:
   haproxy:
-    container_name: ${SYSTEM_NAME}.${SYSTEM_DOMAIN}
+    container_name: ${SYSTEM_NAME}.${SYSTEM_DOMAIN}-base-url
     image: cgr.dev/chainguard/haproxy
     ports:
       - "8081:80"
@@ -36,7 +36,7 @@ services:
       - ./configs/:/usr/local/etc/haproxy/:ro
       - haproxy-certs:/etc/haproxy/certs/:ro
   acme-register:
-    container_name: ${SYSTEM_NAME}.${SYSTEM_DOMAIN}-yes
+    container_name: ${SYSTEM_NAME}.${SYSTEM_DOMAIN}
     image: ghcr.io/openchami/acme.sh:v0.2.2
     networks:
       - cert-internal
