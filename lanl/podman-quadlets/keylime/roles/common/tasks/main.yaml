@@ -1,0 +1,37 @@
+- name: Install Keylime and TPM dependencies
+  package:
+    name:
+      - keylime
+      - keylime_agent
+      - tpm2-tools
+      - tpm2-tss
+    state: present
+
+- name: Ensure TPM device is present (TPM enabled in BIOS)
+  stat:
+    path: /dev/tpmrm0
+  register: tpmrm
+
+- name: Fail if no TPM device found
+  fail:
+    msg: "No TPM 2.0 device found at /dev/tpmrm0. Ensure TPM is enabled and /dev/tpmrm0 exists."
+  when: not tpmrm.stat.exists
+
+# (Optional) If running Keylime agent as a host service instead of container, set TPM2TOOLS_TCTI via systemd override
+#- name: Configure TPM environment for Keylime agent service (if not containerized)
+#  copy:
+#    dest: /etc/systemd/system/keylime_agent.service.d/override.conf
+#    content: |
+#      [Service]
+#      Environment="TPM2TOOLS_TCTI=device:/dev/tpmrm0"
+#  notify: Reload systemd
+#  when: keylime_agent_host_service | default(false)
+
+- name: Configure TPM2TOOLS to use resource manager
+  copy:
+    dest: /etc/profile.d/tpm2tools.sh
+    content: |
+      export TPM2TOOLS_TCTI="device:/dev/tpmrm0"
+    owner: root
+    group: root
+    mode: '0644'
