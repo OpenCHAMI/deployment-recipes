@@ -23,16 +23,16 @@
 - block:
     - name: write templates to file
       copy:
-        content: '{{ cluster_cloud_init_combined_templates }}'
+        content: '{{ cluster_cloud_init_templates }}'
         dest: /etc/ochami/cloud-init-templates-raw.json
     - name: POST new cloud-init templates
       shell: |
-        ochami cloud-init group set -d @/etc/ochami/cloud-init-templates-raw.json
+        ochami --token "{{ access_token.stdout }}" cloud-init group set -d @/etc/ochami/cloud-init-templates-raw.json
 
     - name: write meta-data to file
       copy:
-        content: '{{ cluster_cloud_init_combined_metadata }}'
+        content: '{{ cluster_cloud_init_metadata }}'
         dest: /etc/ochami/cloud-init-meta-data-raw.json
     - name: POST new cloud-init templates
       shell: |
-        ochami cloud-init group set -d @/etc/ochami/cloud-init-meta-data-raw.json
+        ochami --token "{{ access_token.stdout }}" cloud-init group set -d @/etc/ochami/cloud-init-meta-data-raw.json
