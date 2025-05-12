@@ -5,6 +5,7 @@
       - --token
       - "{{ access_token.stdout }}"
       - discover
+      - static
       - --overwrite
       - -d
       - "@/etc/ochami/nodes.yaml"
@@ -12,49 +13,32 @@
       - yaml
 
 - block:
-  - name: "Get SMD group data"
-    ansible.builtin.uri:
-      url: '{{ ochami_smd_url }}/groups'
-      method: "GET"
-      return_content: yes
-      body_format: json
-      headers:
-        Authorization: 'Bearer {{ access_token.stdout }}'
-    register: smd_group_data
+    - name: "Get SMD group data"
+      ansible.builtin.shell: |
+        /usr/bin/ochami --token "{{ access_token.stdout }}" smd group get
+      register: smd_group_data
 
-  - name: "Convert SMD data to ansible variable"
-    set_fact:
-      existing_smd_groups: '{{ smd_group_data.content | from_json }}'
+    - name: "Convert SMD data to ansible variable"
+      set_fact:
+        existing_smd_groups: '{{ smd_group_data.stdout | from_json }}'
 
-  - name: "Get existing SMD groups"
-    set_fact:
-      existing_smd_group_names: "{{ existing_smd_groups | map(attribute='label')| list  }}"
+    - name: "Get existing SMD groups"
+      set_fact:
+        existing_smd_group_names: "{{ existing_smd_groups | map(attribute='label')| list  }}"
 
 - block:
-  - name: "POST new SMD groups"
-    ansible.builtin.uri:
-      url: '{{ ochami_smd_url }}/groups'
-      method: "POST"
-      status_code:
-        - 200
-        - 201
-      headers:
-        Authorization: 'Bearer {{ access_token.stdout }}'
-      body_format: json
-      body:
-        "label": '{{ item.key }}'
-        "members": {
-          "ids": '{{ item.value }}'
-        }
-    when: item.key not in existing_smd_group_names
-    with_items:
-      - '{{ ochami_groups | default({}) | dict2items }}'
+    - name: "POST new SMD groups"
+      ansible.builtin.shell: |
+        /usr/bin/ochami --token "{{ access_token.stdout }}" smd group add -m {{ item.value | join(",") }} {{ item.key }}
+      when: item.key not in existing_smd_group_names
+      with_items:
+        - '{{ ochami_groups | dict2items }}'
 
-  - name: Check for group updates
-    include_tasks: update_smd_groups.yaml
-    with_items: ' {{ ochami_groups | default({}) | dict2items }}'
-    loop_control:
-      loop_var: grp
-      label: '{{ grp.key }}'
-    when:
-      - grp.key in existing_smd_group_names
+    - name: Check for group updates
+      include_tasks: update_smd_groups.yaml
+      with_items: '{{ ochami_groups | default({}) | dict2items }}'
+      loop_control:
+        loop_var: grp
+        label: '{{ grp.key }}'
+      when:
+        - grp.key in existing_smd_group_names
