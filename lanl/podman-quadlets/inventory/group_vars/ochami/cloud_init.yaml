@@ -4,19 +4,19 @@ cloud_init_wireguard_endpoint: '10.90.0.6'
 cloud_init_wireguard_server: '10.0.0.1'
 cloud_init_wireguard_port: '27777'
 
-cloud_init_base_endpoint: |
-  {% if enable_wiregaurd | default(false) | bool %}
+cloud_init_base_endpoint: >-
+  {%- if enable_wiregaurd | default(false) | bool -%}
   {{ cloud_init_wireguard_server }}
-  {% else %}
+  {%- else -%}
   {{ cluster_boot_ip }}
-  {% endif %}
+  {%- endif -%}
 
-cloud_init_base_port: |
-  {% if enable_wiregaurd | default(false) | bool %}
+cloud_init_base_port: >-
+  {%- if enable_wiregaurd | default(false) | bool -%}
   {{ cloud_init_wireguard_port }}
-  {% else %}
+  {%- else -%}
   8081
-  {% endif %}
+  {%- endif -%}
 
 _cloud_init_merge:
   merge_how:
