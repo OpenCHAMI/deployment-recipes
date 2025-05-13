@@ -5,10 +5,10 @@ cluster_domain: "openchami.cluster"
 cluster_boot_ip: 172.16.0.254
 cluster_boot_interface: ens259f0
 
-cluster_boot_ssh_pub_key: |
+cluster_boot_ssh_pub_key: >-
   {{ lookup('ansible.builtin.file', '/root/.ssh/id_rsa.pub') }}
 
-cluster_munge_key: |
+cluster_munge_key: >-
   {{ lookup('ansible.builtin.file', '/etc/munge/munge.key') | b64encode }}
 
 ochami_base_url: "https://{{ cluster_name }}.{{ cluster_domain }}:8443"
