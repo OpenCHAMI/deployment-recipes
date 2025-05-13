@@ -1,4 +1,4 @@
-# Ochami Bootcamp
+# OpenCHAMI with Podman Quadlets
 This Doc is a very brief tutorial on how to deploy OpenCHAMI with the podman-quadlets recipe.  
 This won't get a full production system running but should give you an idea of how to get started in that direction.
 
