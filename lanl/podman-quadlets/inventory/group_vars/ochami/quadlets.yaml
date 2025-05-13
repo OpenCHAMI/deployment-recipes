@@ -316,6 +316,7 @@ _coresmd_quadlets:
     image: ghcr.io/openchami/coredhcp:v0.3.0
     capabilities:
       - NET_ADMIN
+      - NET_RAW
     volumes:
       - step-root-ca.volume:/root_ca/:ro
       - /etc/ochami/configs/coredhcp.yaml:/etc/coredhcp/config.yaml:ro
