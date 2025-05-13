@@ -6,6 +6,7 @@ podman_quadlet_networks:
   - name: ochami-cert-internal
     internal: true
   - name: ochami-external
+    subnet: '{{ cloud_init_wireguard_subnet }}'
 
 podman_quadlet_volumes:
   - name: step-ca-db

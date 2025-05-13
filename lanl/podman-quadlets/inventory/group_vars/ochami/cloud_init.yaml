@@ -1,5 +1,6 @@
 enable_wireguard: false
-cloud_init_wireguard_endpoint: '10.89.2.6'
+cloud_init_wireguard_subnet: '10.90.0.0/24'
+cloud_init_wireguard_endpoint: '10.90.0.6'
 cloud_init_wireguard_server: '10.0.0.1'
 cloud_init_wireguard_port: '27777'
 

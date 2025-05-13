@@ -191,12 +191,18 @@ Generate an SSH key pair if one doesn't exist
 ssh-keygen
 ```
 Just hit enter 'til you get the prompt back.  
-Now we take the contents of `~/.ssh/id_rsa.pub` and set it in our inventory.  
-In `inventory/group_vars/ochami/cluster.yaml`
-```yaml
-cluster_boot_ssh_pub_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDZW66ja<snip> = root@st-head'
+Ansible that will run later will read that and use it for SSH access to the nodes
+
+### Setup munge
+Install munge
+```bash
+dnf install -y munge
 ```
- Replace what is there with what `ssh-keygen` created. Make sure it is the pub key. 
+Create a new key
+```bash
+create-munge-key
+```
+Ansible will use this for future slurm use (if you want to go that far).
 
 ### Populate nodes
 Now we need to populate `inventory/group_vars/ochami/nodes.yaml`. This describes your cluster in a flat yaml file. 

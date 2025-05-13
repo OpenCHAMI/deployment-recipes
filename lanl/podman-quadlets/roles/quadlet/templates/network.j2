@@ -8,10 +8,10 @@ Internal={{ item.internal }}
 {% else %}
 Internal=false
 {% endif %}
+{% if item.subnet is defined %}
+Subnet={{ item.subnet }}
+{% endif %}
 {% if item.driver is defined %}
 Driver={{ item.driver }}
-{% if item.driver == 'macvlan' %}
-Subnet={{ item.subnet }}
 Options={{ item.opts }}
-{% endif %}
 {% endif %}
