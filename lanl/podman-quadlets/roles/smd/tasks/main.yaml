@@ -6,7 +6,8 @@
       - --token
       - "{{ access_token.stdout }}"
       - discover
-      - --payload
-      - "/etc/ochami/nodes.yaml"
-      - --payload-format
+      - static
+      - -d
+      - "@/etc/ochami/nodes.yaml"
+      - -f
       - yaml
