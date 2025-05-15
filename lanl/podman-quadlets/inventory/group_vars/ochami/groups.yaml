@@ -1,0 +1,17 @@
+_xnames: |
+  {% for item in nodes %}
+  - {{ item.xname }}
+  {% endfor %}
+
+xnames: '{{ _xnames | from_yaml }}'
+
+ochami_groups:
+  compute: '{{ xnames }}'
+  ssh: '{{ xnames }}'
+  ssh_host_keys: '{{ xnames }}'
+  munge: '{{ xnames }}'
+  slurm: '{{ xnames }}'
+  runcmds: '{{ xnames }}'
+  hosts: '{{ xnames }}'
+  chrony: '{{ xnames }}'
+  disk_config: [ 'x1000c1s7b1n0' ]

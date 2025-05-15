@@ -1,4 +1,3 @@
-# Using this monstrosity until we can figure out a way to speed up an ansible way of populating SMD
 - name: Populate SMD with ochami CLI
   ansible.builtin.command:
     argv:
@@ -6,7 +5,40 @@
       - --token
       - "{{ access_token.stdout }}"
       - discover
-      - --payload
-      - "/etc/ochami/nodes.yaml"
-      - --payload-format
+      - static
+      - --overwrite
+      - -d
+      - "@/etc/ochami/nodes.yaml"
+      - -f
       - yaml
+
+- block:
+    - name: "Get SMD group data"
+      ansible.builtin.shell: |
+        /usr/bin/ochami --token "{{ access_token.stdout }}" smd group get
+      register: smd_group_data
+
+    - name: "Convert SMD data to ansible variable"
+      set_fact:
+        existing_smd_groups: '{{ smd_group_data.stdout | from_json }}'
+
+    - name: "Get existing SMD groups"
+      set_fact:
+        existing_smd_group_names: "{{ existing_smd_groups | map(attribute='label')| list  }}"
+
+- block:
+    - name: "POST new SMD groups"
+      ansible.builtin.shell: |
+        /usr/bin/ochami --token "{{ access_token.stdout }}" smd group add -m {{ item.value | join(",") }} {{ item.key }}
+      when: item.key not in existing_smd_group_names
+      with_items:
+        - '{{ ochami_groups | dict2items }}'
+
+    - name: Check for group updates
+      include_tasks: update_smd_groups.yaml
+      with_items: '{{ ochami_groups | default({}) | dict2items }}'
+      loop_control:
+        loop_var: grp
+        label: '{{ grp.key }}'
+      when:
+        - grp.key in existing_smd_group_names

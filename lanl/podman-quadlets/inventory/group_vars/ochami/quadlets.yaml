@@ -6,6 +6,7 @@ podman_quadlet_networks:
   - name: ochami-cert-internal
     internal: true
   - name: ochami-external
+    subnet: '{{ cloud_init_wireguard_subnet }}'
 
 podman_quadlet_volumes:
   - name: step-ca-db
@@ -22,7 +23,7 @@ podman_quadlet_start: ['ochami-init', 'image-server']
 
 _ochami_init_quadlets:
   - name: ochami-init
-    image: alpine:latest
+    image: docker.io/library/alpine:latest
     entrypoint:
       - /bin/sh
       - -c 
@@ -33,7 +34,7 @@ _ochami_init_quadlets:
       - coresmd.service
 
   - name: ochami-jenga
-    image: alpine:latest
+    image: docker.io/library/alpine:latest
     entrypoint:
       - /bin/sh
       - -c
@@ -61,7 +62,7 @@ _step_ca_quadlets:
 
 _postgres_quadlets:
   - name: postgres
-    image: postgres:11.5-alpine
+    image: docker.io/library/postgres:11.5-alpine
     secrets:
       - postgres_password,type=env,target=POSTGRES_PASSWORD
       - bss_postgres_password,type=env,target=BSS_POSTGRES_PASSWORD
@@ -123,7 +124,7 @@ _acme_quadlets:
 
 _hydra_quadlets:
   - name: hydra-migrate
-    image: oryd/hydra:v2.2.0-rc.3
+    image: docker.io/oryd/hydra:v2.2.0-rc.3
     secrets:
       - hydra_system_secret,type=env,target=SECRETS_SYSTEM
       - hydra_postgres_password,type=env,target=HYDRA_POSTGRES_PASSWORD
@@ -138,7 +139,7 @@ _hydra_quadlets:
     after:
       - postgres.service
   - name: hydra
-    image: oryd/hydra:v2.2.0-rc.3
+    image: docker.io/oryd/hydra:v2.2.0-rc.3
     command: 'serve -c /etc/config/hydra/hydra.yml all --sqa-opt-out'
     volumes:
       - /etc/ochami/configs/:/etc/config/hydra
@@ -201,7 +202,7 @@ _opaal_quadlets:
 
 _ochami_quadlets:
   - name: smd-init
-    image: ghcr.io/openchami/smd:v2.17.7
+    image: ghcr.io/openchami/smd:v2.18.0
     secrets:
       - smd_postgres_password,type=env,target=SMD_DBPASS
     envs:
@@ -218,7 +219,7 @@ _ochami_quadlets:
     restart: 'on-failure'
     type: 'oneshot'
   - name: smd
-    image: ghcr.io/openchami/smd:v2.17.7
+    image: ghcr.io/openchami/smd:v2.18.0
     secrets:
       - smd_postgres_password,type=env,target=SMD_DBPASS
     envs:
@@ -268,14 +269,13 @@ _ochami_quadlets:
       - BSS_OAUTH2_PUBLIC_BASE_URL=http://opaal:3333
       - 'BSS_IPXE_SERVER={{ cluster_name }}.{{ cluster_domain }}'
       - BSS_CHAIN_PROTO=https
-      - BSS_BOOTSCRIPT_NOTIFY_URL=http://tpm-manager:27780/Node
     after:
       - bss-init.service
       - opaal.service
     networks:
       - ochami-internal.network
   - name: cloud-init-server
-    image: ghcr.io/openchami/cloud-init:v0.1.1
+    image: ghcr.io/openchami/cloud-init:v1.2.1
     envs:
       - LISTEN_ADDR=:27777
       - SMD_URL=http://smd:27779
@@ -286,21 +286,11 @@ _ochami_quadlets:
       - opaal.service
     networks:
       - ochami-internal.network
-  - name: tpm-manager
-    image: ghcr.io/openchami/tpm-manager:v0.2.2
-    command: "-port 27780 -batch-size 100 -interval 30s"
-    envs:
-      - OPAAL_URL=http://opaal:3333
-      - HSM_URL=http://smd:27779
-      - ANSIBLE_HOST_KEY_CHECKING=False
-    after:
-      - smd.service
-      - opaal.service
-    networks:
-      - ochami-internal.network
-      - ochami-external.network
-    volumes:
-      - /root/.ssh:/root/.ssh:ro
+      - 'ochami-external.network:ip={{ cloud_init_wireguard_endpoint }}'
+    capabilities:
+      - CAP_NET_ADMIN
+#    command: '/usr/local/bin/cloud-init-server --listen 0.0.0.0:27777 --smd-url http://smd:27779 --token-url http://opaal:3333/token --jwks-url http://opaal:3333/keys --impersonation=true --cluster-name {{ cluster_name }} --wireguard-server {{ cloud_init_wireguard_server }}/16 --wireguard-only --debug'
+    command: '/usr/local/bin/cloud-init-server --listen 0.0.0.0:27777 --smd-url http://smd:27779 --token-url http://opaal:3333/token --impersonation=true --cluster-name {{ cluster_name }}'
 
 _haproxy_quadlets:
   - name: haproxy
@@ -320,14 +310,13 @@ _haproxy_quadlets:
       - bss.service
       - acme-deploy.service
       - cloud-init-server.service
-      - tpm-manager.service
-      - configurator.service
 
 _coresmd_quadlets:
   - name: coresmd
     image: ghcr.io/openchami/coredhcp:v0.3.0
     capabilities:
       - NET_ADMIN
+      - NET_RAW
     volumes:
       - step-root-ca.volume:/root_ca/:ro
       - /etc/ochami/configs/coredhcp.yaml:/etc/coredhcp/config.yaml:ro

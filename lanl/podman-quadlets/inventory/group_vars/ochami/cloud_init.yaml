@@ -1,12 +1,219 @@
-cluster_cloud_init:
-  - name: compute
-    cloud_init:
-      userdata:
+enable_wireguard: false
+cloud_init_wireguard_subnet: '10.90.0.0/24'
+cloud_init_wireguard_endpoint: '10.90.0.6'
+cloud_init_wireguard_server: '10.0.0.1'
+cloud_init_wireguard_port: '27777'
+
+cloud_init_base_endpoint: >-
+  {%- if enable_wiregaurd | default(false) | bool -%}
+  {{ cloud_init_wireguard_server }}
+  {%- else -%}
+  {{ cluster_boot_ip }}
+  {%- endif -%}
+
+cloud_init_base_port: >-
+  {%- if enable_wiregaurd | default(false) | bool -%}
+  {{ cloud_init_wireguard_port }}
+  {%- else -%}
+  8081
+  {%- endif -%}
+
+_cloud_init_merge:
+  merge_how:
+    - name: list
+      settings: [append]
+    - name: dict
+      settings: [no_replace, recurse_list]
+
+cluster_cloud_init_templates:
+  - name: phone_home
+    description: "Phone-home if cloud-init is run successfully"
+    file:
+      encoding: plain
+      content: |
+        ## template: jinja
+        #cloud-config
+        {{ _cloud_init_merge | to_yaml }}
+        {% raw %}
+        phone_home:
+          post: [pub_key_rsa, pub_key_ecdsa, pub_key_ed25519, instance_id, hostname, fqdn]
+          tries: 5
+          url: {{ ds.meta_data.instance_data.v1.vendor_data.cloud_init_base_url }}/phone-home/{{ v1.instance_id }}/
+        {% endraw %}
+  - name: ssh
+    description: 'ssh config templates'
+    file:
+      encoding: plain
+      content: |
+        ## template: jinja
+        #cloud-config
+        {{ _cloud_init_merge | to_yaml }}
+        {% raw %}
+        users:
+          - name: root
+            ssh_authorized_keys: {{ ds.meta_data.instance_data.v1.public_keys }}
+        disable_root: false
+        {% endraw %}
+
+  - name: chrony
+    description: "chrony.conf template"
+    file:
+      encoding: plain
+      content: |
+        ## template: jinja
+        #cloud-config
+        {{ _cloud_init_merge | to_yaml }}
+        {% raw %}
         write_files:
-          - path: /root/.ssh/authorized_keys
-            content: '{{ cluster_boot_ssh_pub_key }}'
+          - content: |
+              server {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.chrony_server }} iburst
+              driftfile /var/lib/chrony/drift
+              makestep 1.0 3
+              rtcsync
+              keyfile /etc/chrony.keys
+              leapsectz right/UTC
+              logdir /var/log/chrony
+            path: /etc/chrony.conf
+        runcmd:
+          - systemctl restart chronyd
+        {% endraw %}
+  - name: hosts
+    description: "hosts file template"
+    file:
+      encoding: plain
+      content: |
+        ## template: jinja
+        #cloud-config
+        {{ _cloud_init_merge | to_yaml }}
+        {% raw %}
+        write_files:
+          - content: |
+              127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+              ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+              172.16.0.254    demo.openchami.cluster st-head
+              172.16.0.1      de0001
+              172.16.0.2      de0002
+              172.16.0.3      de0003
+              172.16.0.4      de0004
+              172.16.0.5      de0005
+              172.16.0.6      de0006
+              172.16.0.7      de0007
+              172.16.0.8      de0008
+              172.16.0.9      de0009
+              172.16.0.101    de-bmc0001
+              172.16.0.102    de-bmc0002
+              172.16.0.103    de-bmc0003
+              172.16.0.104    de-bmc0004
+              172.16.0.105    de-bmc0005
+              172.16.0.106    de-bmc0006
+              172.16.0.107    de-bmc0007
+              172.16.0.108    de-bmc0008
+              172.16.0.109    de-bmc0009
+            path: /etc/hosts
+        {% endraw %}
+  - name: runcmds
+    description: "extra commands to run on boot"
+    file:
+      encoding: plain
+      content: |
+        #cloud-config
+        {{ _cloud_init_merge | to_yaml }}
+        {% raw %}
         runcmd:
           - setenforce 0
-          - systemctl disable firewalld
-      metadata:
-        instance-id: test
+          - systemctl stop firewalld
+          - systemctl start munge
+          - systemctl start slurmd
+        {% endraw %}
+  - name: slurm
+    description: "slurmd template"
+    file:
+      encoding: plain
+      content: |
+        ## template: jinja
+        #cloud-config
+        {{ _cloud_init_merge | to_yaml }}
+        {% raw %}
+        write_files:
+          - content: |
+              SLURMD_OPTIONS=--conf-server {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.slurm_server }}:6817
+            path: /etc/sysconfig/slurmd
+        {% endraw %}
+  - name: munge
+    description: "munge template"
+    file:
+      encoding: plain
+      content: |
+        ## template: jinja
+        #cloud-config
+        {{ _cloud_init_merge | to_yaml }}
+        {% raw %}
+        write_files:
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.munge_key }} 
+            path: /etc/munge/munge.key
+            permissions: '0400'
+            owner: 'munge:munge'
+            encoding: base64
+        {% endraw %}
+  - name: ssh_host_keys
+    description: "ssh host keys group"
+    file:
+      encoding: plain
+      content: |
+        ## template: jinja
+        #cloud-config
+        {{ _cloud_init_merge | to_yaml }}
+        {% raw %}
+        merge_how:
+         - name: list
+           settings: [append]
+         - name: dict
+           settings: [no_replace, recurse_list]
+        ssh_deletekeys: false
+        write_files:
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.rsa_public }}
+            path: /etc/ssh/ssh_host_rsa_key.pub
+            permissions: '0644'
+            owner: 'root:root'
+            encoding: base64
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.rsa_private }}
+            path: /etc/ssh/ssh_host_rsa_key
+            permissions: '0640'
+            owner: 'root:ssh_keys'
+            encoding: base64
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.ecdsa_public }}
+            path: /etc/ssh/ssh_host_ecdsa_key.pub
+            permissions: '0644'
+            owner: 'root:root'
+            encoding: base64
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.ecdsa_private }}
+            path: /etc/ssh/ssh_host_ecdsa_key
+            permissions: '0640'
+            owner: 'root:ssh_keys'
+            encoding: base64
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.ed25519_public }}
+            path: /etc/ssh/ssh_host_ed25519_key.pub
+            permissions: '0644'
+            owner: 'root:root'
+            encoding: base64
+          - content: {{ ds.meta_data.instance_data.v1.vendor_data.groups.compute.ed25519_private }}
+            path: /etc/ssh/ssh_host_ed25519_key
+            permissions: '0640'
+            owner: 'root:ssh_keys'
+            encoding: base64
+          {% endraw %}
+
+cluster_cloud_init_metadata:
+  - name: compute
+    description: "Group for all compute meta-data"
+    meta-data:
+      chrony_server: 172.16.0.254
+      slurm_server: 172.16.0.254
+      munge_key: |
+        '{{ cluster_munge_key }}'
+      rsa_public: '{{ ssh_host_keys.rsa_public }}'
+      rsa_private: '{{ ssh_host_keys.rsa_private }}'
+      ecdsa_public: '{{ ssh_host_keys.ecdsa_public }}'
+      ecdsa_private: '{{ ssh_host_keys.ecdsa_private }}'
+      ed25519_public: '{{ ssh_host_keys.ed25519_public }}'
+      ed25519_private: '{{ ssh_host_keys.ed25519_private }}'

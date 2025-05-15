@@ -4,7 +4,8 @@ bss_initrd_url: 'http://{{ cluster_boot_ip }}:8080/openchami/{{ bss_image_versio
 bss_kernel_url: 'http://{{ cluster_boot_ip }}:8080/openchami/{{ bss_image_version }}/vmlinuz-{{ bss_kernel_version }}'
 bss_params_root: 'root=live:http://{{ cluster_boot_ip }}:8080/openchami/{{ bss_image_version }}/rootfs-{{ bss_kernel_version }}'
 bss_params_cloud_init: 'ds=nocloud;s=http://{{ cluster_boot_ip }}:8081/cloud-init/'
-bss_params_opts: 'overlayroot=tmpfs overlayroot_cfgdisk=disabled nomodeset ro ip=dhcp apparmor=0 selinux=0 console=ttyS0,115200 ip6=off network-config=disabled rd.shell'
+#bss_params_cloud_init: 'ochami_wg_ip={{ cloud_init_wireguard_endpoint }} '
+bss_params_opts: 'overlayroot=tmpfs overlayroot_cfgdisk=disabled nomodeset ro ip=dhcp apparmor=0 selinux=0 console=ttyS0,115200 ipv6.disable=1 network-config=disabled rd.shell'
 bss_params: '{{ bss_params_root }} {{ bss_params_cloud_init }} {{ bss_params_opts }}'
 
 _bss_macs: |

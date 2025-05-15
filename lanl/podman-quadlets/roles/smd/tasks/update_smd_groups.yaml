@@ -1,0 +1,33 @@
+- block:
+    - name: '{{ grp.key }} | Get SMD group data'
+      set_fact:
+        smd_group_members: >-
+          {{ (existing_smd_groups | selectattr("label", "==", grp.key) | first).members.ids }}
+      no_log: true
+
+    - name: '{{ grp.key }} | Get inventory content'
+      set_fact:
+        inventory_group_members: '{{ grp.value }}'
+      no_log: true
+
+    - name: '{{ grp.key }} | Set changed if contents do not match'
+      set_fact:
+        smd_group_changed: true
+      when: smd_group_members | symmetric_difference(inventory_group_members) | length  > 0
+      no_log: true
+
+- name: debug
+  debug:
+    msg: '{{ grp }}'
+
+- name: '{{ grp.key }} | DELETE group'
+  ansible.builtin.shell: |
+      /usr/bin/ochami --token "{{ access_token.stdout }}" smd group delete --no-confirm {{ grp.key }}
+  when:
+    - smd_group_changed | default(false) | bool
+
+- name: '{{ grp.key }} | POST group'
+  ansible.builtin.shell: |
+    /usr/bin/ochami --token "{{ access_token.stdout }}" smd group add -m {{ grp.value | join(",") }} {{ grp.key }}
+  when:
+    - smd_group_changed | default(false) | bool
