@@ -1,12 +1,12 @@
 services:
   rfemulator3:
-    hostname: x1000c0s0b3
-    container_name: x1000c0s0b3
+    hostname: x1000c0s0b1
+    container_name: x1000c0s0b1
     image: ghcr.io/openchami/csm-rie:v1.6.7
     environment:
       - MOCKUPFOLDER=EX425
       - MAC_SCHEMA=Mountain
-      - XNAME=x1000c0s0b3
+      - XNAME=x1000c0s0b1
       - PORT=443
     ports:
       - 443:443
