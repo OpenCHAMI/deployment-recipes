@@ -9,21 +9,12 @@ install_packages() {
 	sudo apt install -y virtinst
 }
 
-sushy_create_disk() {
-	sudo virsh pool-define-as testPool dir - - - - "/testPool"
-	sudo virsh pool-build testPool
-	sudo virsh pool-start testPool
-	sudo virsh pool-autostart testPool
-	sudo virsh vol-create-as testPool testVol 1G
-	sudo cp /var/www/html/file.qcow2 /testPool
-}
-
 sushy_create_domain() {
 	tmpfile=$(mktemp /tmp/sushy-domain.XXXXXX)
 	sudo virt-install \
 		--name "${VBMC_DOMAIN_NAME}" \
 		--ram 1024 \
-		--disk path=${HOME}/file.qcow2,size=4,format=qcow2 \
+		--disk size=4,format=qcow2 \
 		--vcpus 2 \
 		--os-variant fedora28 \
 		--graphics vnc \
@@ -57,7 +48,6 @@ sushy_clean_domain() {
 
 main() {
 	install_packages
-	touch file.qcow2
 	sushy_create_network
 	sushy_create_domain
 	sudo virsh start "${VBMC_DOMAIN_NAME}"
