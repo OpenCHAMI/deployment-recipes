@@ -1,0 +1,13 @@
+services:
+  manta:
+    image: tgrivel/manta-ws:0.0.1
+    hostname: manta-ws
+    container_name: manta-ws
+    restart: always
+    networks:
+      - internal
+      - jwt-internal
+    volumes:
+      - ./manta-ws.config:/root/.config/manta/config.toml
+    ports:
+      - 3000:3000

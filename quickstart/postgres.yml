@@ -16,8 +16,8 @@ services:
     networks:
       - internal
       - jwt-internal
-    #ports:
-    #  - 5432:5432
+    ports:
+      - 5432:5432
     healthcheck:
       test: ["CMD", "pg_isready", "--username", "${POSTGRES_USER}"]
       interval: 10s
