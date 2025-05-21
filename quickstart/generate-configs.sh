@@ -64,10 +64,15 @@ then
 	echo "Command \"sed\" not found"
 	exit 1
 fi
+if [[ ! -x $(command -v openssl) ]]
+then
+	echo "Command \"openssl\" not found"
+	exit 1
+fi
 
 generate_random_alphanumeric() {
 	local num_chars=${1:-32}
-	dd bs=512 if=/dev/urandom count=1 2>/dev/null | tr -dc '[:alnum:]' | fold -w "${num_chars}" | head -n 1
+	openssl rand -base64 "${num_chars}" | openssl dgst | cut -d' ' -f2 | fold -w "${num_chars}" | head -n 1
 }
 
 # Generate OPAAL config from configs/opaal-template.yaml. This will populate the
