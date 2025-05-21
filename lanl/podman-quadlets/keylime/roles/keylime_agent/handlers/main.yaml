@@ -1,0 +1,7 @@
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Restart keylime_agent
+  service:
+    name: keylime_agent.service
+    state: restarted

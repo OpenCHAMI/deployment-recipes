@@ -1,0 +1,39 @@
+[Unit]
+Description=Keylime Registrar Service (Podman)
+After=network-online.target keylime_verifier.service
+Wants=network-online.target keylime_verifier.service
+
+[Container]
+# Image={{ keylime_registrar_image }}  # e.g. "quay.io/keylime/registrar:latest"
+Image=quay.io/keylime/keylime_registrar:latest
+ContainerName=keylime_registrar
+# Expose Registrar port on host (8890)
+PublishPort=8890:8890               # expose registrar's port 8890 on host
+PublishPort=8891:8891               # expose registrar's port 8891 on host
+Environment=TPM2TOOLS_TCTI=device:/dev/tpmrm0
+
+# TLS key password for server cert (required if encrypted)
+#Environment=KEYLIME_REGISTRAR_SERVER_KEY_PASSWORD={{ keylime_tls_passphrase | default("CHANGEME") }}
+
+# Optional: if you use a client cert to contact the registrar (e.g. verifier or tenant)
+#Environment=KEYLIME_REGISTRAR_CLIENT_KEY_PASSWORD={{ keylime_tls_passphrase | default("CHANGEME") }}
+
+
+
+
+# Essential and correct volume mounts
+Volume=/var/lib/keylime/cv_ca:/var/lib/keylime/cv_ca:Z
+Volume=/etc/keylime/verifier.conf.d:/etc/keylime/verifier.conf.d:Z
+
+
+
+# Mount volume for persistent keylime data (if using a podman volume)
+# Make sure it's defined separately as a keylime-data.volume unit or create it via podman
+# Volume=keylime-data.volume:/var/lib/keylime
+
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

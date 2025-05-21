@@ -1,0 +1,31 @@
+[Unit]
+Description=Keylime Verifier Service (Podman)
+After=network-online.target 
+Wants=network-online.target
+
+[Container]
+Image=quay.io/keylime/keylime_verifier:latest
+ContainerName=keylime_verifier
+PublishPort=8881:8881                # expose verifier's port 8881 on host
+Environment=TPM2TOOLS_TCTI=device:/dev/tpmrm0
+
+#Environment=KEYLIME_VERIFIER_SERVER_KEY_PASSWORD={{ keylime_tls_passphrase | default("CHANGEME") }}
+#Environment=KEYLIME_VERIFIER_CLIENT_KEY_PASSWORD={{ keylime_tls_passphrase | default("CHANGEME") }}
+
+
+# Essential and correct volume mounts
+Volume=/var/lib/keylime/cv_ca:/var/lib/keylime/cv_ca:Z
+Volume=/etc/keylime/verifier.conf.d:/etc/keylime/verifier.conf.d:Z
+
+
+
+# Mount volume for persistent keylime data (if using a podman volume)
+# Make sure it's defined separately as a keylime-data.volume unit or create it via podman
+# Volume=keylime-data.volume:/var/lib/keylime
+
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

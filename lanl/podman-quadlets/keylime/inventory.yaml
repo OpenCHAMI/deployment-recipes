@@ -1,0 +1,6 @@
+[keylime_server]
+server-node ansible_connection=local
+
+[keylime_agents]
+agent1 ansible_host=agent1
+agent2 ansible_host=agent2
