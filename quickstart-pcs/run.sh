@@ -4,7 +4,7 @@ export VAULT_ADDR=http://127.0.0.1:8200
 export VAULT_TOKEN=hms
 export SUSHY_URL="http://localhost:8000"
 
-XNAME=x1000c0s0b3
+XNAME=x1000c0s0b1
 
 KEYS_PATH="keys"
 
@@ -78,8 +78,8 @@ smd_populate() {
 	# 1: https://github.com/OpenCHAMI/power-control/blob/main/docker-compose.test.ct.yaml#L108
 
 	curl -X POST -d '{"RedfishEndpoints":[{
-	  "ID":"x1000c0s0b3",
-	  "FQDN":"x1000c0s0b3",
+	  "ID":"x1000c0s0b1",
+	  "FQDN":"x1000c0s0b1",
 	  "RediscoverOnUpdate":true,
 	  "User":"root",
 	  "Password":"root_password"
