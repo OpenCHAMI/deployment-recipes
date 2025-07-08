@@ -1,6 +1,6 @@
 services:
   coredhcp:
-    image: ghcr.io/openchami/coredhcp:v0.3.0
+    image: ghcr.io/openchami/coredhcp:v0.3.1
     container_name: coredhcp
     hostname: coredhcp
     network_mode: host
@@ -14,7 +14,7 @@ services:
       - "-L"
       - "debug"
     healthcheck:
-      test: pgrep coredhcp
+      test: "dhcping -c {{cluster_boot_ip}} -s {{cluster_boot_ip}} -h 00:00:00:00:00:00"
       interval: 5s
       timeout: 10s
       retries: 60
