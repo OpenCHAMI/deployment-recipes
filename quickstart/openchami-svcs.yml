@@ -117,7 +117,7 @@ services:
 ###
   # cloud-init server, with the secure route disabled for now
   cloud-init:
-    image: ghcr.io/openchami/cloud-init:v0.1.1
+    image: ghcr.io/openchami/cloud-init:v1.2.3
     container_name: cloud-init
     hostname: cloud-init
     environment:
@@ -133,3 +133,8 @@ services:
         condition: service_healthy
     networks:
       - internal
+    healthcheck:
+      test: ["CMD", "curl", "http://127.0.0.1:27777/cloud-init/version"]
+      interval: 5s
+      timeout: 10s
+      retries: 60

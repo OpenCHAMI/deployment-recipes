@@ -56,6 +56,11 @@ _step_ca_quadlets:
       - DOCKER_STEPCA_INIT_ACME=true
     networks:
       - ochami-cert-internal.network
+    health:
+      cmd: "step ca health"
+      interval: '10s'
+      retries: 5
+      timeout: '10s'
     no_hosts: true
     after: 
       - ochami-jenga.service
@@ -77,6 +82,11 @@ _postgres_quadlets:
     networks:
       - ochami-internal.network
       - ochami-jwt-internal.network
+    health:
+      cmd: "pg_isready --dbname ${POSTGRES_USER} --username ${POSTGRES_USER}"
+      interval: 10s
+      timeout: 10s
+      retries: 5
     after:
       - ochami-jenga.service
 
@@ -159,6 +169,12 @@ _hydra_quadlets:
       - ochami-jenga.service
     networks:
       - ochami-jwt-internal.network
+    health:
+      cmd: "wget --spider -q http://hydra:4444/health/alive"
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
   # Fix for hydra race condition
   - name: hydra-gen-jwks
     image: cgr.dev/chainguard/curl:latest
@@ -178,6 +194,11 @@ _opaal_quadlets:
       - /etc/ochami/configs:/opaal/config/
     networks:
       - ochami-jwt-internal
+    health:
+      cmd: "curl --fail --silent http://opaal-idp:3332/.well-known/jwks.json"
+      interval: 5s
+      timeout: 10s
+      retries: 60
     after:
       - hydra-gen-jwks.service
   - name: opaal
@@ -192,11 +213,11 @@ _opaal_quadlets:
       - "{{ cluster_name }}.{{ cluster_domain }}:{{ cluster_boot_ip }}"
     post_start:
       - sleep 10s
-        #    health:
-        #      cmd: 'curl --fail --silent http://opaal:3333/keys'
-        #      interval: 5s
-        #      timeout: 10s
-        #      retries: 60
+    health:
+      cmd: "curl --fail --silent http://opaal:3333/keys"
+      interval: 5s
+      timeout: 10s
+      retries: 60
     after:
       - opaal-idp.service
 
@@ -229,6 +250,12 @@ _ochami_quadlets:
       - SMD_DBUSER=smd-user
       - SMD_DBOPTS=sslmode=disable
       - SMD_JWKS_URL=http://opaal:3333/keys
+    health:
+      cmd: "curl --fail --silent http://localhost:27779/hsm/v2/service/ready"
+      interval: 5s
+      retries: 60
+      timeout: 10s
+
     after:
       - smd-init.service
       - opaal.service
@@ -274,8 +301,14 @@ _ochami_quadlets:
       - opaal.service
     networks:
       - ochami-internal.network
+    health:
+      cmd: "curl --fail --silent http://localhost:27778/boot/v1/service/status"
+      interval: 5s
+      retries: 60
+      timeout: 10s
+
   - name: cloud-init-server
-    image: ghcr.io/openchami/cloud-init:v1.2.1
+    image: ghcr.io/openchami/cloud-init:v1.2.3
     envs:
       - LISTEN_ADDR=:27777
       - SMD_URL=http://smd:27779
@@ -291,6 +324,11 @@ _ochami_quadlets:
       - CAP_NET_ADMIN
 #    command: '/usr/local/bin/cloud-init-server --listen 0.0.0.0:27777 --smd-url http://smd:27779 --token-url http://opaal:3333/token --jwks-url http://opaal:3333/keys --impersonation=true --cluster-name {{ cluster_name }} --wireguard-server {{ cloud_init_wireguard_server }}/16 --wireguard-only --debug'
     command: '/usr/local/bin/cloud-init-server --listen 0.0.0.0:27777 --smd-url http://smd:27779 --token-url http://opaal:3333/token --impersonation=true --cluster-name {{ cluster_name }}'
+    health:
+      cmd: "curl http://127.0.0.1:27777/cloud-init/version"
+      interval: '10s'
+      retries: 5
+      timeout: '10s'
 
 _haproxy_quadlets:
   - name: haproxy
@@ -310,10 +348,15 @@ _haproxy_quadlets:
       - bss.service
       - acme-deploy.service
       - cloud-init-server.service
+    health:
+      cmd: "bash -c 'exec 3<>/dev/tcp/haproxy/8404; echo -e \"GET / HTTP/1.1\\nConnection: close\\n\" >&3; cat <&3 | grep \"200 OK\"'"
+      interval: '10s'
+      retries: 5
+      timeout: '10s'
 
 _coresmd_quadlets:
   - name: coresmd
-    image: ghcr.io/openchami/coredhcp:v0.3.0
+    image: ghcr.io/openchami/coredhcp:v0.3.1
     capabilities:
       - NET_ADMIN
       - NET_RAW
@@ -324,6 +367,11 @@ _coresmd_quadlets:
       - host
     after:
       - haproxy.service
+    health:
+      cmd: "dhcping -c {{cluster_boot_ip}} -s {{cluster_boot_ip}} -h 00:00:00:00:00:00"
+      interval: '10s'
+      retries: 5
+      timeout: '10s'
 
 _image_server_quadlets:
   - name: image-server
@@ -334,6 +382,13 @@ _image_server_quadlets:
       - '{{ cluster_boot_ip }}:8080:80'
     pre_start:
       - mkdir -p /data/domain-images
+      - echo "Service Available" > /data/domain-images/index.html
+      - chmod a+r  /data/domain-images/index.html
+    health:
+      cmd: "curl --fail --silent http://image-server"
+      interval: '10s'
+      retries: 5
+      timeout: '10s'
 
 _configurator_quadlets:
   - name: configurator

@@ -15,7 +15,7 @@ services:
       - internal
       - jwt-internal
     healthcheck:
-      test: ["CMD", "haproxy", "-c", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
+      test: ["CMD", "bash", "-c", "'exec 3<>/dev/tcp/haproxy/8404; echo -e \"GET / HTTP/1.1\\nConnection: close\\n\" >&3; cat <&3 | grep \"200 OK\"'"]
       interval: 10s
       timeout: 10s
       retries: 5
