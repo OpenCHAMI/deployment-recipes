@@ -33,7 +33,7 @@ main() {
 if [ $# -eq 0 ]; then
 	echo "error: missing argument"
 	echo "example:"
-	echo "${0} x1000c0s0b3n0 force-off"
+	echo "${0} x1000c0s0b1n0 force-off"
 	exit 1
 fi
 
