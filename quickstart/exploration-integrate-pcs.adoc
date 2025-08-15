@@ -1,0 +1,317 @@
+= PCS integration in quickstart
+:toc:
+:sectnums:
+
+== Step
+
+. Deploy sushy-emulator
+. Create a virtual node
+. Do a `make run` that will
+** generate keys folder
+** start openchami services
+** create access token to openchami service
+** configure vault for jwt authentification
+** populate vault with virtual node url
+
+. with manta:
+.. Add a redfish-endpoint
+.. Add a node in a group
+
+== Interact with PCS through cURL
+
+From this docker compose https://github.com/OpenCHAMI/power-control/blob/main/docker-compose.test.ct.yaml[docker-compose.test.ct.yaml]
+
+A list of differents tests.
+
+[source, shell]
+----
+docker exec power-control-smd-1 curl -s power-control-power-control-1:28007/v1/
+<a href="//power-control-power-control-1:28007/v1">Moved Permanently</a>.
+----
+
+[source, shell]
+----
+docker exec power-control-smd-1 curl -s power-control-power-control-1:28007/
+hms-power-control
+----
+
+[source, shell]
+----
+docker exec power-control-smd-1 curl -s power-control-power-control-1:28007/liveness
+----
+
+[source, shell]
+----
+docker exec power-control-smd-1 curl -s power-control-power-control-1:28007/notfound
+404 page not found
+----
+
+From `./internal/hsm/state_manager.go` of `power-control` repository:
+
+[source, go]
+----
+hsmLivenessPath                   = "/hsm/v2/service/liveness"
+hsmStateComponentsPath            = "/hsm/v2/State/Components"
+hsmStateComponentsQueryPath       = "/hsm/v2/State/Components/Query"
+hsmInventoryComponentEndpointPath = "/hsm/v2/Inventory/ComponentEndpoints"
+hsmReservationCheckPath           = "/hsm/v2/locks/service/reservations/check"
+hsmReservationPath                = "/hsm/v2/locks/service/reservations"
+hsmReservationReleasePath         = "/hsm/v2/locks/service/reservations/release"
+hsmPowerMapPath                   = "/hsm/v2/sysinfo/powermaps"
+----
+
+I cannot use these routes.
+
+== Interact with PCS through Manta cli and cURL
+
+From this quickstart folder.
+
+Manta cli
+
+----
+manta power off nodes --assume-yes x1000c0s0b1
+ERROR - Could not power off node/s '[]'. Reason:
+ERROR - Message: ERROR - MESA: <html><body><h1>503 Service Unavailable</h1>
+No server is available to handle this request.
+</body></html>
+----
+
+curl
+
+----
+docker exec smd curl -s http://pcs:28007/health | jq
+{
+  "KvStore": "connected, responsive",
+  "DistLocking": "connected, responsive",
+  "StateManager": "connected, responsive",
+  "Vault": "connected, responsive",
+  "TaskRunner": "connected, responsive, local mode"
+}
+----
+
+ochami
+
+----
+ochami pcs status
+2025-03-31T15:54:32+02:00 FTL pcs-status.go:55 > PCS status (readiness) request yielded unsuccessful HTTP response error="GetReadiness(): error getting PCS liveness: unsuccessful HTTP status: HTTP/1.1 503 Service Unavailable: <html><body><h1>503 Service Unavailable</h1>\nNo server is available to handle this request.\n</body></html>\n"
+----
+
+== Edit the HAProxy and retry
+
+retry
+
+* ochami works
++
+----
+ochami pcs status
+{"pcs":"ready"}
+----
+
+* manta cli still not working
++
+----
+ERROR - Message: ERROR - MESA: <html><body><h1>503 Service Unavailable</h1>
+No server is available to handle this request.
+</body></html>
+----
+
+== retry
+
+----
+ochami pcs status
+{"pcs":"ready"}
+manta power off nodes --assume-yes x1000c0s0b1
+INFO  | Create PCS transition 'force-off' on []
+ERROR - Could not power off node/s '[]'. Reason:
+ERROR - Message: ERROR - MESA: <html><body><h1>503 Service Unavailable</h1>
+No server is available to handle this request.
+</body></html>
+
+manta --version
+manta 1.54.1-beta.100
+----
+
+== Manta CLI can talk to PCS
+
+=== Update Manta CLI
+
+. In `eth-cscs/manta`: Switch to local ochami-rs
++
+[source, patch]
+----
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -32,13 +32,13 @@ publish = false                                                         # cargo
+ # PROD
+
+ backend-dispatcher = "0.1.42"
+-ochami-rs = "0.1.44"
++# ochami-rs = "0.1.44"
+ mesa = "0.42.3-beta.75"
+
+ # DEV
+
+ # backend-dispatcher = { path = "../backend-dispatcher" } # Only for development purposes
+-# ochami-rs = { path = "../ochami-rs" } # Only for development purposes
++ochami-rs = { path = "../ochami-rs" } # Only for development purposes
+ # mesa = { path = "../mesa" } # Only for development purposes
+
+ # --- END MANTA DEPENDENCIES ---
+----
+
+. In `OpenCHAMI/ochami-rs`: remove the URL prefix
++
+[source, patch]
+----
+Subject: [PATCH] remove power-control
+
+sed -i 's|power-control/v1/||' $(find . -name "*.rs")
+---
+ src/pcs/power_cap/http_client.rs    | 8 ++++----
+ src/pcs/power_status/http_client.rs | 4 ++--
+ src/pcs/transitions/http_client.rs  | 6 +++---
+ 3 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/src/pcs/power_cap/http_client.rs b/src/pcs/power_cap/http_client.rs
+index a9646af..1aff215 100644
+--- a/src/pcs/power_cap/http_client.rs
++++ b/src/pcs/power_cap/http_client.rs
+@@ -26,7 +26,7 @@ pub async fn get(
+         client = client_builder.build()?;
+     }
+
+-    let api_url = format!("{}/power-control/v1/power-cap", shasta_base_url);
++    let api_url = format!("{}/power-cap", shasta_base_url);
+
+     let response = client
+         .get(api_url)
+@@ -73,7 +73,7 @@ pub async fn get_task_id(
+         client = client_builder.build()?;
+     }
+
+-    let api_url = format!("{}/power-control/v1/power-cap/{}", shasta_base_url, task_id);
++    let api_url = format!("{}/power-cap/{}", shasta_base_url, task_id);
+
+     let response = client
+         .get(api_url)
+@@ -121,7 +121,7 @@ pub async fn post_snapshot(
+         client_builder.build()?
+     };
+
+-    let api_url = shasta_base_url.to_owned() + "/power-control/v1/power-cap/snapshot";
++    let api_url = shasta_base_url.to_owned() + "/power-cap/snapshot";
+
+     let response = client
+         .put(api_url)
+@@ -169,7 +169,7 @@ pub async fn patch(
+         client_builder.build()?
+     };
+
+-    let api_url = shasta_base_url.to_owned() + "/power-control/v1/power-cap/snapshot";
++    let api_url = shasta_base_url.to_owned() + "/power-cap/snapshot";
+
+     let response = client
+         .put(api_url)
+diff --git a/src/pcs/power_status/http_client.rs b/src/pcs/power_status/http_client.rs
+index 98db214..4151aa2 100644
+--- a/src/pcs/power_status/http_client.rs
++++ b/src/pcs/power_status/http_client.rs
+@@ -29,7 +29,7 @@ pub async fn get(
+         client = client_builder.build()?;
+     }
+
+-    let api_url = format!("{}/power-control/v1/power-status", shasta_base_url);
++    let api_url = format!("{}/power-status", shasta_base_url);
+
+     let xname_vec_str_opt: Option<String> = xname_vec_opt.map(|xname_vec| xname_vec.join(","));
+
+@@ -90,7 +90,7 @@ pub async fn post(
+         client_builder.build()?
+     };
+
+-    let api_url = shasta_base_url.to_owned() + "/power-control/v1/power-status";
++    let api_url = shasta_base_url.to_owned() + "/power-status";
+
+     let response = client
+         .put(api_url)
+diff --git a/src/pcs/transitions/http_client.rs b/src/pcs/transitions/http_client.rs
+index ca54d3e..e83590f 100644
+--- a/src/pcs/transitions/http_client.rs
++++ b/src/pcs/transitions/http_client.rs
+@@ -31,7 +31,7 @@ pub async fn get(
+         client = client_builder.build()?;
+     }
+
+-    let api_url = format!("{}/power-control/v1/transitions", shasta_base_url);
++    let api_url = format!("{}/transitions", shasta_base_url);
+
+     log::debug!("PCS transition URL: {}", api_url);
+
+@@ -83,7 +83,7 @@ pub async fn get_by_id(
+         client = client_builder.build()?;
+     }
+
+-    let api_url = format!("{}/power-control/v1/transitions/{}", shasta_base_url, id);
++    let api_url = format!("{}/transitions/{}", shasta_base_url, id);
+
+     let response = client
+         .get(api_url)
+@@ -156,7 +156,7 @@ pub async fn post(
+         client_builder.build()?
+     };
+
+-    let api_url = shasta_base_url.to_owned() + "/power-control/v1/transitions";
++    let api_url = shasta_base_url.to_owned() + "/transitions";
+
+     // Submit call to http api
+     let response = client
+----
+
+=== Retry to power off
+
+----
+target/debug/manta power off nodes --assume-yes x1000c0s0b1
+INFO  | Create PCS transition 'force-off' on []
+INFO  | PCS transition ID: 04ba747f-8f6c-4df5-80c2-9318251024fe
+Ok(
+    Object {
+        "automaticExpirationTime": String("2025-04-04T09:05:07.41614002Z"),
+        "createTime": String("2025-04-03T09:05:07.416139953Z"),
+        "operation": String("Force-Off"),
+        "taskCounts": Object {
+            "failed": Number(0),
+            "in-progress": Number(0),
+            "new": Number(0),
+            "succeeded": Number(0),
+            "total": Number(0),
+            "un-supported": Number(0),
+        },
+        "transitionID": String("04ba747f-8f6c-4df5-80c2-9318251024fe"),
+        "transitionStatus": String("completed"),
+    },
+)
+Ok(
+    Object {
+        "automaticExpirationTime": String("2025-04-04T09:05:07.41614002Z"),
+        "createTime": String("2025-04-03T09:05:07.416139953Z"),
+        "operation": String("Force-Off"),
+        "taskCounts": Object {
+            "failed": Number(0),
+            "in-progress": Number(0),
+            "new": Number(0),
+            "succeeded": Number(0),
+            "total": Number(0),
+            "un-supported": Number(0),
+        },
+        "transitionID": String("04ba747f-8f6c-4df5-80c2-9318251024fe"),
+        "transitionStatus": String("completed"),
+    },
+)
+Power 'Force-Off' summary - status: completed, failed: 0, in-progress: 0, succeeded: 0, total: 0. Attempt 1 of 300
+----
+
+== Next
+
+Manta is now able to communicate with PCS.
+
+But I did not test if PCS communicate well with a redfish endpoint

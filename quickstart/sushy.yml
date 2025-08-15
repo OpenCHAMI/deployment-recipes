@@ -1,0 +1,17 @@
+services:
+  sushy:
+    image: tgrivel/sushy-emulator:0.0.3
+    hostname: x1000c0s0b0
+    container_name: x1000c0s0b0
+    restart: always
+    networks:
+      - internal
+      - jwt-internal
+    volumes:
+      - ./sushy-emulator/ssl:/ssl
+      - ./sushy-emulator/ssh:/root/.ssh
+      - ./sushy-emulator/config:/config
+      - ./sushy-emulator/htpasswd:/htpasswd
+    ports:
+      - 8000:443
+    command: /env/bin/sushy-emulator --port 443 --config /config/config.py --interface 0.0.0.0 --ssl-certificate /ssl/sushy-emulator.crt --ssl-key /ssl/sushy-emulator.key

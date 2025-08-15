@@ -5,7 +5,7 @@ volumes:
 
 services:
   haproxy:
-    container_name: haproxy
+    container_name: ${SYSTEM_NAME}.${SYSTEM_DOMAIN}-base-url
     image: cgr.dev/chainguard/haproxy
     ports:
       - "8081:80"
@@ -28,6 +28,10 @@ services:
         condition: service_healthy
       bss:
         condition: service_healthy
+      acme-register:
+        condition: service_completed_successfully
+
+
     volumes:
       - ./configs/:/usr/local/etc/haproxy/:ro
       - haproxy-certs:/etc/haproxy/certs/:ro
