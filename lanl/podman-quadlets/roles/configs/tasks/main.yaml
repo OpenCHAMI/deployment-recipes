@@ -1,12 +1,49 @@
-- import_tasks: packages.yaml
-- import_tasks: configs.yaml
-- import_tasks: configurator.yaml
-- import_tasks: coredhcp.yaml
-- import_tasks: haproxy.yaml
-- import_tasks: hydra.yaml
-- import_tasks: opaal.yaml
-- import_tasks: pg-init.yaml
-- import_tasks: podman.yaml
-- import_tasks: profile.yaml
-- import_tasks: ochami.yaml
-- import_tasks: hosts.yaml
+#  Copyright 2025 Dell Inc. or its subsidiaries. All Rights Reserved.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+- name: Import packages task
+  ansible.builtin.import_tasks: packages.yaml
+
+- name: Import configs task
+  ansible.builtin.import_tasks: configs.yaml
+
+- name: Import configurator task
+  ansible.builtin.import_tasks: configurator.yaml
+
+- name: Import coredhcp task
+  ansible.builtin.import_tasks: coredhcp.yaml
+
+- name: Import haproxy task
+  ansible.builtin.import_tasks: haproxy.yaml
+
+- name: Import hydra task
+  ansible.builtin.import_tasks: hydra.yaml
+
+- name: Import opaal task
+  ansible.builtin.import_tasks: opaal.yaml
+
+- name: Import pg-init task
+  ansible.builtin.import_tasks: pg-init.yaml
+
+- name: Import podman task
+  ansible.builtin.import_tasks: podman.yaml
+
+- name: Import profile task
+  ansible.builtin.import_tasks: profile.yaml
+
+- name: Import ochami task
+  ansible.builtin.import_tasks: ochami.yaml
+
+- name: Import hosts task
+  ansible.builtin.import_tasks: hosts.yaml
