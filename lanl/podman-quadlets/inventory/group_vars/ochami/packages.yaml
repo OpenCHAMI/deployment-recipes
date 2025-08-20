@@ -10,5 +10,5 @@ ochami_package_dependencies:
 
 ochami_pip_packages:
   - requests
-  - yaml
+  - pyyaml
   - jwt
