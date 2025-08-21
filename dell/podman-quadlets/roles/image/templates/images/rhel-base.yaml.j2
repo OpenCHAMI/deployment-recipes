@@ -1,0 +1,42 @@
+options:
+  layer_type: 'base'
+  name: '{{ rhel_base_image_name }}'
+  publish_tags: '{{ rhel_tag }}'
+  pkg_manager: 'dnf'
+  parent: 'scratch'
+  publish_registry: '{{ cluster_name }}.{{ cluster_domain }}:5000/{{ cluster_name }}'
+  registry_opts_push:
+    - '--tls-verify=false'
+
+repos:
+{% for repo in rhel_repos %}
+{% if repo.url | length > 1 %}
+  - alias: '{{ repo.name }}'
+    url: '{{ repo.url }}'
+{% endif %}
+{% if repo.gpg | length > 1 %}
+    gpg: '{{ repo.gpg }}'
+{% endif %}
+{% endfor %}
+
+package_groups:
+  - 'Minimal Install'
+  - 'Development Tools'
+packages:
+  - chrony
+  - cloud-init
+  - systemd
+  - dracut-live
+  - dracut-network
+  - squashfs-tools
+  - kernel
+  - rsyslog
+  - sudo
+  - wget
+cmds:
+  - cmd: 'echo -e "#!/bin/bash\nexit 0" > /usr/lib/systemd/systemd-sysroot'
+  - cmd: 'chmod +x /usr/lib/systemd/systemd-sysroot'
+  - cmd: 'echo -e "#!/bin/bash\nexit 0" > /usr/lib/systemd/systemd-sysroot-fstab-check'
+  - cmd: 'chmod +x /usr/lib/systemd/systemd-sysroot-fstab-check'
+  - cmd: 'dracut --add "dmsquash-live livenet network-manager systemd" --install "/usr/lib/systemd/systemd-sysroot-fstab-check" --kver $(basename /lib/modules/*) -N -f --logfile /tmp/dracut.log 2>/dev/null'
+  - cmd: 'echo DRACUT LOG:; cat /tmp/dracut.log'

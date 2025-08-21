@@ -1,0 +1,11 @@
+- name: Create ochami directory
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    mode: '{{ file_perm_rwx }}'
+  with_items:
+    - '{{ data_oci_dir }}'
+    - '{{ data_s3_dir }}'
+    - '{{ ochami_work_dir }}'
+    - '{{ openchami_config_dir }}'
+    - '{{ ochami_dir }}'

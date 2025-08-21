@@ -1,0 +1,81 @@
+echo "Removing openchami packages"
+dnf remove ochami -y
+dnf remove openchami -y
+systemctl stop openchami.target
+rm -rf /etc/containers/systemd/registry.container
+rm -rf /etc/containers/systemd/minio.container
+sudo systemctl daemon-reload
+
+echo "Removing openchami containers, volume and secrets"
+# Containers
+containers=(
+  minio-server registry step-ca postgres hydra
+  opaal-idp smd bss opaal cloud-init-server
+  haproxy coresmd
+)
+
+for container in "${containers[@]}"; do
+  podman rm -f "$container" 2>/dev/null && echo "Removed container: $container" || echo "Container not found: $container"
+done
+
+# Volumes
+volumes=(
+  haproxy-certs acme-certs postgres-data
+  step-ca-db step-root-ca step-ca-home
+)
+
+for volume in "${volumes[@]}"; do
+  podman volume rm -f "$volume" 2>/dev/null && echo "Removed volume: $volume" || echo "Volume not found: $volume"
+done
+
+# Secrets
+secrets=(
+  hydra_postgres_password hydra_dsn hydra_system_secret
+  smd_postgres_password postgres_password
+  postgres_multiple_databases bss_postgres_password
+)
+
+for secret in "${secrets[@]}"; do
+  podman secret rm "$secret" 2>/dev/null && echo "Removed secret: $secret" || echo "Secret not found: $secret"
+done
+
+
+echo "Cleanup firewall config"
+# lists of ports and interfaces used
+TCP_PORTS=(9000 9001 5000 5432 27778 27779 8081 8443)
+UDP_PORTS=(69 67 68)
+PODMAN_INTERFACES=(podman0 podman1 podman2 podman3 podman4)
+
+# Remove TCP ports
+for port in "${TCP_PORTS[@]}"; do
+  sudo firewall-cmd --permanent --remove-port=${port}/tcp
+done
+
+# Remove UDP ports
+for port in "${UDP_PORTS[@]}"; do
+  sudo firewall-cmd --permanent --remove-port=${port}/udp
+done
+
+# Remove podman interfaces from trusted zone
+for iface in "${PODMAN_INTERFACES[@]}"; do
+  sudo firewall-cmd --permanent --zone=trusted --remove-interface=${iface}
+done
+
+# Reload firewalld
+sudo firewall-cmd --reload
+
+echo "Removing s3cmd and regctl config"
+s3cmd del s3://efi
+s3cmd del s3://boot-images
+dnf remove s3cmd -y
+rm -rf ~/.regctl/config.json
+rm -rf /usr/local/bin/regctl
+
+echo "Removing openchami config directory"
+rm -rf /data/oci
+rm -rf /data/s3
+rm -rf /opt/workdir
+rm -rf /etc/openchami
+rm -rf /etc/ochami
+
+echo "Cleanup complete."

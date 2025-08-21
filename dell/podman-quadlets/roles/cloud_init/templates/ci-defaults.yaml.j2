@@ -1,0 +1,7 @@
+---
+base-url: "http://{{ cluster_boot_ip }}:8081/cloud-init"
+cluster-name: "{{ cluster_name }}"
+nid-length: 3
+public-keys:
+- "{{ read_ssh_key.stdout }}"
+short-name: "{{ cluster_shortname }}"
