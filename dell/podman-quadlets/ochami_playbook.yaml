@@ -1,0 +1,8 @@
+- name: 'ochami VM Nodes'
+  hosts: ochami
+  roles:
+    - { role: configs, tags: ['configs'] }
+    - { role: smd, tags: ['smd'] }
+    - { role: image_builder, tags: ['image'] }
+    - { role: bss, tags: ['bss'] }
+    - { role: cloud_init, tags: ['cloud_init'] }

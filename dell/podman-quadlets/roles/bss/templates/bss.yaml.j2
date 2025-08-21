@@ -1,0 +1,8 @@
+---
+kernel: 'http://{{ cluster_boot_ip }}:9000/{{ kernel }}'
+initrd: 'http://{{ cluster_boot_ip }}:9000/{{ initrd }}'
+params: 'nomodeset ro root=live:http://{{ cluster_boot_ip }}:9000/boot-images/compute/{{ rhel_base_compute_image_name }}/rhel{{ rhel_tag }}-{{ rhel_base_compute_image_name }}-{{ rhel_tag }} squashfs rd.live.image rd.luks=0 rd.md=0 rd.dm=0 ip=dhcp rd.neednet=1 rd.timeout=180 rd.retry=5 selinux=0 apparmor=0 console=tty0 console=ttyS0,115200n8 ip6=off cloud-init=enabled ds=nocloud-net;s=http://{{ cluster_boot_ip }}:8081/cloud-init default_hugepagesz=1G hugepagesz=1G hugepages=128 numa_balancing=disable'
+macs:
+{% for item in nodes %}
+  - {{ item.interfaces[0].mac_addr }}
+{% endfor %}

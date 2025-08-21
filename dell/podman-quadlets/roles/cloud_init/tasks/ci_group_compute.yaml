@@ -1,0 +1,18 @@
+- name: Load ci group compute template
+  ansible.builtin.copy:
+    src: '{{ ci_group_compute_template }}'
+    dest: '{{ ci_group_compute_dest }}'
+    mode: '{{ file_perm_rw }}'
+
+- name: Set ci group compute configuration
+  ansible.builtin.command: ochami cloud-init group set -f yaml -d @{{ ci_group_compute_dest }}
+  changed_when: true
+
+- name: Verify ci group compute configuration
+  ansible.builtin.command: ochami cloud-init group get config compute
+  changed_when: false
+  register: ci_group_compute_output
+
+- name: Verify ci group compute output
+  ansible.builtin.debug:
+    msg: "{{ ci_group_compute_output.stdout_lines }}"

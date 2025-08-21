@@ -1,0 +1,72 @@
+
+- name: Update smd
+  environment: "{{ ochami_env }}"
+  block:
+    - name: Create ochami nodes directory
+      ansible.builtin.file:
+        path: '{{ ochami_work_dir }}/nodes'
+        state: directory
+        mode: '{{ file_perm_rwx }}'
+
+    - name: Drop ochami nodes.yaml
+      ansible.builtin.template:
+        src: nodes.yaml.j2
+        dest: '{{ ochami_work_dir }}/nodes/nodes.yaml'
+        mode: '{{ file_perm_rw }}'
+
+    - name: Drop ochami groups.yaml
+      template:
+        src: groups.yaml.j2
+        dest: '{{ ochami_work_dir }}/nodes/groups.yaml'
+        mode: '{{ file_perm_rw }}'
+
+    - name: Discover ochami nodes
+      block:
+        - name: Discover ochami nodes
+          ansible.builtin.shell: |
+            ochami discover static -f yaml -d @{{ ochami_work_dir }}/nodes/nodes.yaml --overwrite
+          changed_when: true
+          register: openchami_discover
+      rescue:
+        - name: Failed to discover nodes
+          ansible.builtin.debug:
+            msg: "Failed to discover nodes. Update inventory/group_vars/ochami/nodes.yaml with only new nodes and re-run the playbook. Error: {{ openchami_discover.stderr_lines }}"
+
+    - name: Verify node created in smd
+      ansible.builtin.shell: |
+        ochami smd component get | jq '.Components[] | select(.Type == "Node")'
+      changed_when: true
+      register: openchami_smd_status
+
+    - name: Openchami smd status output
+      ansible.builtin.debug:
+        msg: "{{ openchami_smd_status.stdout_lines }}"
+
+    - name: "Get SMD group data"
+      ansible.builtin.shell: |
+        /usr/bin/ochami smd group get
+      register: smd_group_data
+
+    - name: "Convert SMD data to ansible variable"
+      ansible.builtin.set_fact:
+        existing_smd_groups: '{{ smd_group_data.stdout | from_json }}'
+
+    - name: "Get existing SMD groups"
+      ansible.builtin.set_fact:
+        existing_smd_group_names: "{{ existing_smd_groups | map(attribute='label')| list  }}"
+
+    - name: "POST new SMD groups"
+      ansible.builtin.shell: |
+        /usr/bin/ochami smd group add -m {{ item.value | join(",") }} {{ item.key }}
+      when: item.key not in existing_smd_group_names
+      with_items:
+        - '{{ ochami_groups | dict2items }}'
+
+    - name: Check for group updates
+      ansible.builtin.include_tasks: update_smd_groups.yaml
+      with_items: '{{ ochami_groups | default({}) | dict2items }}'
+      loop_control:
+        loop_var: grp
+        label: '{{ grp.key }}'
+      when:
+        - grp.key in existing_smd_group_names

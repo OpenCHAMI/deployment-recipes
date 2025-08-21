@@ -1,0 +1,60 @@
+echo "Removing openchami packages"
+dnf remove ochami -y
+dnf remove openchami -y
+systemctl stop openchami.target
+rm -rf /etc/containers/systemd/registry.container
+rm -rf /etc/containers/systemd/minio.container
+sudo systemctl daemon-reload
+
+echo "Removing openchami containers, volume and secrets"
+podman rm minio-server \
+          registry \
+          step-ca \
+          postgres \
+          hydra \
+          opaal-idp \
+          smd \
+          bss \
+          opaal \
+          cloud-init-server \
+          haproxy \
+          coresmd -f
+
+podman volume rm haproxy-certs \
+                 acme-certs \
+                 postgres-data \
+                 step-ca-db \
+                 step-root-ca \
+                 step-ca-home -f 
+
+podman secret rm hydra_postgres_password \
+                 hydra_dsn \
+                 hydra_system_secret \
+                 smd_postgres_password \
+                 postgres_password \
+                 postgres_multiple_databases \
+                 bss_postgres_password
+
+echo "Cleanup firewall config"
+sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman0
+sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman1
+sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman2
+sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman3
+sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman4
+sudo firewall-cmd --reload
+
+echo "Removing s3cmd and regctl config"
+s3cmd del s3://efi
+s3cmd del s3://boot-images
+dnf remove s3cmd -y
+rm -rf ~/.regctl/config.json
+rm -rf /usr/local/bin/regctl
+
+echo "Removing openchami config directory"
+rm -rf /data/oci
+rm -rf /data/s3
+rm -rf /opt/workdir
+rm -rf /etc/openchami
+rm -rf /etc/ochami
+
+echo "Cleanup complete."

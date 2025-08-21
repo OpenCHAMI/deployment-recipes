@@ -1,0 +1,37 @@
+- name: Configure the base compute osimage
+  ansible.builtin.template:
+    src: "{{ rhel_base_compute_image_template }}"
+    dest: "{{ ochami_work_dir }}/images/{{ rhel_base_compute_image_name }}-{{ rhel_tag }}.yaml"
+    mode: '{{ file_perm_rw }}'
+
+- name: Build base compute osimage
+  block:
+    - name: Build base compute osimage (This task will take some time)
+      ansible.builtin.command:  
+        cmd: >
+          podman run --rm
+          --device /dev/fuse
+          --network host -e S3_ACCESS=admin -e S3_SECRET=admin123
+          -v {{ ochami_work_dir }}/images/{{ rhel_base_compute_image_name }}-{{ rhel_tag }}.yaml:/home/builder/config.yaml
+          ghcr.io/openchami/image-build:latest
+          image-build --config config.yaml --log-level DEBUG
+      changed_when: true
+      register: build_base_compute_osimage
+  rescue:
+    - name: Failed to build base osimage
+      ansible.builtin.debug:
+        msg: "Error encountered while building base osimage. Error: {{ build_base_compute_osimage.stderr_lines }}"
+
+- name: Verify the base compute osimage created
+  ansible.builtin.command: regctl repo ls {{ cluster_name }}.{{ cluster_domain }}:5000
+  changed_when: false
+  register: verify_base_compute_osimage
+
+- name: Fail if base ompute osimage not created
+  ansible.builtin.fail:
+    msg: "Failed to build base compute osimage {{ rhel_base_compute_image }}"
+  when: rhel_base_compute_image not in verify_base_compute_osimage.stdout
+
+- name: Verify base compute osimage output
+  ansible.builtin.debug:
+    msg: "{{ verify_base_compute_osimage.stdout_lines }}"

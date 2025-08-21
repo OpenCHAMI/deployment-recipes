@@ -1,0 +1,29 @@
+- name: Verify ochami installation
+  block:
+    - name: Start the openchami service (This task will take some time)
+      ansible.builtin.systemd:
+        name: openchami.target
+        state: restarted
+        enabled: true
+        daemon_reload: true
+    
+    - name: Configure ochami
+      ansible.builtin.command: sudo ochami config cluster set --system --default {{ cluster_name }} cluster.uri https://{{ cluster_name }}.{{ cluster_domain }}:8443
+      changed_when: true
+
+    - name: Verify openchami service
+      ansible.builtin.import_tasks: verify_ochami.yaml
+  rescue:
+    - name: Restart openchami in case of error
+      ansible.builtin.systemd:
+        name: openchami.target
+        state: restarted
+        enabled: true
+        daemon_reload: true
+    
+    - name: Configure ochami
+      ansible.builtin.command: sudo ochami config cluster set --system --default {{ cluster_name }} cluster.uri https://{{ cluster_name }}.{{ cluster_domain }}:8443
+      changed_when: true
+
+    - name: Verify openchami service
+      ansible.builtin.import_tasks: verify_ochami.yaml

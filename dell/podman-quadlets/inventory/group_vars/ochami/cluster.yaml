@@ -1,0 +1,18 @@
+cluster_name: "demo"
+cluster_shortname: "nid"
+cluster_nidlength: 3
+cluster_domain: "openchami.cluster"
+cluster_boot_ip: 172.16.0.254
+cluster_boot_interface: ens259f0
+cluster_env_key: "{{ cluster_name | upper }}_ACCESS_TOKEN"
+
+ochami_base_url: "https://{{ cluster_name }}.{{ cluster_domain }}:8443"
+ochami_smd_url: "{{ ochami_base_url }}/hsm/v2"
+ochami_bss_url: "{{ ochami_base_url }}/boot/v1"
+ochami_cloud_init_url: "{{ ochami_base_url }}/cloud-init"
+
+rhel_tag: 10.0
+
+rhel_repos:
+  - { name: 'RHEL10_BaseOS', url: '', gpg: '' }
+  - { name: 'RHEL10_AppStream', url: '', gpg: '' }

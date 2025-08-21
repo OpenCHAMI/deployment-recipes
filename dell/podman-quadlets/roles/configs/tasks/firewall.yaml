@@ -1,0 +1,22 @@
+- name: Ensure firewalld is running
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Add Podman interfaces to trusted zone
+  ansible.posix.firewalld:
+    interface: "{{ item }}"
+    zone: trusted
+    permanent: true
+    state: enabled
+  loop:
+    - podman0
+    - podman1
+    - podman2
+    - podman3
+    - podman4
+
+- name: Reload firewalld to apply changes
+  ansible.builtin.command: firewall-cmd --reload
+  changed_when: true

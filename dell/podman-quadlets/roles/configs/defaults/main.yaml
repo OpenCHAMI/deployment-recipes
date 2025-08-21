@@ -1,0 +1,12 @@
+ochami_cli_log_level: warning
+ochami_cli_log_format: rfc3339
+ochami_dir: /etc/ochami
+openchami_dir: /etc/openchami
+openchami_config_dir: '{{ openchami_dir }}/configs'
+file_perm_rw: 0644
+file_perm_rwx: 0755
+ochami_work_dir: /opt/workdir
+data_oci_dir: /data/oci
+data_s3_dir: /data/s3
+openchami_api_url: "https://api.github.com/repos/openchami/release/releases/latest"
+ochami_client_api_url: "https://api.github.com/repos/OpenCHAMI/ochami/releases/latest"
