@@ -41,11 +41,27 @@ done
 
 
 echo "Cleanup firewall config"
-sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman0
-sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman1
-sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman2
-sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman3
-sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman4
+# lists of ports and interfaces used
+TCP_PORTS=(9000 9001 5000 5432 27778 27779 8081 8443)
+UDP_PORTS=(69 67 68)
+PODMAN_INTERFACES=(podman0 podman1 podman2 podman3 podman4)
+
+# Remove TCP ports
+for port in "${TCP_PORTS[@]}"; do
+  sudo firewall-cmd --permanent --remove-port=${port}/tcp
+done
+
+# Remove UDP ports
+for port in "${UDP_PORTS[@]}"; do
+  sudo firewall-cmd --permanent --remove-port=${port}/udp
+done
+
+# Remove podman interfaces from trusted zone
+for iface in "${PODMAN_INTERFACES[@]}"; do
+  sudo firewall-cmd --permanent --zone=trusted --remove-interface=${iface}
+done
+
+# Reload firewalld
 sudo firewall-cmd --reload
 
 echo "Removing s3cmd and regctl config"

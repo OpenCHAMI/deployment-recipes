@@ -10,3 +10,22 @@ data_oci_dir: /data/oci
 data_s3_dir: /data/s3
 openchami_api_url: "https://api.github.com/repos/openchami/release/releases/latest"
 ochami_client_api_url: "https://api.github.com/repos/OpenCHAMI/ochami/releases/latest"
+tcp_ports:
+  - 9000
+  - 9001
+  - 5000
+  - 5432
+  - 27778
+  - 27779
+  - 8081
+  - 8443
+udp_ports:
+  - 69
+  - 67
+  - 68
+podman_interfaces:
+  - podman0
+  - podman1
+  - podman2
+  - podman3
+  - podman4  
