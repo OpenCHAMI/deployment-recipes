@@ -7,33 +7,38 @@ rm -rf /etc/containers/systemd/minio.container
 sudo systemctl daemon-reload
 
 echo "Removing openchami containers, volume and secrets"
-podman rm minio-server \
-          registry \
-          step-ca \
-          postgres \
-          hydra \
-          opaal-idp \
-          smd \
-          bss \
-          opaal \
-          cloud-init-server \
-          haproxy \
-          coresmd -f
+# Containers
+containers=(
+  minio-server registry step-ca postgres hydra
+  opaal-idp smd bss opaal cloud-init-server
+  haproxy coresmd
+)
 
-podman volume rm haproxy-certs \
-                 acme-certs \
-                 postgres-data \
-                 step-ca-db \
-                 step-root-ca \
-                 step-ca-home -f 
+for container in "${containers[@]}"; do
+  podman rm -f "$container" 2>/dev/null && echo "Removed container: $container" || echo "Container not found: $container"
+done
 
-podman secret rm hydra_postgres_password \
-                 hydra_dsn \
-                 hydra_system_secret \
-                 smd_postgres_password \
-                 postgres_password \
-                 postgres_multiple_databases \
-                 bss_postgres_password
+# Volumes
+volumes=(
+  haproxy-certs acme-certs postgres-data
+  step-ca-db step-root-ca step-ca-home
+)
+
+for volume in "${volumes[@]}"; do
+  podman volume rm -f "$volume" 2>/dev/null && echo "Removed volume: $volume" || echo "Volume not found: $volume"
+done
+
+# Secrets
+secrets=(
+  hydra_postgres_password hydra_dsn hydra_system_secret
+  smd_postgres_password postgres_password
+  postgres_multiple_databases bss_postgres_password
+)
+
+for secret in "${secrets[@]}"; do
+  podman secret rm "$secret" 2>/dev/null && echo "Removed secret: $secret" || echo "Secret not found: $secret"
+done
+
 
 echo "Cleanup firewall config"
 sudo firewall-cmd --permanent --zone=trusted --remove-interface=podman0
