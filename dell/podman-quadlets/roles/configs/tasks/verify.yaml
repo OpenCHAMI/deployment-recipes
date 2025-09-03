@@ -13,6 +13,7 @@
 
     - name: Verify openchami service
       ansible.builtin.import_tasks: verify_ochami.yaml
+      vars:
         max_retries: 1
   rescue:
     - name: Restart openchami in case of error
