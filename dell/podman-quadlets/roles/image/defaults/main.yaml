@@ -1,0 +1,12 @@
+openchami_work_dir: /opt/workdir
+file_perm_rwx: 0755
+file_perm_rw: 0644
+rhel_base_image_name: rhel-base
+rhel_base_image: '{{ cluster_name }}/{{ rhel_base_image_name }}'
+rhel_base_image_template: images/rhel-base.yaml.j2
+rhel_base_compute_image_name: rhel-compute
+rhel_base_compute_image: '{{ cluster_name }}/{{ rhel_base_compute_image_name }}'
+rhel_base_compute_image_template: images/rhel-base-compute.yaml.j2
+image_build_fail_msg: "Error encountered while building image. This can be due to invalid url, packages or network issues."
+rhel_base_compute_mounts: "-v {{ openchami_work_dir }}/images/{{ rhel_base_compute_image_name }}-{{ rhel_tag }}.yaml:/home/builder/config.yaml:z"
+rhel_base_mounts: "-v {{ openchami_work_dir }}/images/{{ rhel_base_image_name }}-{{ rhel_tag }}.yaml:/home/builder/config.yaml:z"

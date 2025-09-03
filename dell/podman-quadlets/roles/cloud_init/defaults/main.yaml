@@ -1,0 +1,8 @@
+ssh_key_path: /root/.ssh/id_ed25519
+file_perm_rw: '0644'
+file_perm_rwx: '0755'
+ci_defaults_template: ci-defaults.yaml.j2
+openchami_work_dir: /opt/workdir
+ci_defaults_dest: '{{ openchami_work_dir }}/cloud-init/ci-defaults.yaml'
+ci_group_compute_template: ci-group-compute.yaml.j2
+ci_group_compute_dest: '{{ openchami_work_dir }}/cloud-init/ci-group-compute.yaml'

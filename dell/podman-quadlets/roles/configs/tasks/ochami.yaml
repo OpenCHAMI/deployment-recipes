@@ -1,0 +1,71 @@
+- name: Get latest openchami response
+  ansible.builtin.uri:
+    url: "{{ openchami_api_url }}"
+    return_content: true
+  register: openchami_release_response
+
+- name: Extract openchami RPM download URL
+  ansible.builtin.set_fact:
+    openchami_rpm_url: "{{ openchami_release_response.content | from_json | json_query('assets[?ends_with(name, `.rpm`)].browser_download_url') | first }}"
+    openchami_rpm_name: "{{ openchami_release_response.content | from_json | json_query('assets[?ends_with(name, `.rpm`)].name') | first }}"
+
+- name: Download the openchami RPM file
+  ansible.builtin.get_url:
+    url: "{{ openchami_rpm_url }}"
+    dest: "{{ openchami_work_dir }}/{{ openchami_rpm_name }}"
+    mode: "{{ file_perm_rwx }}"
+  register: download_openchami
+  until: download_openchami is not failed
+  retries: "{{ max_retries }}"
+  delay: "{{ max_delay }}"
+
+- name: Install the openchami
+  ansible.builtin.dnf:
+    name: "{{ openchami_work_dir }}/{{ openchami_rpm_name }}"
+    state: present
+    disable_gpg_check: true
+
+- name: Get ochami client respone
+  ansible.builtin.uri:
+    url: "{{ ochami_client_api_url }}"
+    return_content: true
+  register: ochami_client_release_response
+
+- name: Extract ochami RPM download URL
+  ansible.builtin.set_fact:
+    ochami_client_rpm_url: "{{ ochami_client_release_response.content | from_json | json_query('assets[?ends_with(name, `amd64.rpm`)].browser_download_url') | first }}"
+    ochami_client_rpm_name: "{{ ochami_client_release_response.content | from_json | json_query('assets[?ends_with(name, `amd64.rpm`)].name') | first }}"
+
+- name: Download the ochami client RPM file
+  ansible.builtin.get_url:
+    url: "{{ ochami_client_rpm_url }}"
+    dest: "{{ openchami_work_dir }}/{{ ochami_client_rpm_name }}"
+    mode: "{{ file_perm_rwx }}"
+  register: download_ochami
+  until: download_ochami is not failed
+  retries: "{{ max_retries }}"
+  delay: "{{ max_delay }}"
+
+- name: Install ochami CLI
+  ansible.builtin.dnf:
+    name: "{{ openchami_work_dir }}/{{ ochami_client_rpm_name }}"
+    state: present
+    disable_gpg_check: true
+
+- name: Configure ochami CLI
+  ansible.builtin.template:
+    src: ochami/config.yaml.j2
+    dest: '{{ ochami_dir }}/config.yaml'
+    mode: '{{ file_perm_rw }}'
+
+- name: Drop coredhcp config file
+  ansible.builtin.template:
+    src: coredhcp/coredhcp.yaml.j2
+    dest: '{{ openchami_config_dir }}/coredhcp.yaml'
+    owner: root
+    group: root
+    mode: '{{ file_perm_rw }}'
+
+- name: Configure cluster FQDN for certificates
+  ansible.builtin.command: sudo openchami-certificate-update update {{ cluster_name }}.{{ cluster_domain }}
+  changed_when: true

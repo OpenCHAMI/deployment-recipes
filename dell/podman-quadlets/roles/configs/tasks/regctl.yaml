@@ -1,0 +1,20 @@
+- name: Install regctl binary
+  ansible.builtin.get_url:
+    url: '{{ regctl_url }}'
+    dest: '{{ regctl_dest }}'
+    mode: '{{ file_perm_rwx }}'
+
+- name: Configure regctl
+  ansible.builtin.shell: |
+    /usr/local/bin/regctl registry set --tls disabled {{ cluster_name }}.{{ cluster_domain }}:5000
+  changed_when: true
+
+- name: Verify regctl configs
+  ansible.builtin.shell: |
+    cat ~/.regctl/config.json 
+  changed_when: false
+  register: regctl_config
+
+- name: Verify regctl config output
+  ansible.builtin.debug:
+    msg: "{{ regctl_config.stdout_lines }}"

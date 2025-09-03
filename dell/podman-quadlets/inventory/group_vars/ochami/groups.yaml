@@ -1,0 +1,12 @@
+_xnames: |
+  {% for item in nodes %}
+  - {{ item.xname }}
+  {% endfor %}
+
+xnames: '{{ _xnames | from_yaml }}'
+
+group_name: compute
+
+ochami_groups:
+  compute: '{{ xnames }}'
+

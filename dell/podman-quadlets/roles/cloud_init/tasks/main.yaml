@@ -1,0 +1,15 @@
+---
+- name: Configure the cloud-init
+  environment: "{{ ochami_env }}"
+  block:
+    - name: Create cloud-init directory
+      ansible.builtin.file:
+        path: '{{ openchami_work_dir }}/cloud-init'
+        state: directory
+        mode: '{{ file_perm_rwx }}'
+
+    - name: Cloud init defaults configuration
+      ansible.builtin.import_tasks: ci_defaults.yaml
+
+    - name: Cloud init group compute configuration
+      ansible.builtin.import_tasks: ci_group_compute.yaml

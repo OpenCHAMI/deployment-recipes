@@ -1,0 +1,15 @@
+- name: Load cleanup to root
+  ansible.builtin.template:
+    src: cleanup.sh.j2
+    dest: /root/cleanup.sh
+    mode: 0755
+
+- name: Run cleanup
+  ansible.builtin.shell:
+    bash /root/cleanup.sh
+  changed_when: true
+  register: cleanup
+
+- name: Cleanup output
+  ansible.builtin.debug:
+    msg: "{{ cleanup.stdout_lines }}"

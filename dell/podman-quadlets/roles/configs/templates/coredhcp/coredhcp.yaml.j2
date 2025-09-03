@@ -1,0 +1,10 @@
+server4:
+  listen:
+    - "%{{ cluster_boot_interface }}"
+  plugins:
+    - server_id: {{ coredhcp_server_id }}
+    - dns: {{ coredhcp_dns_server }}
+    - router: {{ coredhcp_router }}
+    - netmask: {{ coredhcp_netmask }}
+    - coresmd: https://{{ cluster_name }}.{{ cluster_domain }}:8443 http://{{ cluster_boot_ip }}:8081 /root_ca/root_ca.crt {{ coredhcp_cache_validity }} {{ coredhcp_lease_duration }} {{ coredhcp_tftp_single_port_mode | lower }}
+    - bootloop: /tmp/coredhcp.db {{ coredhcp_custom_ipxe }} {{ coredhcp_tmp_lease_duration }} {{ coredhcp_dhcp_pool }}
