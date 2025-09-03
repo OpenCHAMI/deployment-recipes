@@ -28,4 +28,7 @@ podman_interfaces:
   - podman1
   - podman2
   - podman3
-  - podman4  
+  - podman4
+wait_time: 10
+max_delay: 10
+max_retries: 10

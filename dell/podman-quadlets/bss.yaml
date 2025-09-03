@@ -1,0 +1,4 @@
+- name: 'ochami bss'
+  hosts: ochami
+  roles:
+    - { role: bss, tags: ['bss'] }

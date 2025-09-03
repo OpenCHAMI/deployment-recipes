@@ -1,0 +1,12 @@
+# Setup endpoint
+host_base = {{ cluster_name }}.{{ cluster_domain }}:9000
+host_bucket = {{ cluster_name }}.{{ cluster_domain }}:9000
+bucket_location = us-east-1
+use_https = False
+
+# Setup access keys
+access_key = admin
+secret_key = admin123
+
+# Enable S3 v4 signature APIs
+signature_v2 = False

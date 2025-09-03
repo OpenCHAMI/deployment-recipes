@@ -14,5 +14,6 @@ ochami_cloud_init_url: "{{ ochami_base_url }}/cloud-init"
 rhel_tag: 10.0
 
 rhel_repos:
+  - { name: 'RHEL10_Epel', url: 'https://dl.fedoraproject.org/pub/epel/10.0/Everything/x86_64/', gpg: 'https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-10' }
   - { name: 'RHEL10_BaseOS', url: '', gpg: '' }
   - { name: 'RHEL10_AppStream', url: '', gpg: '' }

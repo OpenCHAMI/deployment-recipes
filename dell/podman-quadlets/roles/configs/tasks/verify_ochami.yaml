@@ -10,9 +10,9 @@
 - name: Verify ochami installation
   environment: "{{ ochami_env }}"
   block:
-    - name: Pause for 60 seconds
-      ansible.builtin.pause:
-        seconds: 60
+    - name: wait for {{ wait_time }} seconds
+      ansible.builtin.wait_for:
+        timeout: "{{ wait_time }}"
 
     - name: Verify ochami dependencies
       ansible.builtin.shell:
@@ -28,6 +28,9 @@
       ansible.builtin.shell:
         ochami bss service status
       register: openchami_bss_status
+      until: openchami_bss_status.rc == 0
+      retries: "{{ max_retries }}"
+      delay: "{{ max_delay }}"
       changed_when: false
 
     - name: Openchami bss status output
@@ -38,6 +41,9 @@
       ansible.builtin.shell:
         ochami smd service status
       register: openchami_smd_status
+      until: openchami_smd_status.rc == 0
+      retries: "{{ max_retries }}"
+      delay: "{{ max_delay }}"
       changed_when: false
 
     - name: Openchami smd status output

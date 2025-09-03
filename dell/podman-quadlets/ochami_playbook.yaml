@@ -1,8 +1,5 @@
-- name: 'ochami VM Nodes'
-  hosts: ochami
-  roles:
-    - { role: configs, tags: ['configs'] }
-    - { role: smd, tags: ['smd'] }
-    - { role: image_builder, tags: ['image'] }
-    - { role: bss, tags: ['bss'] }
-    - { role: cloud_init, tags: ['cloud_init'] }
+- import_playbook: configs.yaml
+- import_playbook: smd.yaml
+- import_playbook: image.yaml
+- import_playbook: bss.yaml
+- import_playbook: cloud_init.yaml

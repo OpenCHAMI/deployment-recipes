@@ -13,6 +13,10 @@
   ansible.builtin.get_url:
     url: "{{ openchami_rpm_url }}"
     dest: "{{ ochami_work_dir }}/{{ openchami_rpm_name }}"
+  register: download_openchami
+  until: download_openchami is not failed
+  retries: "{{ max_retries }}"
+  delay: "{{ max_delay }}"
 
 - name: Install the openchami
   ansible.builtin.dnf:
@@ -35,6 +39,10 @@
   ansible.builtin.get_url:
     url: "{{ ochami_client_rpm_url }}"
     dest: "{{ ochami_work_dir }}/{{ ochami_client_rpm_name }}"
+  register: download_ochami
+  until: download_ochami is not failed
+  retries: "{{ max_retries }}"
+  delay: "{{ max_delay }}"
 
 - name: Install ochami CLI
   ansible.builtin.dnf:
