@@ -1,0 +1,31 @@
+- name: Ensure firewalld is running
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Open TCP ports
+  ansible.posix.firewalld:
+    port: "{{ item }}/tcp"
+    permanent: yes
+    state: enabled
+  loop: "{{ tcp_ports }}"
+
+- name: Open UDP ports
+  ansible.posix.firewalld:
+    port: "{{ item }}/udp"
+    permanent: yes
+    state: enabled
+  loop: "{{ udp_ports }}"
+
+- name: Add Podman interfaces to trusted zone
+  ansible.posix.firewalld:
+    interface: "{{ item }}"
+    zone: trusted
+    permanent: true
+    state: enabled
+  loop: "{{ podman_interfaces }}"
+
+- name: Reload firewalld to apply changes
+  ansible.builtin.command: firewall-cmd --reload
+  changed_when: true

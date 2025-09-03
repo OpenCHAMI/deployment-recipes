@@ -1,0 +1,43 @@
+- name: Create ochami images directory
+  ansible.builtin.file:
+    path: '{{ openchami_work_dir }}/images'
+    state: directory
+    mode: '{{ file_perm_rwx }}'
+
+- name: Configure the base osimage
+  ansible.builtin.template:
+    src: "{{ rhel_base_image_template }}"
+    dest: "{{ openchami_work_dir }}/images/{{ rhel_base_image_name }}-{{ rhel_tag }}.yaml"
+    mode: '{{ file_perm_rw }}'
+
+- name: Build base osimage
+  block:
+    - name: Build base osimage (This task will take some time)
+      ansible.builtin.command:  
+        cmd: >
+          podman run --rm
+          --device /dev/fuse
+          --network host
+          {{ rhel_base_mounts }}
+          ghcr.io/openchami/image-build:latest
+          image-build --config config.yaml --log-level DEBUG
+      changed_when: true
+      register: build_base_osimage
+  rescue:
+    - name: Failed to build base osimage
+      ansible.builtin.debug:
+        msg: "{{ image_build_fail_msg }}. Error: {{ build_base_osimage.stderr_lines }}"
+
+- name: Verify the base osimage created
+  ansible.builtin.command: regctl repo ls {{ cluster_name }}.{{ cluster_domain }}:5000
+  changed_when: false
+  register: verify_base_osimage
+
+- name: Fail if base osimage not created
+  ansible.builtin.fail:
+    msg: "Failed to build base osimage {{ rhel_base_image }}"
+  when: rhel_base_image not in verify_base_osimage.stdout_lines
+
+- name: Verify base osimage output
+  ansible.builtin.debug:
+    msg: "{{ verify_base_osimage.stdout_lines }}"

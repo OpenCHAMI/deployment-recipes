@@ -1,0 +1,51 @@
+- name: Generate access token
+  ansible.builtin.shell: sudo bash -lc 'gen_access_token'
+  register: access_token_result
+  changed_when: false
+
+- name: Set ochami_env
+  ansible.builtin.set_fact:
+    ochami_env: "{{ { cluster_env_key: access_token_result.stdout } }}"
+
+- name: Verify ochami installation
+  environment: "{{ ochami_env }}"
+  block:
+    - name: wait for {{ wait_time }} seconds
+      ansible.builtin.wait_for:
+        timeout: "{{ wait_time }}"
+
+    - name: Verify ochami dependencies
+      ansible.builtin.shell:
+        systemctl list-dependencies openchami.target
+      register: openchami_dependencies
+      changed_when: false
+
+    - name: Openchami dependencies output
+      ansible.builtin.debug:
+        msg: "{{ openchami_dependencies.stdout_lines }}"
+
+    - name: Verify ochami bss status
+      ansible.builtin.shell:
+        ochami bss service status
+      register: openchami_bss_status
+      until: openchami_bss_status.rc == 0
+      retries: "{{ max_retries }}"
+      delay: "{{ max_delay }}"
+      changed_when: false
+
+    - name: Openchami bss status output
+      ansible.builtin.debug:
+        msg: "{{ openchami_bss_status.stdout_lines }}"
+
+    - name: Verify ochami smd status
+      ansible.builtin.shell:
+        ochami smd service status
+      register: openchami_smd_status
+      until: openchami_smd_status.rc == 0
+      retries: "{{ max_retries }}"
+      delay: "{{ max_delay }}"
+      changed_when: false
+
+    - name: Openchami smd status output
+      ansible.builtin.debug:
+        msg: "{{ openchami_smd_status.stdout_lines }}"

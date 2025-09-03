@@ -1,0 +1,53 @@
+---
+- name: Configure the bss
+  environment: "{{ ochami_env }}"
+  block:
+    - name: Verify image, kernel and initramfs in S3
+      ansible.builtin.shell: s3cmd ls -Hr s3://boot-images | grep {{ rhel_base_compute_image_name }} | grep {{ rhel_tag }} | awk '{print $4}' | sed 's|s3://||'
+      changed_when: false
+      register: verify_s3_image
+
+    - name: Verify s3 image output
+      ansible.builtin.debug:
+        msg: "{{ verify_s3_image.stdout_lines }}"
+
+    - name: Initialize kernel and initrd
+      ansible.builtin.set_fact:
+        kernel: ""
+        initrd: ""
+
+    - name: Set kernel and initrd variables
+      ansible.builtin.set_fact:
+        kernel: "{{ verify_s3_image.stdout_lines | select('search', 'vmlinuz') | list | first }}"
+        initrd: "{{ verify_s3_image.stdout_lines | select('search', 'initramfs') | list | first }}"
+      when: verify_s3_image.stdout_lines | length > 1
+
+    - name: Fail if kernel or initrd length less than 1
+      ansible.builtin.fail:
+        msg: "Failed to set kernel or initrd. Please verify the compute image created"
+      when: kernel | length < 1 or initrd | length < 1
+
+    - name: Create boot directory
+      ansible.builtin.file:
+        path: '{{ openchami_work_dir }}/boot'
+        state: directory
+        mode: '{{ file_perm_rwx }}'
+
+    - name: Load bss template
+      ansible.builtin.template:
+        src: '{{ bss_template }}'
+        dest: '{{ bss_dest }}'
+        mode: '{{ file_perm_rw }}'
+
+    - name: Set boot configuration
+      ansible.builtin.command: ochami bss boot params set -f yaml -d @{{ openchami_work_dir }}/boot/bss-compute.yaml
+      changed_when: true
+
+    - name: Verify boot params set
+      ansible.builtin.command: ochami bss boot params get -F yaml
+      changed_when: false
+      register: boot_params_output
+
+    - name: Verify boot params output
+      ansible.builtin.debug:
+        msg: "{{ boot_params_output.stdout_lines }}"

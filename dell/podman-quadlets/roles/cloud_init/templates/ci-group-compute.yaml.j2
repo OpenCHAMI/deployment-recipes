@@ -1,0 +1,16 @@
+- name: {{ group_name }}
+  description: "{{ group_name }} config"
+  file:
+    encoding: plain
+    content: |
+      ## template: jinja
+      #cloud-config
+      merge_how:
+      - name: list
+        settings: [append]
+      - name: dict
+        settings: [no_replace, recurse_list]
+      users:
+        - name: root
+          ssh_authorized_keys: "{{ read_ssh_key.stdout }}"
+      disable_root: false

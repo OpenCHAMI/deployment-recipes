@@ -1,0 +1,5 @@
+- name: Add OpenCHAMI host to hosts file
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ cluster_boot_ip }} {{ cluster_name }}.{{ cluster_domain }}"
+    create: true

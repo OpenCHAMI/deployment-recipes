@@ -1,0 +1,4 @@
+- name: 'ochami image'
+  hosts: ochami
+  roles:
+    - { role: image, tags: ['image'] }

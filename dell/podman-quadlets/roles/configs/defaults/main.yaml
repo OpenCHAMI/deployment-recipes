@@ -1,0 +1,39 @@
+ochami_cli_log_level: warning
+ochami_cli_log_format: rfc3339
+ochami_dir: /etc/ochami
+openchami_dir: /etc/openchami
+openchami_config_dir: '{{ openchami_dir }}/configs'
+file_perm_rw: 0644
+file_perm_rwx: 0755
+openchami_work_dir: /opt/workdir
+s3_work_dir: /opt/workdir
+data_oci_dir: /data/oci
+data_s3_dir: /data/s3
+openchami_api_url: "https://api.github.com/repos/openchami/release/releases/latest"
+ochami_client_api_url: "https://api.github.com/repos/OpenCHAMI/ochami/releases/latest"
+tcp_ports:
+  - 9000
+  - 9001
+  - 5000
+  - 5432
+  - 27778
+  - 27779
+  - 8081
+  - 8443
+udp_ports:
+  - 69
+  - 67
+  - 68
+podman_interfaces:
+  - podman0
+  - podman1
+  - podman2
+  - podman3
+  - podman4
+wait_time: 10
+max_delay: 10
+max_retries: 10
+regctl_url: https://github.com/regclient/regclient/releases/latest/download/regctl-linux-amd64
+regctl_dest: /usr/local/bin/regctl
+epel10_url: https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
+epel10_gpg_key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-10
