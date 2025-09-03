@@ -1,5 +1,6 @@
 rhel_base_compute_image_name: rhel-compute
 bss_template: bss.yaml.j2
+ochami_work_dir: /opt/workdir
 bss_dest: '{{ ochami_work_dir }}/boot/bss-compute.yaml'
 file_perm_rw: '0644'
 file_perm_rwx: '0755'
