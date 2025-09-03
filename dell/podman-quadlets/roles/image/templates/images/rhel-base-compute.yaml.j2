@@ -1,0 +1,35 @@
+options:
+  layer_type: base
+  name: '{{ rhel_base_compute_image_name }}'
+  publish_tags: '{{ rhel_tag }}'
+  pkg_manager: dnf
+  parent: '{{ cluster_name }}.{{ cluster_domain }}:5000/{{ rhel_base_image }}:{{ rhel_tag }}'
+  registry_opts_pull:
+    - '--tls-verify=false'
+  publish_s3: 'http://{{ cluster_name }}.{{ cluster_domain }}:9000'
+  s3_prefix: '{{ group_name }}/{{ rhel_base_compute_image_name }}/'
+  s3_bucket: 'boot-images'
+  publish_registry: '{{ cluster_name }}.{{ cluster_domain }}:5000/{{ cluster_name }}'
+  registry_opts_push:
+    - '--tls-verify=false'
+
+repos:
+{% for repo in rhel_repos %}
+{% if repo.url | length > 1 %}
+  - alias: '{{ repo.name }}'
+    url: '{{ repo.url }}'
+{% endif %}
+{% if repo.gpg | length > 1 %}
+    gpg: '{{ repo.gpg }}'
+{% endif %}
+{% endfor %}
+
+packages:
+{% for pkg in base_compute_image_packages %}
+  - {{ pkg }}
+{% endfor %}
+
+cmds:
+{% for cmd in base_compute_image_commands %}
+  - cmd: "{{ cmd }}"
+{% endfor %}

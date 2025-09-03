@@ -1,0 +1,18 @@
+[Unit]
+Description=Image OCI Registry
+After=network-online.target
+Requires=network-online.target
+
+[Container]
+ContainerName=registry
+HostName=registry
+Image=docker.io/library/registry:latest
+Volume={{ data_oci_dir }}:/var/lib/registry:Z
+PublishPort=5000:5000
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

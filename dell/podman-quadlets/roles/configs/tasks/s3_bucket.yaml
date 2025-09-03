@@ -1,0 +1,57 @@
+- name: Import EPEL GPG key
+  ansible.builtin.rpm_key:
+    key: '{{ epel10_gpg_key }}'
+    state: present
+
+- name: Install EPEL release RPM
+  ansible.builtin.dnf:
+    name: '{{ epel10_url }}'
+    state: present
+
+- name: Install s3cmd
+  ansible.builtin.dnf:
+    name: s3cmd
+    state: present
+
+- name: Create s3cfg
+  ansible.builtin.template:
+    src: s3/s3cfg.j2
+    dest: '/root/.s3cfg'
+    mode: '{{ file_perm_rw }}'
+
+- name: Verify s3 bucket
+  ansible.builtin.command: s3cmd ls
+  changed_when: false
+  failed_when: false
+  register: s3_bucket_output
+
+- name: Create S3 bucket 'efi'
+  ansible.builtin.command: s3cmd mb s3://efi
+  register: efi_bucket
+  changed_when: "'Bucket' in efi_bucket.stdout"
+  when: '"s3://efi" not in s3_bucket_output.stdout' 
+
+- name: Set ACL to public for 'efi'
+  command: s3cmd setacl s3://efi --acl-public
+  changed_when: true
+  when: '"s3://efi" not in s3_bucket_output.stdout' 
+
+- name: Create S3 bucket 'boot-images'
+  command: s3cmd mb s3://boot-images
+  register: boot_images_bucket
+  changed_when: "'Bucket' in boot_images_bucket.stdout"
+  when: '"s3://boot-images" not in s3_bucket_output.stdout' 
+
+- name: Set ACL to public for 'boot-images'
+  command: s3cmd setacl s3://boot-images --acl-public
+  changed_when: true
+  when: '"s3://boot-images" not in s3_bucket_output.stdout' 
+
+- name: Verify s3 bucket
+  ansible.builtin.command: s3cmd ls
+  changed_when: false
+  register: s3_bucket_output
+
+- name: Verify s3 bucket output
+  ansible.builtin.debug:
+    msg: "{{ s3_bucket_output.stdout_lines }}"

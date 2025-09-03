@@ -1,0 +1,5 @@
+- import_playbook: configs.yaml
+- import_playbook: smd.yaml
+- import_playbook: image.yaml
+- import_playbook: bss.yaml
+- import_playbook: cloud_init.yaml

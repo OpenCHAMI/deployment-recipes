@@ -1,0 +1,10 @@
+- name: Install ochami dependent packages
+  ansible.builtin.dnf:
+    name: '{{ ochami_package_dependencies }}'
+    state: present
+
+- name: Install pip packages
+  ansible.builtin.pip:
+    name: '{{ ochami_pip_packages }}'
+    state: present
+    executable: pip3

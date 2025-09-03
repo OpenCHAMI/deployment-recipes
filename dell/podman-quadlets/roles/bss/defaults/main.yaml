@@ -1,0 +1,8 @@
+rhel_base_compute_image_name: rhel-compute
+bss_template: bss.yaml.j2
+openchami_work_dir: /opt/workdir
+bss_dest: '{{ openchami_work_dir }}/boot/bss-{{ group_name }}.yaml'
+file_perm_rw: '0644'
+file_perm_rwx: '0755'
+bss_params_cloud_init: 'ds=nocloud;s=http://{{ cluster_boot_ip }}:8081/cloud-init/'
+bss_params_opts: 'ip=dhcp rd.live.image rd.live.ram rd.neednet=1 rd.driver.blacklist=ccp,edac_core,power_meter,ahci,megaraid_sas modprobe.blacklist=ccp,edac_core,power_meter,ahci,megaraid_sas libata.force=1:disable,2:disable,3:disable,4:disable rd.luks=0 rd.md=0 rd.dm=0 console=tty0 console=ttyS0,115200 selinux=0 apparmor=0 ip6=off cloud-init=enabled'

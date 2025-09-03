@@ -1,0 +1,4 @@
+- name: 'Cleanup ochami'
+  hosts: ochami
+  roles:
+    - { role: cleanup, tags: ['cleanup'] }
