@@ -13,7 +13,7 @@
 
     - name: Verify openchami service
       ansible.builtin.import_tasks: verify_ochami.yaml
-      vars:
+      vars:https://github.com/abhishek-sa1/deployment-recipes/pull/1/conflict?name=dell%252Fpodman-quadlets%252Froles%252Fconfigs%252Ftasks%252Fverify.yaml&base_oid=6c62d25d868291731f7c956a3688707512ed9d67&head_oid=4b7eb22a903d39d8781056782d0b911d1f2c1483
         max_retries: 1
   rescue:
     - name: Restart openchami in case of error
