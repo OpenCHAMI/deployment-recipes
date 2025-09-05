@@ -1,0 +1,87 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  creationTimestamp: 2018-07-04T15:03:08Z
+  generation: 1
+  labels:
+    kubevirt.io/os: linux
+  # TODO this should be configurable, and ideally we'd have some means of deploying multiple.
+  name: fred
+  annotations:
+    # TODO guides currently have this specified at the Application level. We may want to start
+    # doing it per resource as shown here.
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  runStrategy: Always
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        kubevirt.io/domain: fred
+    spec:
+      hostname: fred
+      domain:
+        cpu:
+          cores: 2
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: disk0
+          - cdrom:
+              bus: sata
+              readonly: true
+            name: cloudinitdisk
+          interfaces:
+            - name: default
+              masquerade: {}
+              ports:
+                - name: ssh
+                  port: 22
+        machine:
+          type: q35
+        resources:
+          requests:
+            memory: 1024M
+      networks:
+      - name: default
+        pod: {} # Stock pod network
+      volumes:
+      - name: disk0
+        persistentVolumeClaim:
+          claimName: fedora
+      - name: cloudinitdisk
+        cloudInitNoCloud:
+          secretRef:
+            name: vm-cloud-init
+---
+# TODOI I forget exactly why this exists. It's probably unnecessary.
+apiVersion: v1
+kind: Service
+metadata:
+  name: vm
+spec:
+  selector:
+    vm.kubevirt.io/name: fred
+  clusterIP: None
+  type: ClusterIP
+  ports:
+  - name: foo # Actually, no port is needed.
+    port: 1234
+    targetPort: 1234
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # TODO while the SSH service is more useful, at present it's tied to the single VM instance.
+  # Multiple would name collide. We'd either need https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/nameprefix/
+  # in the kustomization or require separate namespaces for each VM.
+  name: sshvm
+spec:
+  selector:
+    vm.kubevirt.io/name: fred
+  type: LoadBalancer
+  ports:
+  - name: ssh
+    port: 22
+    targetPort: 22

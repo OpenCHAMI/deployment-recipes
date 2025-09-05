@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smd
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: smd
+          image: smd-stub
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 27779
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /hsm/v2/service/ready
+              port: 27779
+          env:
+          - name: SMD_DBPORT
+            value: "5432"
+          - name: SMD_DBOPTS
+            value: sslmode=disable
+          - name: SMD_DBHOST
+            value: ochami-postgres-rw
+          - name: SMD_DBUSER
+            valueFrom:
+              secretKeyRef:
+                name: smd-db
+                key: username
+          - name: SMD_DBPASS
+            valueFrom:
+              secretKeyRef:
+                name: smd-db
+                key: password
+          - name: SMD_DBNAME
+            value: smd
+          securityContext:
+            runAsUser: 65534
+            runAsGroup: 65534
+            runAsNonRoot: true

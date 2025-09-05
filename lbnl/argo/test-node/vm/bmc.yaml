@@ -1,0 +1,22 @@
+# TODO This relies on static mapping between the VM and this resource.
+# Ideally, the kustomization should patch the VM name to both the VM and BMC.
+apiVersion: virtualmachine.kubevirt.io/v1alpha1
+kind: VirtualMachineBMC
+metadata:
+  labels:
+    app.kubernetes.io/name: virtualmachinebmc
+    app.kubernetes.io/instance: fred
+    app.kubernetes.io/part-of: kubevirtbmc
+    app.kubernetes.io/created-by: kubevirtbmc
+  name: fred-bmc
+  # TODO Not sure if these are actually limited to the system namespace.
+  # The examples are, but that with a remote NS reference feels backwards.
+  # In initial testing I didn't see the operator provision others and just
+  # used the default one. It'd be nice to have these expose xnames along the
+  # default SMD expectations.
+  namespace: kubevirtbmc-system
+spec:
+  username: admin
+  password: fredfred
+  vmNamespace: default
+  vmName: fred

@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mgmt
+
+resources:
+- ../db
+- ../init
+- ../base
+
+labels:
+- includeSelectors: false
+  pairs:
+    app.kubernetes.io/version: v2.7.0
+    app.kubernetes.io/component: power-service
+
+#images:
+#- name: power-control-stub
+#  # TODO there isn't yet a release of Postgres-capable PCS,
+#  # and we furthermore need additional changes to support
+#  # - Using universal BMC creds from the environment, without Vault.
+#  # - Using HTTP for BMC requests.
+#  # - Overriding BMC hostnames. https://github.com/OpenCHAMI/ochami/pull/51
+#  #   resolves this, but isn't released yet.
+#  newName: docker.io/traines/power-control
+#  newTag: v1.1.0-debug.1

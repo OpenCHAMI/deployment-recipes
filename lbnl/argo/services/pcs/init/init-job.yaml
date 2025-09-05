@@ -1,0 +1,47 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate-pcs
+spec:
+  template:
+    metadata:
+      annotations:
+        traffic.sidecar.istio.io/excludeOutboundPorts: 2379,2380
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: ochami-power-control
+        image: power-control-stub
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: LOG_LEVEL
+            value: INFO
+          - name: STORAGE
+            value: POSTGRES
+          - name: POSTGRES_HOST
+            value: ochami-postgres-rw
+          # TODO it'd be nice to be able to push these down from the suite. can we patch them in
+          # or replace them? Probably simpler to just require a namespace per full deployment and
+          # not worry about name collisions
+          - name: POSTGRES_DBNAME
+            value: pcs
+          - name: POSTGRES_INSECURE
+            value: "true"
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: pcs-db
+                key: username
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pcs-db
+                key: password
+        command:
+          - power-control
+          - init-postgres
+        securityContext:
+          runAsUser: 65534
+          runAsGroup: 65534
+          runAsNonRoot: true

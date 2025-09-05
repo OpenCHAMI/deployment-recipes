@@ -1,0 +1,10 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: smd
+spec:
+  name: smd
+  owner: smd
+  cluster:
+    name: ochami-postgres
