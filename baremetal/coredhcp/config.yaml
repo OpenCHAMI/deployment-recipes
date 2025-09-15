@@ -1,0 +1,9 @@
+---
+server4:
+  plugins:
+    - server_id: 172.16.0.254
+    - dns: 1.1.1.1
+    - router: 172.16.0.253
+    - netmask: 255.255.255.0
+    - coresmd: https://foobar.openchami.cluster:8443 http://172.16.0.254:8081 /root_ca/root_ca.crt 30s 1h false
+    - lease_time: 10m

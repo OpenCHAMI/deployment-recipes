@@ -1,0 +1,6 @@
+host,mac_address,node_ip_bmc,node_ip_cn,bmc_ip
+dns,useless,-,1.1.1.1,-
+router,useless,-,172.16.0.253,useless
+admin,useless,10.0.0.254,172.16.0.254,useless
+cn1,aa:bb:cc:00:00:01,10.0.0.1,-,172.16.0.1
+cn2,aa:bb:cc:00:00:02,10.0.0.2,-,172.16.0.2
