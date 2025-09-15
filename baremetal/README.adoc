@@ -8,6 +8,9 @@ An virtualize environment is already available in this repository. +
 Let's groove metal.
 ____
 
+NOTE: This README includes files, but GitHub doesn't support this feature, do not hesitate to render html output on your laptop. +
+See https://github.com/github/markup/issues/1095[Asciidoctor: support include directives for other asciidoc files #1095].
+
 == Prerequisites
 
 === Tools
