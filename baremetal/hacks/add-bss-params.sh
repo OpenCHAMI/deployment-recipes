@@ -6,7 +6,9 @@ MAC_ADDRESS="$(get_node_mac "${1}")"
 SERVER="$(get_node_ip_cn "admin")"
 XNAME="$(get_node_xname "${1}")"
 
-ochami --cacert cacert.pem \
+ochami \
+	--token $(<access_token) \
+	--cacert cacert.pem \
 	bss boot params add \
 	--mac "${MAC_ADDRESS}" \
 	--kernel "http://${SERVER}/vmlinuz-linux" \
