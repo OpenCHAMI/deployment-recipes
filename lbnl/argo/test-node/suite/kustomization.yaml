@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../kubevirt
+- ../kubevirtbmc
+- ../vm
+# TODO installing cert-manager using Argo makes Argo unhappy with webhook certs.
+# unknown issue prevents Argo from trusting cert-manager's. Pending a fix for that,
+# it must be installed separately:
+#
+# kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.18.2/cert-manager.yaml
+
+labels:
+- includeSelectors: false
+  pairs:
+    app.kubernetes.io/part-of: virt-test

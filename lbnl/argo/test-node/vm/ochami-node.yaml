@@ -1,0 +1,27 @@
+nodes:
+-   name: ba011
+    # We'd need static IP configuration on the VM and BMC to make these meaningful.
+    # I'm not sure where they're actually used outside of coresmd DHCP configuration,
+    # which is irrelevant for kubevirt.
+    bmc_ipaddr: 10.49.186.68
+    ipaddr: 10.119.4.198
+    # Similarly only relevant to DHCP, but there's likely no way to provide a "correct"
+    # value at all.
+    mac: "5e:72:59:e4:6a:a8"
+    # TODO this depends on the VM name. It uses the BMC kubevirtbmc auto-creates
+    # instead of a custom one. It is not available in the current v0.5.3 release:
+    # https://github.com/OpenCHAMI/ochami/pull/51
+    # PCS _does not_ have the ability to select BMC protocol from SMD configuration,
+    # and still needs PCS_DEBUG_RFE_PROTO to override that to HTTP.
+    bmc_fqdn: default-fred-virtbmc.kubevirtbmc-system
+    group: example
+    nid: 1
+    xname: x1000c0s0b0n0
+    # TODO these are fake values, and PCS at least doesn't appear to care about them.
+    # However, SMD appears to have some odd behavior for static discovered nodes with
+    # no interfaces that still needs investigation.
+    interfaces:
+    - mac_addr: f4:a2:2e:ee:9e:f8
+      ip_addrs:
+      - name: internal
+        ip_addr: 10.143.0.199
