@@ -1,0 +1,25 @@
+- name: Load boot policy file
+  ansible.builtin.template:
+    src: s3/s3-public-read-boot.json.j2
+    dest: '{{ s3_work_dir }}/s3-public-read-boot.json'
+    mode: '{{ file_perm_rw }}'
+
+- name: Load efi policy file
+  ansible.builtin.template:
+    src: s3/s3-public-read-efi.json.j2
+    dest: '{{ s3_work_dir }}/s3-public-read-efi.json'
+    mode: '{{ file_perm_rw }}'
+
+- name: Update the boot policy
+  ansible.builtin.command: >
+    s3cmd setpolicy {{ s3_work_dir }}/s3-public-read-boot.json s3://boot-images \
+    --host={{ cluster_boot_ip }}:9000 \
+    --host-bucket={{ cluster_boot_ip }}:9000
+  changed_when: true
+
+- name: Update the efi policy
+  ansible.builtin.command: >
+    s3cmd setpolicy {{ s3_work_dir }}/s3-public-read-efi.json s3://efi \
+    --host={{ cluster_boot_ip }}:9000 \
+    --host-bucket={{ cluster_boot_ip }}:9000
+  changed_when: true

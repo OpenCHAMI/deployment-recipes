@@ -1,0 +1,56 @@
+
+base_image_packages:
+# Core init + system
+  - systemd
+  - systemd-udev
+  - kernel
+  - dracut
+  - dracut-live
+  - dracut-network
+  - squashfs-tools
+  - nfs-utils
+
+  # Networking
+  - NetworkManager
+  - nm-connection-editor
+  - iproute
+  - iputils
+  - curl
+
+  # Base tools dracut wants
+  - bash
+  - coreutils
+  - grep
+  - sed
+  - gawk
+  - gzip
+  - findutils
+  - util-linux
+  - kbd
+  - lsof
+  - cryptsetup
+  - lvm2
+  - device-mapper
+
+  # Logging & time
+  - rsyslog
+  - chrony
+
+  # Cloud/init helpers
+  - sudo
+  - wget
+  - cloud-init
+
+base_compute_image_packages:
+  - git
+  - nfs-utils
+  - tcpdump
+  - traceroute
+  - vim
+
+base_image_commands:
+  - "dracut --add 'dmsquash-live livenet network-manager' --install '/usr/lib/systemd/systemd-sysroot-fstab-check' --kver $(basename /lib/modules/*) -N -f --logfile /tmp/dracut.log 2>/dev/null"
+  - "echo DRACUT LOG:; cat /tmp/dracut.log"
+
+base_compute_image_commands:
+  - "useradd -mG wheel -p '$6$VHdSKZNm$O3iFYmRiaFQCemQJjhfrpqqV7DdHBi5YpY6Aq06JSQpABPw.3d8PQ8bNY9NuZSmDv7IL/TsrhRJ6btkgKaonT.' testuser"

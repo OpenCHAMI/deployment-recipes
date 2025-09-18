@@ -1,0 +1,4 @@
+- name: 'ochami cloud init'
+  hosts: ochami
+  roles:
+    - { role: cloud_init, tags: ['cloud_init'] }

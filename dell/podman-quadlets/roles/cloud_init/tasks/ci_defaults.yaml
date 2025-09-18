@@ -1,0 +1,32 @@
+- name: Verify the ssh key exist
+  ansible.builtin.stat:
+    path: "{{ ssh_key_path }}.pub"
+  register: ssh_path_stat
+
+- name: Create ssh key
+  ansible.builtin.shell: bash -c "yes | ssh-keygen -t ed25519 -f {{ ssh_key_path }} -N ''"
+  changed_when: false
+  when: not ssh_path_stat.stat.exists
+
+- name: Read the ssh key
+  ansible.builtin.command: cat {{ ssh_key_path }}.pub
+  register: read_ssh_key
+
+- name: Load ci defaults template
+  ansible.builtin.template:
+    src: '{{ ci_defaults_template }}'
+    dest: '{{ ci_defaults_dest }}'
+    mode: '{{ file_perm_rw }}'
+
+- name: Set ci defaults configuration
+  ansible.builtin.command: ochami cloud-init defaults set -f yaml -d @{{ ci_defaults_dest }}
+  changed_when: true
+
+- name: Verify ci defaults configuration
+  ansible.builtin.command: ochami cloud-init defaults get -F json-pretty
+  changed_when: false
+  register: ci_defaults_output
+
+- name: Verify ci defaults output
+  ansible.builtin.debug:
+    msg: "{{ ci_defaults_output.stdout_lines }}"

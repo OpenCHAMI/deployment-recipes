@@ -1,0 +1,7 @@
+- name: Import base image tasks
+  ansible.builtin.import_tasks: base_image.yaml
+  tags: base_image
+
+- name: Import base compute image tasks
+  ansible.builtin.import_tasks: base_compute_image.yaml
+  tags: compute_image

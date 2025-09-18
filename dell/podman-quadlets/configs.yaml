@@ -1,0 +1,4 @@
+- name: 'ochami configs'
+  hosts: ochami
+  roles:
+    - { role: configs, tags: ['configs'] }

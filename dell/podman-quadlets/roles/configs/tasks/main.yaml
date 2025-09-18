@@ -1,0 +1,32 @@
+- name: Import packages task
+  ansible.builtin.import_tasks: packages.yaml
+
+- name: Import configs task
+  ansible.builtin.import_tasks: configs.yaml
+
+- name: Import hosts task
+  ansible.builtin.import_tasks: hosts.yaml
+
+- name: Import minio task
+  ansible.builtin.import_tasks: minio.yaml
+
+- name: Import registry task
+  ansible.builtin.import_tasks: registry.yaml
+
+- name: Import ochami task
+  ansible.builtin.import_tasks: ochami.yaml
+
+- name: Import firewall task
+  ansible.builtin.import_tasks: firewall.yaml
+
+- name: Import verify task
+  ansible.builtin.import_tasks: verify.yaml
+
+- name: Import regctl tasks
+  ansible.builtin.import_tasks: regctl.yaml
+
+- name: Import s3 bucket tasks
+  ansible.builtin.import_tasks: s3_bucket.yaml
+
+- name: Import policy update tasks
+  ansible.builtin.import_tasks: policy_update.yaml
