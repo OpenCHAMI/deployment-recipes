@@ -31,4 +31,5 @@ until [ "$(curl \
 	https://foobar.openchami.cluster:8443/hsm/v2/Inventory/RedfishEndpoints | jq -r '.RedfishEndpoints.[].DiscoveryInfo.LastDiscoveryStatus')" \
 	== "DiscoverOK" ]; do
 	echo "wait on DiscoverOk $(date +%s)"
+	sleep 1
 done
