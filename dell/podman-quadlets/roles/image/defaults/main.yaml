@@ -11,3 +11,5 @@ image_build_fail_msg: "Error encountered while building image. This can be due t
 rhel_base_compute_mounts: "-v {{ openchami_work_dir }}/images/{{ rhel_base_compute_image_name }}-{{ rhel_tag }}.yaml:/home/builder/config.yaml:z"
 rhel_base_mounts: "-v {{ openchami_work_dir }}/images/{{ rhel_base_image_name }}-{{ rhel_tag }}.yaml:/home/builder/config.yaml:z"
 image_build_name: "ghcr.io/openchami/image-build:latest"
+rhel_base_command_options: "image-build --config config.yaml --log-level DEBUG"
+rhel_base_compute_command_options: "image-build --config config.yaml --log-level DEBUG"
