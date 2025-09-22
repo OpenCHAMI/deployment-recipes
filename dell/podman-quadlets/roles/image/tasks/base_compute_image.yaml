@@ -14,7 +14,7 @@
           --network host -e S3_ACCESS={{ minio_s3_username }} -e S3_SECRET={{ minio_s3_password }}
           {{ rhel_base_compute_mounts }}
           {{ image_build_name }}
-          image-build --config config.yaml --log-level DEBUG
+          {{ rhel_base_compute_command_options }}
       changed_when: true
       register: build_base_compute_osimage
   rescue:

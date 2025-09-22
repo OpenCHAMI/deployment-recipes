@@ -20,7 +20,7 @@
           --network host
           {{ rhel_base_mounts }}
           {{ image_build_name }}
-          image-build --config config.yaml --log-level DEBUG
+          {{ rhel_base_command_options }}
       changed_when: true
       register: build_base_osimage
   rescue:
