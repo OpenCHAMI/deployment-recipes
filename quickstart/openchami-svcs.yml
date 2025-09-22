@@ -1,3 +1,6 @@
+volumes:
+  cloud-init-data:
+
 services:
 ###
 # SMD Init and Server Containers
@@ -133,6 +136,8 @@ services:
         condition: service_healthy
     networks:
       - internal
+    volumes:
+      - cloud-init-data:/cloud-init
     healthcheck:
       test: ["CMD", "curl", "http://127.0.0.1:27777/cloud-init/version"]
       interval: 5s
