@@ -15,7 +15,6 @@ See https://github.com/github/markup/issues/1095[Asciidoctor: support include di
 
 === Tools
 
-psql:: Communicate with PostgreSQL database
 https://github.com/medialab/xan[xan]:: Execute script that read csv files
 
 === Host file
