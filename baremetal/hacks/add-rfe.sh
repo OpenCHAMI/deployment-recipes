@@ -6,9 +6,10 @@ IP="$(get_bmc_ip "${1}")"
 XNAME="$(get_rfe_xname "${1}")"
 PASSWORD=${BMC_PASSWORD}
 
-curl \
+ANSWER="$(curl \
 	--cacert cacert.pem \
 	--request POST \
+	-s \
 	-d "
 {
   \"RedfishEndpoints\": [
@@ -23,7 +24,13 @@ curl \
   ]
 }
 " \
-	https://foobar.openchami.cluster:8443/hsm/v2/Inventory/RedfishEndpoints
+	https://foobar.openchami.cluster:8443/hsm/v2/Inventory/RedfishEndpoints)"
+
+if [ "${ANSWER}" != "[{\"URI\":\"/hsm/v2/Inventory/RedfishEndpoints/${XNAME}\"}]" ]; then
+	echo "error: received unexpected answer"
+	echo "${ANSWER}"
+	exit 1
+fi
 
 until [ "$(curl \
 	--cacert cacert.pem \
