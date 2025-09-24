@@ -1,0 +1,40 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate-bss
+spec:
+  template:
+    spec:
+      containers:
+      - name: bss-init
+        image: bss-stub
+        imagePullPolicy: IfNotPresent
+        command: ["/usr/local/bin/bss-init"]
+        env:
+        - name: BSS_USESQL
+          value: "true"
+        - name: BSS_INSECURE
+          value: "true"
+        - name: BSS_DBPORT
+          value: "5432"
+        - name: BSS_DBHOST
+          value: ochami-postgres-rw
+        - name: BSS_DBUSER
+          valueFrom:
+            secretKeyRef:
+              name: bss-db
+              key: username
+        - name: BSS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: bss-db
+              key: password
+        - name: BSS_DBNAME
+          value: bss
+        securityContext:
+          runAsUser: 65534
+          runAsGroup: 65534
+          runAsNonRoot: true
+      restartPolicy: OnFailure
+  backoffLimit: 4

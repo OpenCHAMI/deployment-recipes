@@ -1,0 +1,10 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: bss
+spec:
+  name: bss
+  owner: bss
+  cluster:
+    name: ochami-postgres

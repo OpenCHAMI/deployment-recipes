@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mgmt
+
+resources:
+- ../db
+- ../init
+- ../base
+
+labels:
+- includeSelectors: false
+  pairs:
+    app.kubernetes.io/version: v1.32.1
+    app.kubernetes.io/component: boot-script-service
+
+images:
+- name: bss-stub
+  newName: ghcr.io/openchami/bss
+  newTag: v1.32.1
