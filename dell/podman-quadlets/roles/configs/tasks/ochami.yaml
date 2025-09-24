@@ -1,13 +1,14 @@
-- name: Get latest openchami response
-  ansible.builtin.uri:
-    url: "{{ openchami_api_url }}"
-    return_content: true
-  register: openchami_release_response
+# Commenting this task to fix version issues
+# - name: Get latest openchami response
+#   ansible.builtin.uri:
+#     url: "{{ openchami_api_url }}"
+#     return_content: true
+#   register: openchami_release_response
 
-- name: Extract openchami RPM download URL
-  ansible.builtin.set_fact:
-    openchami_rpm_url: "{{ openchami_release_response.content | from_json | json_query('assets[?ends_with(name, `.rpm`)].browser_download_url') | first }}"
-    openchami_rpm_name: "{{ openchami_release_response.content | from_json | json_query('assets[?ends_with(name, `.rpm`)].name') | first }}"
+# - name: Extract openchami RPM download URL
+#   ansible.builtin.set_fact:
+#     openchami_rpm_url: "{{ openchami_release_response.content | from_json | json_query('assets[?ends_with(name, `.rpm`)].browser_download_url') | first }}"
+#     openchami_rpm_name: "{{ openchami_release_response.content | from_json | json_query('assets[?ends_with(name, `.rpm`)].name') | first }}"
 
 - name: Download the openchami RPM file
   ansible.builtin.get_url:
@@ -25,16 +26,17 @@
     state: present
     disable_gpg_check: true
 
-- name: Get ochami client respone
-  ansible.builtin.uri:
-    url: "{{ ochami_client_api_url }}"
-    return_content: true
-  register: ochami_client_release_response
+# Commenting this task to fix version issues
+# - name: Get ochami client respone
+#   ansible.builtin.uri:
+#     url: "{{ ochami_client_api_url }}"
+#     return_content: true
+#   register: ochami_client_release_response
 
-- name: Extract ochami RPM download URL
-  ansible.builtin.set_fact:
-    ochami_client_rpm_url: "{{ ochami_client_release_response.content | from_json | json_query('assets[?ends_with(name, `amd64.rpm`)].browser_download_url') | first }}"
-    ochami_client_rpm_name: "{{ ochami_client_release_response.content | from_json | json_query('assets[?ends_with(name, `amd64.rpm`)].name') | first }}"
+# - name: Extract ochami RPM download URL
+#   ansible.builtin.set_fact:
+#     ochami_client_rpm_url: "{{ ochami_client_release_response.content | from_json | json_query('assets[?ends_with(name, `amd64.rpm`)].browser_download_url') | first }}"
+#     ochami_client_rpm_name: "{{ ochami_client_release_response.content | from_json | json_query('assets[?ends_with(name, `amd64.rpm`)].name') | first }}"
 
 - name: Download the ochami client RPM file
   ansible.builtin.get_url:
