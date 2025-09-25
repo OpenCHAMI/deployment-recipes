@@ -37,3 +37,7 @@ regctl_url: https://github.com/regclient/regclient/releases/latest/download/regc
 regctl_dest: /usr/local/bin/regctl
 epel10_url: https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
 epel10_gpg_key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-10
+openchami_rpm_url: https://github.com/OpenCHAMI/release/releases/download/v0.0.31/openchami-0.0.31.rpm
+openchami_rpm_name: openchami-0.0.31.rpm
+ochami_client_rpm_url:  https://github.com/OpenCHAMI/ochami/releases/download/v0.5.3/ochami_0.5.3_linux_amd64.rpm
+ochami_client_rpm_name: ochami_0.5.3_linux_amd64.rpm
