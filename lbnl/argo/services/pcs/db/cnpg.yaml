@@ -1,0 +1,13 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: pcs
+spec:
+  name: pcs
+  owner: pcs
+  cluster:
+    # TODO https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/nameprefix/ is maybe of interest
+    # for emulating Helm chart release names, but unlike Helm we have no way to make this a function, and
+    # IDK if Kustomize has any good mechanism for "prepend the prefix to this non-name field".
+    name: ochami-postgres

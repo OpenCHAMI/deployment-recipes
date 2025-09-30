@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mgmt
+
+resources:
+- ../db
+- ../init
+- ../base
+
+labels:
+- includeSelectors: false
+  pairs:
+    app.kubernetes.io/version: v2.18.0
+    app.kubernetes.io/component: state-manager
+
+images:
+- name: smd-stub
+  newName: docker.io/traines/smd
+  newTag: v2.0.2-debug.4

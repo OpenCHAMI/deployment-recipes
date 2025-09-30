@@ -1,0 +1,17 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: virt-env
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+    - ServerSideApply=true
+    - SkipDryRunOnMissingResource=true
+  source:
+    path: 'lbnl/argo/test-vm/suite'
+    repoURL: 'https://github.com/OpenCHAMI/deployment-recipes/'
+    targetRevision: main
+  destination:
+    server: 'https://kubernetes.default.svc'

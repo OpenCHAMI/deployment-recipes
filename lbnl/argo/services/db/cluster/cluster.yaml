@@ -1,0 +1,45 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ochami-postgres
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.5
+  
+  storage:
+    size: 5Gi
+  managed:
+    # Ideally we'd have a way to separate these out without using
+    # separate Clusters per service. They can maybe be patched in?
+    roles:
+    - name: pcs
+      ensure: present
+      comment: power-control
+      login: true
+      superuser: false
+      passwordSecret:
+        name: pcs-db
+      inRoles:
+        - pg_monitor
+        - pg_signal_backend
+    - name: smd
+      ensure: present
+      comment: state-management
+      login: true
+      superuser: false
+      passwordSecret:
+        name: smd-db
+      inRoles:
+        - pg_monitor
+        - pg_signal_backend
+    - name: bss
+      ensure: present
+      comment: boot-script
+      login: true
+      superuser: false
+      passwordSecret:
+        name: bss-db
+      inRoles:
+        - pg_monitor
+        - pg_signal_backend

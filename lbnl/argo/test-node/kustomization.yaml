@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- namespace.yaml
+- ../db
+- ../smd/suite
+- ../bss/suite
+- ../pcs/suite
+
+# TODO this probably should be handled at the ochami/suite level, since that's where other end
+# user modification happens. However, that precludes doing an earlier replacement in ochami/pcs/suite:
+# image overrides build from the bottom up, and if your included resource includes a replace, your
+# including kustomization needs to match the result of the replace, not the original stub. Top-level
+# image sections do not clobber lower-level ones.
+#
+# This means you can't deploy ochami/pcs independently without modifying its kustomization. It'd be
+# nice if you could render either with a valid image using the stock manifests.
+images:
+- name: power-control-stub
+  newName: docker.io/traines/power-control
+  newTag: v1.1.0-debug.14444
