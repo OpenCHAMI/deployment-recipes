@@ -6,4 +6,5 @@ cp ~/mountpoint/arch/boot/x86_64/initramfs-linux.img ~/disk-images
 mkdir -p ~/disk-images/arch/x86_64
 cp ~/mountpoint/arch/x86_64/airootfs.sfs ~/disk-images/arch/x86_64
 cp ~/mountpoint/arch/x86_64/airootfs.sfs.cms.sig ~/disk-images/arch/x86_64
+umount mountpoint
 '

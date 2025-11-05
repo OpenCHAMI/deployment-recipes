@@ -2,6 +2,8 @@
 
 source hacks/utils.sh
 
+check_hostname "${1}"
+
 URL="https://$(get_bmc_ip "${1}")"
 
 # not working :(

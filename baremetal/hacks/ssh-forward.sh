@@ -2,6 +2,7 @@ ssh \
 	-N \
 	-L 27777:localhost:27777 \
 	-L 27779:localhost:27779 \
+	-L 27778:localhost:27778 \
 	-L 3000:localhost:3000 \
 	-L 28007:localhost:28007 \
 	-L 8443:localhost:8443 \

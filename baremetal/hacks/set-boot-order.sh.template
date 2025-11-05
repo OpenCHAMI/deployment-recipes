@@ -1,0 +1,55 @@
+set -e
+
+BMC_URL="https://${RFE_IP}"
+PASSWORD="${BMC_PASSWORD}"
+MAC_ADDRESS_UPPERCASE=$(echo "${MAC_ADDRESS}"| tr '[:lower:]' '[:upper:]' | tr -d ':')
+
+function _curl() {
+	curl -sku root:"${PASSWORD}" "${BMC_URL}${1}"
+}
+
+function _curl_patch() {
+	ANSWER="$(curl -sku root:"${PASSWORD}" "${BMC_URL}${1}" \
+		-H "content-type:application/json" \
+		-X PATCH \
+		-d "${2}")"
+
+	ANSWER_MESSAGE="$(echo "${ANSWER}" | jq -r '.error."@Message.ExtendedInfo"[].MessageId')"
+
+	if [ "${ANSWER_MESSAGE}" != "Base.1.4.Success" ]; then
+		echo "error: cannot patch"
+		echo "${ANSWER}" | jq || echo "${ANSWER}"
+		exit 1
+	fi
+}
+
+# get system path
+SYSTEMS=$(_curl "/redfish/v1" | jq -r '.Systems."@odata.id"')
+
+SYSTEMS_1="$(_curl "${SYSTEMS}" | jq -r '.Members[]."@odata.id"')"
+
+for bootOptions in $(_curl "/redfish/v1/Systems/1/BootOptions" | jq -r '.Members.[]."@odata.id"')
+do
+	echo "${bootOptions}"
+	option="$(_curl "${bootOptions}")"
+	if [ "$(echo "${option}" | jq -r .DisplayName)" = "Embedded LOM 1 Port 1 : HPE Ethernet 10Gb 2-port 568i Adapter (PXE IPv4)" ]; then
+		optionReference="$(echo "${option}" | jq -r .BootOptionReference)"
+		echo "${optionReference}"
+		echo "${option}" | jq
+		break
+	fi
+done
+
+bootOrder="$(_curl "${SYSTEMS_1}" | \
+	jq --arg ref "${optionReference}" \
+	'.Boot.BootOrder |del(.[] | select(. == $ref)) | . |= [$ref] + .')"
+
+payload="$(echo '{"Boot":{"BootOrder":[]}}' | \
+	jq --argjson bootOrder "${bootOrder}" \
+	'.Boot.BootOrder += $bootOrder')"
+
+_curl_patch "${SYSTEMS_1}" "${payload}"
+
+# print boot options
+_curl "${SYSTEMS_1}" | jq .Boot
+
