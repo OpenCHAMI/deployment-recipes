@@ -1,0 +1,40 @@
+= Terraform
+
+== Known issus
+
+=== Terraform fails after the first apply
+
+==== Error message
+
+This error can easily appears after the first `terraform apply`.
+
+----
+│ Error: Error cannot swith the power status of the node:
+│
+│   with manta_node.node["h008"],
+│   on main.tf line 52, in resource "manta_node" "node":
+│   52: resource "manta_node" "node" {
+│
+│ Component not found in component map.
+----
+
+==== Cause
+
+This resource will ask to PCS (power control service) to switch power state.
+
+[source,terraform]
+----
+resource "manta_node" "node" {
+  id    = "xname"
+  state = "Off"
+}
+----
+
+==== Reason
+
+But in case where PCS hasn't already fetch component in SMD. The terraform provider will
+trough an error saying that the component doesn't exist.
+
+==== Solution
+
+To solve this error, restart `terraform apply`.
