@@ -42,7 +42,7 @@ compute nodes:: The network for compute nodes
 include::data/networks.csv[]
 |===
 
-== Machines
+== Components
 
 Three type of machines:
 
@@ -50,9 +50,18 @@ BMC:: is connected on out of band's network, handle compute node.
 Compute node:: is connected on compute nodes' network, is the target of provisioning
 Management:: is connected on both network, it communicate with `BMCs` and nodes
 
+=== Machines table
+
 [%header,format=csv]
 |===
 include::data/machines.csv[]
+|===
+
+=== Nodes table
+
+[%header,format=csv]
+|===
+include::data/nodes.csv[]
 |===
 
 == SSH configuration
@@ -166,58 +175,35 @@ In this way you can communicate with OpenCHAMI's services directly from your lap
 include::hacks/ssh-forward.sh[]
 ----
 
-== Add RFE
+== Terraform
 
-Define the BMC's password and add RFE of the host you want.
+The Terraform manta provider have to be installed localy. +
+Instruction is available: https://github.com/eth-cscs/terraform-provider-manta/?tab=readme-ov-file#22-development[2.3. Install Provider locally]
 
-[source,bash]
-----
-BMC_PASSWORD=1234 bash hacks/add-rfe.sh cn1
-----
-
-== Configure BSS
+=== Create variables
 
 [source,bash]
 ----
-bash hacks/add-bss-params.sh cn1
+bash hacks/create-terraform-variables.sh
 ----
 
-If you receive a http error 502, restart OpenCHAMI
-
-== Add IP in database
+=== Deploy
 
 [source,bash]
 ----
-bash hacks/update-ip.sh cn1
+terraform -chdir=terraform apply -auto-approve -var-file=variables.tfvars
 ----
 
-== Restart DHCP
+NOTE: If this message appears +
+`Could not create bss, unexpected error: Post "http://localhost:27778/boot/v1/bootparameters": EOF` +
+Redeploy OpenCHAMI.
 
-CoreSMD will fetch data every X seconds from SMD.
+== Helper script
 
-To avoid this lap where CoreSMD hasn't the latest new information, IP address. Restart it.
+=== Modify boot order
 
-[source,bash]
-----
-bash hacks/stop-dhcp.sh
-bash hacks/start-dhcp.sh
-----
+This script will add pxe ipv4 as first boot option.
 
-== Boot UEFI target
+=== Modify one-time boot
 
-. Turn off the compute node
-+
-----
-bash hacks/transition.sh cn1 force-off
-----
-
-. On the BMC interface, set one-time boot option to UEFI Target
-
-. Turn on the compute node
-+
-[source,bash]
-----
-bash hacks/transition.sh cn1 on
-----
-
-Normally, the node has boot with the arch linux live.
+NOTE: this change will not be permanement
