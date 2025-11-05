@@ -1,3 +1,6 @@
+shfmt:
+	shfmt -w $(shell find . -name "*.sh")
+
 re:
 	bash hacks/stop-dhcp.sh || true
 	ssh -t admin 'pushd quickstart-pcs && make re'
@@ -17,17 +20,14 @@ forward-port:
 kill-forward-port:
 	kill $(shell pgrep -f "ssh -N -L ")
 
-shfmt:
-	shfmt -w $(shell find . -name "*.sh")
-
 getrfe:
-	curl -ks https://foobar.openchami.cluster:8443/hsm/v2/Inventory/RedfishEndpoints | jq
+	@curl -ks https://foobar.openchami.cluster:8443/hsm/v2/Inventory/RedfishEndpoints | jq
 
 getcomponent:
-	curl -sk https://foobar.openchami.cluster:8443/hsm/v2/State/Components/ | jq
+	@curl -sk https://foobar.openchami.cluster:8443/hsm/v2/State/Components/ | jq
 
 gete:
-	curl -sk https://foobar.openchami.cluster:8443/hsm/v2/Inventory/EthernetInterfaces/ | jq
+	@curl -sk https://foobar.openchami.cluster:8443/hsm/v2/Inventory/EthernetInterfaces/ | jq
 
 restart-dhcp:
 	bash hacks/stop-dhcp.sh || true
