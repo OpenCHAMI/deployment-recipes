@@ -1,6 +1,6 @@
 = Terraform
 
-== Known issus
+== Known issues
 
 === Terraform fails after the first apply
 
