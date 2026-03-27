@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bss
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: bss
+        image: bss-stub
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 27778
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /boot/v1/service/status
+            port: 27778
+        env:
+        - name: BSS_USESQL
+          value: "true"
+        - name: BSS_INSECURE
+          value: "true"
+        - name: BSS_DBPORT
+          value: "5432"
+        - name: BSS_DBHOST
+          value: ochami-postgres-rw
+        - name: BSS_DBUSER
+          valueFrom:
+            secretKeyRef:
+              name: bss-db
+              key: username
+        - name: BSS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: bss-db
+              key: password
+        - name: BSS_DBNAME
+          value: bss
+        securityContext:
+          runAsUser: 65534
+          runAsGroup: 65534
+          runAsNonRoot: true

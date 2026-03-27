@@ -1,0 +1,129 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pcs
+  labels:
+    app.kubernetes.io/component: power-service
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 50%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        traffic.sidecar.istio.io/excludeOutboundPorts: 2379,2380
+    spec:
+      containers:
+      - name: pcs
+        image: power-control-stub
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: PCS_FAKE_VAULT_REDFISH_USER
+            value: "admin"
+          - name: PCS_FAKE_VAULT_REDFISH_PASS
+            value: "password"
+          - name: PCS_DEBUG_RFE_PROTO
+            value: "http"
+          - name: PCS_DEBUG_RFE_HOST
+            value: "default-fred-virtbmc"
+          - name: PCS_DEBUG_RFE_DOMAIN
+            value: "kubevirtbmc-system"
+          - name: LOG_LEVEL
+            value: INFO
+          # TODO using the standard port didn't work for whatever reason,
+          # so the SMD Service exposes both 80 and 27779.
+          #- name: SMS_SERVER
+          #  value: http://smd
+          - name: SMS_SERVER
+            value: http://smd:27779
+          - name: VAULT_ENABLED
+            value: "true"
+          - name: VAULT_ADDR
+            value: http://cray-vault.vault:8200
+          - name: VAULT_SKIP_VERIFY
+            value: "true"
+          - name: TRS_IMPLEMENTATION
+            value: LOCAL
+          - name: SERVICE_RESERVATION_VERBOSITY
+            value: ERROR
+          # TODO this appears unused. Dockerfiles have it, but it's absent from code
+          - name: HSMLOCK_ENABLED
+            value: "true"
+          - name: STORAGE
+            value: POSTGRES
+          - name: PCS_CA_URI
+            value: ""
+          - name: MAX_NUM_COMPLETED
+            value: "20000"
+          - name: EXPIRE_TIME_MINS
+            value: "1440"
+          - name: PCS_BASE_TRS_TASK_TIMEOUT
+            value: "40"
+          - name: PCS_STATUS_TIMEOUT
+            value: "30"
+          - name: PCS_STATUS_HTTP_RETRIES
+            value: "3"
+          - name: PCS_MAX_IDLE_CONNS
+            value: "4000"
+          - name: PCS_MAX_IDLE_CONNS_PER_HOST
+            value: "4"
+          - name: MAX_TRANSITION_MESSAGE_LENGTH
+            value: "130"
+          - name: POSTGRES_HOST
+            value: ochami-postgres-rw
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: pcs-db
+                key: username
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pcs-db
+                key: password
+          - name: POSTGRES_DBNAME
+            value: pcs
+          - name: POSTGRES_INSECURE
+            value: "true"
+        ports:
+          - containerPort: 28007
+            name: http
+        livenessProbe:
+          httpGet:
+            path: /v1/liveness
+            port: 28007
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /v1/readiness
+            port: 28007
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          timeoutSeconds: 25
+        # TODO we should add cert-manager integration, but don't
+        # currently have it set up.
+        #volumeMounts:
+        #  - mountPath: /usr/local/pki
+        #    name: ochami-pki-cacert-vol
+        resources:
+          limits:
+            cpu: "4"
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 256Mi
+        securityContext:
+          runAsUser: 65534
+          runAsGroup: 65534
+          runAsNonRoot: true
+      # TODO we should add cert-manager integration, but don't
+      # currently have it set up.
+      #volumes:
+      #  - configMap:
+      #      name: ochami-configmap-ca-public-key
+      #    name: ochami-pki-cacert-vol
