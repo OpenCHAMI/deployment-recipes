@@ -30,14 +30,22 @@ podman_interfaces:
   - podman2
   - podman3
   - podman4
-wait_time: 10
+wait_time: 30
 max_delay: 10
 max_retries: 10
 regctl_url: https://github.com/regclient/regclient/releases/latest/download/regctl-linux-amd64
 regctl_dest: /usr/local/bin/regctl
 epel10_url: https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
 epel10_gpg_key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-10
-openchami_rpm_url: https://github.com/OpenCHAMI/release/releases/download/v0.0.31/openchami-0.0.31.rpm
-openchami_rpm_name: openchami-0.0.31.rpm
-ochami_client_rpm_url:  https://github.com/OpenCHAMI/ochami/releases/download/v0.5.3/ochami_0.5.3_linux_amd64.rpm
-ochami_client_rpm_name: ochami_0.5.3_linux_amd64.rpm
+openchami_rpm_url: https://github.com/OpenCHAMI/release/releases/download/v0.1.2/openchami-0.1.2.rpm
+openchami_rpm_name: openchami-0.1.2.rpm
+ochami_client_rpm_url:  https://github.com/OpenCHAMI/ochami/releases/download/v0.7.1/ochami_0.7.1_linux_amd64.rpm
+ochami_client_rpm_name: ochami_0.7.1_linux_amd64.rpm
+
+# DNS forwarders for CoreDNS
+dns_forwarders:
+  - 8.8.8.8
+  - 1.1.1.1
+
+# CA certificate path for CoreDNS coresmd plugin
+ca_cert_path: /root_ca/root_ca.crt
