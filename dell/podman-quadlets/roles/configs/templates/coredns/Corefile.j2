@@ -1,0 +1,41 @@
+.:53 {
+    # Enable readiness endpoint.
+    #ready
+
+    # Bind Prometheus metrics endpoint.
+    prometheus 0.0.0.0:9153
+
+    # Bind to specific IP address.
+    bind {{ cluster_boot_ip }}
+
+    # Specify DNS forwarders.
+    forward . {{ dns_forwarders | join(' ') }}
+
+    # Generate DNS records based on BMC and node data in SMD.
+    coresmd {
+        # Base URI of OpenCHAMI cluster. The SMD base endpoint is appended to this
+        # when requesting node and BMC data from SMD.
+        smd_url {{ ochami_base_url }}
+
+        # Path to CA certificate bundle to use when verifying TLS for smd_url.
+        ca_cert {{ ca_cert_path }}
+
+        # Frequency to update the SMD data cache.
+        cache_duration 30s
+
+        # DNS zone configurations based on records generated from SMD data.
+        zone {{ cluster_domain }} {
+            # Besides generating DNS records for nodes based on xname, a custom
+            # record format can be specified based on the node ID. For instance:
+            #
+            # nodes de{03d}
+            #
+            # will produce:
+            #
+            # de001.openchami.cluster
+            #
+            # for node ID 1 and domain openchami.cluster.
+            nodes {{ cluster_shortname }}{0{{ cluster_nidlength }}d}
+        }
+    }
+}

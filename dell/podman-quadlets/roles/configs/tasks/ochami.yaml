@@ -68,6 +68,14 @@
     group: root
     mode: '{{ file_perm_rw }}'
 
+- name: Drop coredns Corefile config
+  ansible.builtin.template:
+    src: coredns/Corefile.j2
+    dest: '{{ openchami_config_dir }}/Corefile'
+    owner: root
+    group: root
+    mode: '{{ file_perm_rw }}'
+
 - name: Configure cluster FQDN for certificates
   ansible.builtin.command: sudo openchami-certificate-update update {{ cluster_name }}.{{ cluster_domain }}
   changed_when: true
