@@ -1,0 +1,665 @@
+# Originally attempted to use the Helm Kustomize invocation:
+#
+#HelmCharts:
+#- name: kubevirtbmc
+#  includeCRDs: true
+#  valuesInline: {}
+#  releaseName: bmc
+#  version: v0.2.4
+#  repo: https://charts.zespre.com/
+#
+# However, that broke:
+# Error: map[string]interface {}(nil): yaml: unmarshal errors:
+#   line 13: mapping key "labels" already defined at line 5
+# so this contains "helm template" output with some changes.
+---
+# Source: kubevirtbmc/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubevirtbmc-manager
+  namespace: kubevirtbmc-system
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+automountServiceAccountToken: true
+---
+# Source: kubevirtbmc/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubevirtbmc-virtbmc
+  namespace: kubevirtbmc-system
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+automountServiceAccountToken: true
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-vm-watcher
+rules:
+- apiGroups:
+  - kubevirt.io
+  resources:
+  - virtualmachines
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: kube-rbac-proxy
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-metrics-reader
+rules:
+- nonResourceURLs:
+  - "/metrics"
+  verbs:
+  - get
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: kube-rbac-proxy
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-proxy-role
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-pod-svc-manager
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-vmbmc-manager
+rules:
+- apiGroups:
+  - virtualmachine.kubevirt.io
+  resources:
+  - virtualmachinebmcs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - virtualmachine.kubevirt.io
+  resources:
+  - virtualmachinebmcs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - virtualmachine.kubevirt.io
+  resources:
+  - virtualmachinebmcs/status
+  verbs:
+  - get
+  - patch
+  - update
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: agent-rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-vm-manager
+rules:
+- apiGroups:
+  - kubevirt.io
+  resources:
+  - virtualmachines
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+  - patch
+- apiGroups:
+  - kubevirt.io
+  resources:
+  - virtualmachineinstances
+  verbs:
+  - get
+  - list
+  - watch
+  - delete
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-watch-vms
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubevirtbmc-vm-watcher
+subjects:
+- kind: ServiceAccount
+  name: kubevirtbmc-manager
+  namespace: kubevirtbmc-system
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: kube-rbac-proxy
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-proxy-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubevirtbmc-proxy-role
+subjects:
+- kind: ServiceAccount
+  name: kubevirtbmc-manager
+  namespace: kubevirtbmc-system
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-manage-pods-svcs
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubevirtbmc-pod-svc-manager
+subjects:
+- kind: ServiceAccount
+  name: kubevirtbmc-manager
+  namespace: kubevirtbmc-system
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-manage-vmbmcs
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubevirtbmc-vmbmc-manager
+subjects:
+- kind: ServiceAccount
+  name: kubevirtbmc-manager
+  namespace: kubevirtbmc-system
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrolebinding
+    app.kubernetes.io/instance: virtbmc-rolebinding
+    app.kubernetes.io/component: virtbmc-rbac
+    app.kubernetes.io/created-by: kubevirtbmc
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: virtbmc-rolebinding
+# TODO something's screwy with the chart and it inserts two labels/name fields here
+# IDK which one is correct
+#
+#  labels:
+#    helm.sh/chart: kubevirtbmc-0.2.4
+#    app.kubernetes.io/name: kubevirtbmc
+#    app.kubernetes.io/instance: kubevirtbmc
+#    app.kubernetes.io/version: "v0.5.3"
+#    app.kubernetes.io/component: agent-rbac
+#    app.kubernetes.io/part-of: kubevirtbmc
+#  name: kubevirtbmc-manage-vm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubevirtbmc-vm-manager
+subjects:
+- kind: ServiceAccount
+  name: kubevirtbmc-virtbmc
+  namespace: kubevirtbmc-system
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-leader-election-role
+  namespace: kubevirtbmc-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+---
+# Source: kubevirtbmc/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-leader-election-rolebinding
+  namespace: kubevirtbmc-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kubevirtbmc-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: kubevirtbmc-manager
+  namespace: kubevirtbmc-system
+---
+# Source: kubevirtbmc/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: kube-rbac-proxy
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-metrics-service
+  namespace: kubevirtbmc-system
+spec:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: metrics-server
+  selector:
+      app.kubernetes.io/name: kubevirtbmc
+      app.kubernetes.io/instance: kubevirtbmc
+---
+# Source: kubevirtbmc/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-webhook-service
+  namespace: kubevirtbmc-system
+spec:
+  ports:
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: webhook-server
+  selector:
+      app.kubernetes.io/name: kubevirtbmc
+      app.kubernetes.io/instance: kubevirtbmc
+---
+# Source: kubevirtbmc/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubevirtbmc
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: manager
+    app.kubernetes.io/part-of: kubevirtbmc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubevirtbmc
+      app.kubernetes.io/instance: kubevirtbmc
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: kubevirtbmc-0.2.4
+        app.kubernetes.io/name: kubevirtbmc
+        app.kubernetes.io/instance: kubevirtbmc
+        app.kubernetes.io/version: "v0.5.3"
+        app.kubernetes.io/component: manager
+        app.kubernetes.io/part-of: kubevirtbmc
+    spec:
+      serviceAccountName: kubevirtbmc-manager
+      securityContext:
+        runAsNonRoot: true
+      containers:
+      - name: manager
+        securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+        image: "traines/virtbmc-controller:v0.5.3-ainfo"
+        imagePullPolicy: IfNotPresent
+        command:
+        - /manager
+        args:
+        - "--health-probe-bind-address=:8081"
+        - "--metrics-bind-address=127.0.0.1:8080"
+        - "--agent-image-name=traines/virtbmc"
+        - "--agent-image-tag=v0.5.3-ainfo.3"
+        - "--leader-elect"
+        ports:
+        - name: metrics-server
+          containerPort: 8080
+          protocol: TCP
+        - name: webhook-server
+          containerPort: 9443
+          protocol: TCP
+        livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+        readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+        resources:
+            {}
+        volumeMounts:
+        - name: cert
+          mountPath: "/tmp/k8s-webhook-server/serving-certs"
+          readOnly: true
+      - name: kube-rbac-proxy
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        image: "gcr.io/kubebuilder/kube-rbac-proxy:v0.15.0"
+        imagePullPolicy: IfNotPresent
+        args:
+        - "--secure-listen-address=0.0.0.0:8443"
+        - "--upstream=http://127.0.0.1:8080/"
+        - "--logtostderr=true"
+        - "--v=0"
+        ports:
+        - containerPort: 8443
+          protocol: TCP
+          name: https
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 5m
+            memory: 64Mi
+      volumes:
+      - name: cert
+        secret:
+          secretName: kubevirtbmc-webhook-server-cert
+          defaultMode: 420
+---
+# Source: kubevirtbmc/templates/certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: certificate
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-serving-cert
+  namespace: kubevirtbmc-system
+spec:
+  dnsNames:
+  - kubevirtbmc-webhook-service.kubevirtbmc-system.svc
+  - kubevirtbmc-webhook-service.kubevirtbmc-system.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: kubevirtbmc-selfsigned-issuer
+  secretName: kubevirtbmc-webhook-server-cert
+---
+# Source: kubevirtbmc/templates/certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: certificate
+    app.kubernetes.io/part-of: kubevirtbmc
+  name: kubevirtbmc-selfsigned-issuer
+  namespace: kubevirtbmc-system
+spec:
+  selfSigned: {}
+---
+# Source: kubevirtbmc/templates/webhoookconfiguration.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/part-of: kubevirtbmc
+  annotations:
+    cert-manager.io/inject-ca-from: kubevirtbmc-system/kubevirtbmc-serving-cert
+  name: kubevirtbmc-mutating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: kubevirtbmc-webhook-service
+      namespace: kubevirtbmc-system
+      path: /mutate-virtualmachine-kubevirt-io-v1alpha1-virtualmachinebmc
+  failurePolicy: Fail
+  name: mvirtualmachinebmc.kb.io
+  rules:
+  - apiGroups:
+    - virtualmachine.kubevirt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - virtualmachinebmcs
+  sideEffects: None
+---
+# Source: kubevirtbmc/templates/webhoookconfiguration.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  labels:
+    helm.sh/chart: kubevirtbmc-0.2.4
+    app.kubernetes.io/name: kubevirtbmc
+    app.kubernetes.io/instance: kubevirtbmc
+    app.kubernetes.io/version: "v0.5.3"
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/part-of: kubevirtbmc
+  annotations:
+    cert-manager.io/inject-ca-from: kubevirtbmc-system/kubevirtbmc-serving-cert
+  name: kubevirtbmc-validating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: kubevirtbmc-webhook-service
+      namespace: kubevirtbmc-system
+      path: /validate-virtualmachine-kubevirt-io-v1alpha1-virtualmachinebmc
+  failurePolicy: Fail
+  name: vvirtualmachinebmc.kb.io
+  rules:
+  - apiGroups:
+    - virtualmachine.kubevirt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - virtualmachinebmcs
+  sideEffects: None

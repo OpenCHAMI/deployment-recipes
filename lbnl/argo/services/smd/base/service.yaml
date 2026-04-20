@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smd
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: http
+      name: smd
+      protocol: TCP
+    # TODO no idea why, but the named target via the default HTTP port
+    # was quite unhappy, so exposing both and configuring other services
+    # to use the original SMD API port.
+    - port: 27779
+      targetPort: 27779
+      name: smd-alt
+      protocol: TCP
