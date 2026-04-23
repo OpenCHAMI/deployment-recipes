@@ -5,7 +5,7 @@ Wants=local-fs.target network-online.target
 
 [Container]
 ContainerName=minio-server
-Image=docker.io/minio/minio:latest
+Image=docker.io/pgsty/minio:RELEASE.2026-04-17T00-00-00Z
 # Volumes
 Volume={{ data_s3_dir }}:/data:Z
 

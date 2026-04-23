@@ -6,7 +6,7 @@ Requires=network-online.target
 [Container]
 ContainerName=registry
 HostName=registry
-Image=docker.io/library/registry:latest
+Image=docker.io/library/registry:3.1.0
 Volume={{ data_oci_dir }}:/var/lib/registry:Z
 PublishPort=5000:5000
 
