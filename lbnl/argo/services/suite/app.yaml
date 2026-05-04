@@ -1,0 +1,18 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openchami
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+    - ServerSideApply=true
+    - SkipDryRunOnMissingResource=true
+  source:
+    path: 'lbnl/argo/services/suite'
+    repoURL: 'https://github.com/OpenCHAMI/deployment-recipes/"
+    targetRevision: 2025-08-21
+  destination:
+    namespace: mgmt
+    server: 'https://kubernetes.default.svc'
