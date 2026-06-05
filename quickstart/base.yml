@@ -1,5 +1,0 @@
-networks:
-  internal:
-  jwt-internal:
-  external:
-    driver: bridge
