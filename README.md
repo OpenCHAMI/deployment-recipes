@@ -6,8 +6,6 @@ For new users, we recommend starting with the **[OpenCHAMI Tutorial](https://ope
 
 ## Contents
 
-- [`quickstart/`](./quickstart/) – General quickstart for Docker Compose (**Deprecated** - use the [Tutorial](https://openchami.org/docs/tutorial/) instead)
-- [`quickstart-pcs/`](./quickstart-pcs/) – Quickstart with PCS and Sushy-tools (**Deprecated** - use the [Tutorial](https://openchami.org/docs/tutorial/) instead)
 - [`dell/`](./dell/) – Dell-specific deployment recipes
 - [`lbnl/`](./lbnl/) – LBNL-specific deployment recipes
 
