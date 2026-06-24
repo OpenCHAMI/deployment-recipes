@@ -1,0 +1,9 @@
+---
+server4:
+  plugins:
+    - server_id: ${server_id}
+    - dns: ${dns}
+    - router: ${router}
+    - netmask: ${netmask}
+    - coresmd: https://foobar.openchami.cluster:8443 http://${server_id}:8081 /root_ca/root_ca.crt 30s 1h false
+    - lease_time: 10m

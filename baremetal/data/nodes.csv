@@ -1,0 +1,3 @@
+host,node_ip,node_mac,node_xname,rfe_ip,rfe_xname,rfe_password
+cn1,172.16.0.1,aa:bb:cc:00:00:01,x0c0s1b0n0,10.0.0.1,x0c0s1b0,bmc-password
+cn2,172.16.0.2,aa:bb:cc:00:00:02,x0c0s2b0n0,10.0.0.2,x0c0s2b0,bmc-password

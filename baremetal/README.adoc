@@ -1,0 +1,209 @@
+= BareMetal
+:toc:
+:sectnums:
+
+[quote,Foreword]
+____
+An virtualize environment is already available in this repository. +
+Let's groove metal.
+____
+
+NOTE: This README includes files, but GitHub doesn't support this feature, do not hesitate to render html output on your laptop. +
+See https://github.com/github/markup/issues/1095[Asciidoctor: support include directives for other asciidoc files #1095].
+
+== Prerequisites
+
+=== Tools
+
+https://github.com/medialab/xan[xan]:: Execute script that read csv files
+
+=== Host file
+
+Add line to `/etc/hosts`
+
+----
+127.0.0.1 foobar.openchami.cluster
+----
+
+== Short glossary
+
+CN:: compute node
+RFE:: redfish endpoint
+
+== Networks
+
+There is two networks:
+
+out of band:: The network for `BMCs`
+compute nodes:: The network for compute nodes
+
+[%header,format=csv]
+|===
+include::data/networks.csv[]
+|===
+
+== Components
+
+Three type of machines:
+
+BMC:: is connected on out of band's network, handle compute node.
+Compute node:: is connected on compute nodes' network, is the target of provisioning
+Management:: is connected on both network, it communicate with `BMCs` and nodes
+
+=== Machines table
+
+[%header,format=csv]
+|===
+include::data/machines.csv[]
+|===
+
+=== Nodes table
+
+[%header,format=csv]
+|===
+include::data/nodes.csv[]
+|===
+
+== SSH configuration
+
+Assuming you have access to the management machine with root user by
+
+[source,bash]
+----
+ssh admin
+----
+
+== Components
+
+https://github.com/OpenCHAMI/coresmd[CoreDHCP]:: provide IP and URL to where fetching the `iPXE` script
+https://github.com/OpenCHAMI/bss[BSS]:: provide `iPXE` script with kernel and `initrd` parameters
+https://github.com/openCHAMI/smd[SMD]:: Contains data for hardware components
+
+== Sequence
+
+Just a quick overview on the sequence.
+
+. Deploy link:../quickstart-pcs[quickstart-pcs] on the `admin` machine.
+. Add the RFE `cn1`
+. SMD wills fetch components data of machine from RFE
+. Add directly the IP of `cn1` in the PostgreSQL database
++
+NOTE: This is a hacky way, because I don't know how to add `cn1` IP address in SMD by https://github.com/OpenCHAMI/ochami[ochami cli].
+. Configure `BSS`
+. Start the `CoreDHCP`
+. Boot the `cn1`
+
+== Data folder
+
+This folder has the `data` folder with `csv` files as single source of truth for this entire folder.
+
+The `README` and all the scripts in `hacks` use the `data` folder.
+
+First, think to replace/complete `csv` files contained in `data` folder before following the next steps.
+
+== DHCP configuration
+
+A configuration example.
+
+NOTE: You can create this file by +
+`bash hacks/create-dhcp-config.sh`
+
+[source,yaml]
+----
+include::coredhcp/config.yaml[]
+----
+
+== Start OpenCHAMI services
+
+. Clone
++
+[source,bash]
+----
+include::hacks/clone-deployment-recipes.sh[]
+----
+
+. Generate environment files
++
+[source,bash]
+----
+include::hacks/generate-config.sh[]
+----
+
+. Start (this is the same step to restart by cleaning old volumes)
++
+[source,bash]
+----
+include::hacks/restart-openchami.sh[]
+----
+
+== Start DHCP
+
+DHCP is not in the link:../quickstart-pcs[quickstart-pcs].
+It has to be start separately.
+
+[source,bash]
+----
+include::hacks/start-dhcp.sh[]
+----
+
+== Start an image server
+
+Start nginx web server
+
+[source,bash]
+----
+include::hacks/start-image-server.sh[]
+----
+
+== Prepare live image
+
+. https://archlinux.org/download/[Download archlinux live] iso on admin machine
+. Name it `file.iso`
+. Mount it and copy file under `disk-images` folder
++
+[source,bash]
+----
+include::hacks/prepare-live-files.sh[]
+----
+
+== Forward port
+
+In this way you can communicate with OpenCHAMI's services directly from your laptop.
+
+[source,bash]
+----
+include::hacks/ssh-forward.sh[]
+----
+
+== Terraform
+
+The Terraform manta provider have to be installed localy. +
+Instruction is available: https://github.com/eth-cscs/terraform-provider-manta/?tab=readme-ov-file#22-development[2.3. Install Provider locally]
+
+=== Create variables
+
+[source,bash]
+----
+bash hacks/create-terraform-variables.sh
+----
+
+=== Deploy
+
+[source,bash]
+----
+terraform -chdir=terraform apply -auto-approve -var-file=variables.tfvars
+----
+
+NOTE: If this message appears +
+`Could not create bss, unexpected error: Post "http://localhost:27778/boot/v1/bootparameters": EOF` +
+Redeploy OpenCHAMI.
+
+== Helper script
+
+=== Modify boot order
+
+This script will add pxe ipv4 as first boot option.
+
+=== Modify one-time boot
+
+NOTE: this change will not be permanement

@@ -1,0 +1,5 @@
+bss_kernel = "http://${SERVER}/vmlinuz-linux"
+bss_initrd = "http://${SERVER}/initramfs-linux.img"
+bss_params = "console=ttyS0,115200 console=tty0 unregistered=1 archisobasedir=arch archiso_http_srv=http://${SERVER}/ cms_verify=y ip=dhcp ds=nocloud;s=http://${SERVER}:8081/cloud-init network-config=disabled"
+
+cloud_init = "http://${SERVER}:8081/cloud-init"

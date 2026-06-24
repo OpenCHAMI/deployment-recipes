@@ -1,0 +1,53 @@
+BMC_URL="https://${RFE_IP}"
+PASSWORD="${BMC_PASSWORD}"
+MAC_ADDRESS_UPPERCASE=$(echo "${MAC_ADDRESS}"| tr '[:lower:]' '[:upper:]' | tr -d ':')
+
+function _curl() {
+	curl -sku root:"${PASSWORD}" "${BMC_URL}${1}"
+}
+
+function _curl_patch() {
+	ANSWER="$(curl -sku root:"${PASSWORD}" "${BMC_URL}${1}" \
+		-H "content-type:application/json" \
+		-X PATCH \
+		-d "${2}")"
+
+	ANSWER_MESSAGE="$(echo "${ANSWER}" | jq -r '.error."@Message.ExtendedInfo"[].MessageId')"
+
+	if [ "${ANSWER_MESSAGE}" != "Base.1.4.Success" ]; then
+		echo "error: cannot patch"
+		echo "${ANSWER}" | jq || echo "${ANSWER}"
+		exit 1
+	fi
+}
+
+# get system path
+SYSTEMS=$(_curl "/redfish/v1" | jq -r '.Systems."@odata.id"')
+
+SYSTEMS_1="$(_curl "${SYSTEMS}" | jq -r '.Members[]."@odata.id"')"
+
+# get a valid ethernet interface
+ETH_INTERFACE="$(_curl "${SYSTEMS_1}" | jq -r '.Boot."UefiTargetBootSourceOverride@Redfish.AllowableValues"[]' | grep "${MAC_ADDRESS_UPPERCASE}" | grep IPv4 | grep -v Uri)"
+
+# configure the ethernet interface as boot device
+_curl_patch "${SYSTEMS_1}" "
+{
+  \"Boot\": {
+    \"BootSourceOverrideTarget\": \"UefiTarget\",
+    \"UefiTargetBootSourceOverride\": \"${ETH_INTERFACE}\"
+  }
+}
+"
+
+# see [options][1]
+# 1: https://www.supermicro.com/manuals/other/redfish-ref-guide-html/Content/general-content/bios-configuration.htm#boot-options
+_curl_patch "${SYSTEMS_1}" '
+{
+  "Boot": {
+    "BootSourceOverrideEnabled": "Once"
+  }
+}
+'
+
+# print boot options
+_curl "${SYSTEMS_1}" | jq .Boot
